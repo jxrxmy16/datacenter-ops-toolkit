@@ -1,0 +1,16 @@
+# example_hosts.txt — ejemplo para uptime_monitor.py
+# Líneas que comienzan con # son comentarios
+
+# Gateway / Core
+192.168.1.1
+
+# DNS externos
+8.8.8.8
+1.1.1.1
+
+# Servidores internos
+192.168.1.10
+192.168.1.20
+
+# Switches
+192.168.1.254

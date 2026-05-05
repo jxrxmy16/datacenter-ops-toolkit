@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+.venv/
+venv/
+env/
+
+# Backups generados por config_backup.py
+backups/
+*.diff
+
+# Logs y reportes generados
+*.csv
+*.json
+*.html
+!example_*.csv
+!example_*.json
+
+# Credenciales — nunca subas tokens o contraseñas
+.env
+secrets.txt
+*.key
+*.pem
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

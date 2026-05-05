@@ -1,0 +1,40 @@
+name: Lint & Syntax Check
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install pyflakes
+
+      - name: Syntax check — all scripts
+        run: |
+          python -m pyflakes netscan.py
+          python -m pyflakes uptime_monitor.py
+          python -m pyflakes netbox_sync.py
+          python -m pyflakes incident_report.py
+          python -m pyflakes config_backup.py
+
+      - name: Import check (stdlib only)
+        run: |
+          python -c "import ast, sys
+          files = ['netscan.py','uptime_monitor.py','incident_report.py']
+          for f in files:
+              compile(open(f).read(), f, 'exec')
+              print(f'OK: {f}')
+          "
