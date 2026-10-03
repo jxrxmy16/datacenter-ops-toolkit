@@ -38,3 +38,8 @@ secrets.txt
 # OS
 .DS_Store
 Thumbs.db
+
+# Plantillas y formularios generados por opr_reg08.py (datos de clientes)
+plantillas/*.docx
+OPR-REG-08_*.docx
+*.xlsx

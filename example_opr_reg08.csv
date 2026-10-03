@@ -1,0 +1,4 @@
+Tipo de equipo;Fabricante;Modelo;Consumo kW;N° Serie;Sala;Rack;U
+Servidor rack;HP;HP PROLIANT DL380 G10;0,5;CZ00000001;B3;AR17;28-29
+Switch Ethernet;Cisco;C9300-48P;0,35;FOC0000002;B3;AR17;27
+Firewall NGFW;Fortinet;FORTIGATE 200F;0,1;FG200F0000003;B3;AR17;26

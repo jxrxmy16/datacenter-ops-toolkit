@@ -15,6 +15,7 @@ Built from real operational experience in 24x7 Data Center environments.
 | [`netbox_sync.py`](#netbox_syncpy) | NetBox API integration — inventory listing, ping check, status update |
 | [`incident_report.py`](#incident_reportpy) | HTML incident report generator (interactive or from log) |
 | [`config_backup.py`](#config_backuppy) | SSH configuration backup for Cisco, Arista, Huawei, Linux, and more |
+| [`opr_reg08.py`](#opr_reg08py) | Rellena el formulario Word OPR-REG-08 de ingreso de equipos desde la planilla del cliente |
 
 ---
 
@@ -26,7 +27,7 @@ cd datacenter-ops-toolkit
 pip install -r requirements.txt
 ```
 
-**Requirements:** Python 3.9+ · `rich` · `requests` · `paramiko`
+**Requirements:** Python 3.9+ · `rich` · `requests` · `paramiko` · `python-docx` · `openpyxl`
 
 ---
 
@@ -180,6 +181,38 @@ ip,user,type,port
 - Change detection — generates `.diff` file when config changes between runs
 - Organized backup files: `IP_type_YYYYMMDD_HHMMSS.txt`
 - Summary table with per-device status
+
+---
+
+## opr_reg08.py
+
+Rellena el formulario **OPR-REG-08** (Sala de Armado + Sala Blanca) a partir de la planilla de equipos que se descarga de la plataforma del cliente. Agrega o quita filas de equipo según la cantidad, y usa el ticket como RFID.
+
+```bash
+# Ver qué columnas reconoce de la planilla descargada
+python opr_reg08.py descarga.xlsx --columnas
+
+# Generar el Word
+python opr_reg08.py descarga.xlsx --cliente SOLUTIONS --ticket SD5229372
+
+# Con fecha fija, otra plantilla y nombre de salida
+python opr_reg08.py descarga.csv --cliente SOLUTIONS --ticket SD5229372 \
+    --fecha "03/10/2026 12:00 PM" --plantilla plantillas/OPR-REG-08.docx -o ingreso.docx
+```
+
+La plantilla en blanco va en `plantillas/OPR-REG-08.docx` (no se versiona). La planilla puede ser `.xlsx` o `.csv`, con filas de título antes de los encabezados y columnas en cualquier orden. Ver [`example_opr_reg08.csv`](example_opr_reg08.csv).
+
+| Campo del Word | Encabezados reconocidos (ejemplos) |
+|----------------|------------------------------------|
+| Equipamiento | Equipamiento, Tipo de equipo, Descripción |
+| Marca | Marca, Fabricante |
+| Modelo | Modelo |
+| Consumo kW declarado | Consumo, kW, Potencia |
+| N° de serie | Serie, N° de serie, Serial, S/N |
+| Sala / Rack / U Rack | Sala, Rack, U, Posición |
+| Cliente / Ticket | `--cliente` / `--ticket`, o columnas Cliente / Ticket |
+
+Si la plataforma usa otro nombre de columna, se agrega en `ALIASES` al inicio del script.
 
 ---
 
