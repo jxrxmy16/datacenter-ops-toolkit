@@ -1,0 +1,163 @@
+# Forja de Historias
+
+Un narrador interactivo de consola, **sin inteligencia artificial**. Tú pones los
+parámetros (universo, tono, protagonista, falla) y vas tomando decisiones; el
+juego va armando una historia que cambia en cada partida y que **se mantiene
+lógica dentro de su universo**. Al terminar puedes guardarla como un libro.
+
+No usa redes neuronales, ni APIs, ni internet, ni dependencias: solo Python 3.8+
+y su biblioteca estándar. Los textos están escritos a mano; la variedad sale de
+combinar reglas, léxicos y el estado del mundo.
+
+## Jugar
+
+```
+python jugar.py                  # partida interactiva con menús
+python jugar.py --aleatorio      # todos los parámetros al azar
+python jugar.py --demo           # una partida entera que se juega sola
+python jugar.py --semilla 42     # repite exactamente el mismo mundo
+python jugar.py --notas          # muestra de qué obra sale cada escena
+```
+
+En Windows: `py jugar.py`. Durante la partida, `n` activa o desactiva las notas de
+fuentes y `q` sale. Al final se ofrece guardar el libro en `historias/`.
+Hay un libro ya jugado en [`ejemplos/`](ejemplos/el-expediente-sombra-1541.md).
+
+## Cómo es una partida
+
+1. **Parámetros**: género (fantasía, ciencia ficción, noir, terror gótico), tono
+   (luminoso, equilibrado, sombrío), trama (vencer al monstruo / la búsqueda),
+   nombre y pronombres del protagonista, arquetipo y una *falla* que la historia
+   pondrá a prueba.
+2. **Doce capítulos** (las etapas del viaje del héroe). En cada uno el motor
+   elige, entre las escenas que el estado del mundo permite, una distinta, y te
+   da 2-5 decisiones.
+3. **Un final** que no está escrito de antemano: triunfo, victoria pírrica,
+   renacimiento, tragedia, derrota o caída, según lo que le pasó a cada personaje
+   y a quién se volvió el héroe.
+4. **El libro**: capítulos, tus decisiones en cursiva y la bibliografía de lo que
+   apareció.
+
+## Por qué la historia tiene lógica
+
+La idea viene de los planificadores narrativos clásicos: cada escena exige
+**precondiciones** sobre el estado del mundo y, al resolverse, aplica
+**efectos**.
+
+- Quien muere sale del grupo y **no puede volver a aparecer**. Un aviso del
+  renderizador salta si una plantilla nombra a un personaje ausente o muerto sin
+  haberlo declarado como mención (un recuerdo, un epitafio).
+- Quien no fue invitado no acompaña: si rechazas al mentor, no habrá sacrificio
+  del mentor ni «voz del mentor» al final.
+- **Los secretos se deciden al crear el mundo**, no cuando aparecen: quién es
+  el traidor y qué une al villano con el héroe ya está fijado, así que las pistas
+  que se siembran son verdaderas.
+- **Siembra y cosecha** (la pistola de Chéjov): lo que haces antes se cobra
+  después.
+
+| Siembra | Cosecha |
+|---|---|
+| Escuchar rumores en el capítulo 1 | Una opción extra en la llamada: conoces su punto débil |
+| Preguntarle al mentor por su pasado | La revelación del villano no te sorprende; hablarle cuesta menos |
+| Rechazar a un aliado que era traidor | Lo reconoces junto al villano en la prueba suprema |
+| Sospechar de un aliado (preguntas, guardias) | Si traiciona, ya estabas preparado y perdonarlo cuesta menos |
+| Ayudar a unos desconocidos | Vuelven a rescatarte en el camino de vuelta |
+| Ganarte al guardián del umbral hablando | Te abre paso al volver |
+| Perder al mentor (por su sacrificio) | Su legado te da ventaja en la prueba final |
+| Llevarte un recuerdo de casa | Ayuda a resistir la voz de tu falla |
+| Negarte a partir | Tu hogar sufre, y puede que el heraldo no lo cuente |
+
+Hay dados (un d6 más tus atributos y objetos) que deciden si un golpe sale bien,
+pero el sentido moral del final lo decide la **Ambición** acumulada y si al
+final resistes o cedes a la voz de tu falla (la *hamartia* de Aristóteles, la
+«sombra» de Jung).
+
+## Las fuentes: teoría y cine como estructura
+
+El esqueleto no es inventado:
+
+- **Doce etapas**: Vogler, *El viaje del escritor*, sobre Campbell, *El héroe de
+  las mil caras*.
+- **Funciones y personajes**: Propp (donante, auxiliar, agresor, falso héroe,
+  persecución, socorro...) y el modelo actancial de Greimas (ayudante frente a
+  oponente).
+- **Equilibrio roto y restablecido**: Todorov.
+- **Tramas**: Booker, *Las siete tramas básicas* (aquí, dos: vencer al monstruo y
+  la búsqueda; la tragedia y el renacimiento emergen en los finales).
+- **Reversión y reconocimiento**: Aristóteles, *Poética*.
+- **Situaciones**: Polti, *Las 36 situaciones dramáticas*.
+
+Cada escena cita las obras que recuerda (Star Wars, *El Señor de los Anillos*,
+*Los siete samuráis*, *Mad Max*, Le Guin, Conrad...). Con `--notas` se ven junto a
+la escena, y el libro final incluye «qué escena recuerda a qué». El catálogo
+completo está en [`FUENTES.md`](FUENTES.md).
+
+> Las obras de ficción son **inspiración**: se cita el patrón, no se copia texto.
+> Las referencias dan autor, título y año, sin editorial: verifícalas antes de
+> usarlas en un trabajo académico.
+
+## Estructura del código
+
+```
+jugar.py            punto de entrada y menús
+forja/
+  lexico.py         vocabulario por género, arquetipos, fallas, tonos (solo datos)
+  gramatica.py      concordancia en español: {meta.de}, {hogar.a}, cansad{heroe.o}
+  modelo.py         Personaje, Mundo, Escena, Opcion; renderizador con avisos
+  generador.py      crea el mundo y decide los secretos a partir de la semilla
+  efectos.py        vigor(-1), pon("flag"), muere("mentor")... el vocabulario de las escenas
+  acto1/2/3.py      las 21 escenas, agrupadas por acto
+  final.py          elige el final y compone el epílogo
+  motor.py          recorre las 12 etapas y resuelve cada escena
+  consola.py        interfaz: interactiva, demo y muda (para pruebas)
+  libro.py          exporta la partida a Markdown
+  fuentes.py        catálogo de referencias
+tests/test_forja.py
+```
+
+### Añadir una escena
+
+```python
+Escena(
+    id="puente_roto", etapa=6,
+    requiere=lambda w: w.con("aliado"),        # precondición sobre el mundo
+    fuentes=(("propp", "las tareas difíciles"),),
+    texto=["{ambiente}", "{aliado.Cap} mira el puente roto. «Tú primero», dice."],
+    opciones=[
+        Opcion("Cruzar por la cuerda", "valor", dif=7,
+               ok=res("Llegas al otro lado.", confianza("aliado", 1)),
+               mal=res("Resbalas.", vigor(-2))),
+    ],
+)
+```
+
+Añádela a la lista de su acto y al paso correspondiente de `PLAN` en `motor.py`.
+Las plantillas usan `{meta.de}`, `{hogar.a}`, `{aliado.nombre}`, `{heroe.o}`,
+`{villano.Cap}`... para que el género y el número concuerden en cualquier
+universo.
+
+## Pruebas
+
+```
+python -m unittest discover -s tests
+```
+
+La prueba clave juega **400 partidas con decisiones al azar** y exige que ninguna
+rompa las reglas del universo: ningún muerto actúa, nadie ausente acompaña, no
+quedan huecos en las plantillas, no hay preposiciones duplicadas ni frases en
+minúscula, y todas terminan en un final. Otras pruebas comprueban que la misma
+semilla repite la historia y que semillas distintas dan historias distintas.
+
+## Límites (es un prototipo)
+
+- 21 escenas y 4 géneros: la variedad es real pero finita; a la tercera o cuarta
+  partida con el mismo género empiezas a reconocer las piezas. (Es un
+  límite que algunos críticos señalan también en *Wildermyth*.)
+- El texto es de plantilla: coherente, pero no tan fluido como el de un humano
+  o un modelo de lenguaje.
+- Solo dos tramas de Booker; faltan comedia, viaje y regreso, etc.
+- No hay guardado a medias (solo el libro al final).
+
+Ideas para seguir: más escenas por etapa, más géneros (western, histórico),
+más tramas, un «mundo persistente» entre partidas, o un editor para que
+cualquiera añada escenas sin tocar Python.
