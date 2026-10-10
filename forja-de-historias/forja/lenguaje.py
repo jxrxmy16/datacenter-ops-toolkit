@@ -1,0 +1,783 @@
+"""Intérprete de texto libre en español, sin IA: léxico de raíces + reglas.
+
+Dado "salir del bosque caminando con los ojos cerrados", averigua:
+
+  * la INTENCIÓN dominante (valor, ingenio, compasión, ambición, duda, o una
+    de las acciones de exploración: observar, hablar, descansar, moverse);
+  * los MODIFICADORES de dificultad ("con los ojos cerrados" la sube,
+    "con cuidado" la baja) y el fragmento exacto que escribió el jugador;
+  * las ENTIDADES nombradas (el mentor, el guardián, el hogar...);
+  * si encaja con alguna de las opciones de la escena (por intención y por
+    palabras compartidas con su texto);
+  * si la acción es IMPOSIBLE en este momento del relato (hablar con alguien
+    que murió, ir a un sitio al que aún no se puede llegar).
+
+No entiende el lenguaje: reconoce raíces de palabras. Por eso siempre muestra
+al jugador cómo lo ha interpretado, y le deja corregirlo.
+"""
+
+import difflib
+import re
+import unicodedata
+from dataclasses import dataclass, field
+
+CLASES_ACCION = ("valor", "ingenio", "compasion", "sombra", "duda")
+CLASES_EXPLORACION = ("observar", "hablar", "descansar", "moverse")
+CLASES = CLASES_ACCION + CLASES_EXPLORACION
+# Orden de desempate: primero las acciones que deciden.
+_ORDEN = {c: i for i, c in enumerate(CLASES)}
+
+# Qué enfoque de las opciones corresponde a cada intención de acción.
+ENFOQUE_DE = {"valor": "valor", "ingenio": "ingenio", "compasion": "compasion",
+              "sombra": "sombra", "duda": None}
+
+# Una acción de exploración se parece también a alguna acción de decisión.
+AFINIDAD = {
+    "hablar": {"compasion": 0.6, "ingenio": 0.4},
+    "observar": {"ingenio": 0.7},
+    "moverse": {"valor": 0.3, "duda": 0.2},
+    "descansar": {"duda": 0.5},
+}
+
+_TOKEN = re.compile(r"[\wáéíóúüñÁÉÍÓÚÜÑ]+", re.UNICODE)
+
+
+# --------------------------------------------------------------------------
+# Normalización
+# --------------------------------------------------------------------------
+def quitar_tildes(texto: str) -> str:
+    texto = unicodedata.normalize("NFD", texto)
+    return "".join(c for c in texto if unicodedata.category(c) != "Mn").lower()
+
+
+def normalizar_token(token: str) -> str:
+    t = quitar_tildes(token)
+    return re.sub(r"(.)\1{2,}", r"\1", t)          # "ataaacooo" -> "ataco"
+
+
+def tokenizar(texto: str):
+    originales = _TOKEN.findall(texto)
+    return originales, [normalizar_token(t) for t in originales]
+
+
+# --------------------------------------------------------------------------
+# Léxico
+# --------------------------------------------------------------------------
+_FORMAS = {
+    "ar": ("ar o as a amos an e es emos en aba abas abamos aban are ara aremos aran "
+           "aria arias ariamos arian ando ado ada ados adas aste aron").split(),
+    "er": ("er o es e emos en a as amos an ia ias iamos ian ere era eremos eran "
+           "eria erias eriamos erian iendo ido ida idos idas iste io ieron").split(),
+    "ir": ("ir o es e imos en a as amos an ia ias iamos ian ire ira iremos iran "
+           "iria irias iriamos irian iendo ido ida idos idas iste io ieron").split(),
+}
+
+
+def conjugar(raiz: str, tipo: str) -> set:
+    """Formas regulares de un verbo (sin tildes), con cambios c/qu, g/gu, z/c."""
+    formas = set()
+    for f in _FORMAS[tipo]:
+        r = raiz
+        if f and f[0] in "eé" and tipo == "ar":
+            if raiz.endswith("c"):
+                r = raiz[:-1] + "qu"
+            elif raiz.endswith("g"):
+                r = raiz[:-1] + "gu"
+            elif raiz.endswith("z"):
+                r = raiz[:-1] + "c"
+        formas.add(r + f)
+    return formas
+
+
+def _leer(texto: str):
+    """Interpreta una cadena de léxico.
+
+    raiz           prefijo de palabra          (atac -> atacar, ataco, atacando)
+    raiz:0.5       idem con otro peso
+    =palabra       palabra exacta              (=mato)
+    +raiz *raiz ~raiz   verbo regular -ar / -er / -ir
+    """
+    prefijos, exactas = {}, {}
+    for item in texto.split():
+        peso = 1.0
+        if ":" in item:
+            item, p = item.rsplit(":", 1)
+            peso = float(p)
+        if item[0] in "+*~":
+            tipo = {"+": "ar", "*": "er", "~": "ir"}[item[0]]
+            for forma in conjugar(item[1:], tipo):
+                exactas[forma] = peso
+        elif item[0] == "=":
+            exactas[item[1:]] = peso
+        else:
+            prefijos[item] = peso
+    return prefijos, exactas
+
+
+LEXICO_TEXTO = {
+    "valor": """
+        atac enfrent combat embist luch pele golpe destroz derrib aplast arremet desenvain
+        blandi dispar forz empuj repel contraatac abalanz resist aguant defend derrot
+        aniquil machac patad punet apunal acuchill estoc decapit carga cargu embest
+        guantaz mampor paliz apunt empun desenfund demol aporre zurr abofete hostig
+        embrav acomet cabezaz embestid
+        lanz:0.6 arroj:0.6 abat:0.5 sacud:0.5 valent:0.6 brav:0.6 audaz:0.6 empujon:0.8
+        =cargo =herir =hiero =hieres =hiere =hirio =hiriendo =tortas =tumbo =tumbar:0.6
+        +mat +pate +peg:0.8
+    """,
+    "ingenio": """
+        engan minti mient finj fing disfraz distra trampa planific planea calcul
+        deduc infer ingeni improvis aprovech astuc truc sorprend sabot manipul regate
+        esquiv evad sigil camufl infiltr senuel cebo derrumb bloque desvi atajo
+        terren ardid estratagem argucia maquin ocurr invent simul imit suplant
+        pirat enred embauc camel furtiv disimul sutil subterfug pretext fals
+        falsific despist provoc cortocircuit ganzu labia
+        analiz:0.5 negoci:0.7 ocult:0.6 escond:0.5 excusa:0.8 hack:0.8 pens:0.4
+        =planeo =plan =rodear =rodeo =rodeamos =rodeando =colar =colarme =colarse
+        =colarnos =cuelo =cuela =idea =farol:0.5
+    """,
+    "compasion": """
+        ayud auxili socorr sana consol calm tranquiliz abraz perdon disculp compart
+        ofrec proteg salv rescat apoy acompan consuel empati reconcili cobij abrig
+        aliment piedad compas amab gentil amistad sosten
+        convenc:0.7 persuad:0.7 comprend:0.6 entend:0.3 escuch:0.3 entreg:0.4
+        =curar =curo =curas =curamos =curan =curarle =curarla =curarlo =curalo
+        =curala =curame =cuidar =cuido =cuidas =cuida =cuidamos =cuidan =cuidarle
+        =cuidarla =cuidarlo =animar =animo =animas =animarle =vendar =vendo
+        =vendarle =vendarla =vendarlo
+    """,
+    "sombra": """
+        hurt saque amenaz intimid chantaj extors soborn traicion apropi domin tortur
+        exig codici ambici despiadad cruel mezquin rapi coaccion chivat chiv delat
+        denunci estaf desvalij mang birl afan chor
+        asust:0.8 explot:0.6 abandon:0.8 ignor:0.5 aprovech:0.3 timo:0.6
+        =cobrar =cobro =cobra =cobras =quemo =quemar =quemarle +rob:1.4 +vaci
+    """,
+    "duda": """
+        escap fug retir retroced rechaz evit dud titube paraliz tembl rendici
+        esper rend:0.8 escond:1.0 ignor:0.5 cobard:0.8
+        =huir =huyo =huyes =huye =huimos =huyen =huyendo =huido =huyamos =huid
+        =quedo =quedar =quedarme =quedarse =quedate =quedamos =quedas
+        =negar =niego =niegas =niega =negarme =negarse =negamos =negativa
+        =rendir =rendirme =rendirse =rindo =rendi =rinde =rindete
+        =piro =pirarme =pirarse =pirate =pira +larg
+    """,
+    "observar": """
+        mir observ examin invest inspeccion busc revis registr escuch huel explor
+        vigil atisb otear rastre fij reconoc record recuerd contempl lectur
+        estudi:0.6 pens:0.8 reflexion medit analiz:0.7 evalu sopes atent:0.5 ojear
+        hojear curiose cotille espi
+        =oler =ver =veo =ves =vemos =ven =viendo =visto =leer =leo =lee =leemos
+        =leyendo +olfate
+    """,
+    "hablar": """
+        habl conver platic pregunt contest respond salud suplic rog explic dialog
+        confes interrog propon susurr comunic avis advert inform aconsej consej charl
+        relat narr palique sonsac
+        grit:0.6 cuent:0.6 present:0.3
+        =decir =digo =dices =dice =decimos =dicen =dime =dile =diciendo =dijo =dijimos
+        =pedir =pido =pides =pide =pedimos =piden =pidiendo =pidele =pidelo =pedi
+        =pedia =pediria =pedire =pidio +llam +cont:0.8
+    """,
+    "descansar": """
+        descans dorm duerm durm:1.3 siest cabezad repos recuper recost relaj respir
+        acamp recobr reventad agotad cansad
+        polvo:0.3
+        =sentarme =sentarse =sientate =sentarnos =sentandome =tumbarme =tumbarse
+        =tumbarnos =vendarme =vendarse =sueno =suenito =suenecito =comer:0.9
+        =comerme:0.9 =comiendo:0.9 =beber:0.7 =comida:0.5 =pan:0.5 =queso:0.5
+        =bocata:0.5 =bocadillo:0.5 =vendo:0.8
+    """,
+    "moverse": """
+        camin avanz entr cruz baj regres acerc aleja viaj trep escal atraves recorr
+        pase rumb dirig lleg volv vuelv adent descend ascend
+        march:0.6 adelant:0.5 mov:0.6 muev:0.6 desplaz arrastr:0.5 repto atrav
+        sendero:0.4 alante:0.8
+        =ir =voy =vas =va =vamos =van =iba =fui =fue =vaya =yendo =ido =ire
+        =subir =subo =subes =sube =subimos =suben =subiendo =sub
+        =salir =salgo =sales =sale =salimos =salen =salga =salgamos =salio =saldre =sal
+        =seguir =sigo =sigue =sigues =seguimos =siguen =siguiendo =siguio =seguire
+        =pasar:0.5 =paso:0.5 =pasas:0.5 =pasa:0.5 =pasamos:0.5 =pasan:0.5 =pasando:0.5
+        *corr:0.9
+    """,
+}
+
+# --- índices ---------------------------------------------------------------
+_PREFIJOS = []            # (raiz, clase, peso)
+_EXACTAS = {}             # palabra -> [(clase, peso)]
+for _clase, _txt in LEXICO_TEXTO.items():
+    _pref, _exac = _leer(_txt)
+    _PREFIJOS += [(r, _clase, p) for r, p in _pref.items()]
+    for _w, _p in _exac.items():
+        _EXACTAS.setdefault(_w, []).append((_clase, _p))
+_PREFIJOS.sort(key=lambda t: -len(t[0]))
+
+# Frases: todas las raíces deben aparecer cerca (en cualquier orden).
+# Cada raíz: `abc*` prefijo, `a|b` alternativas, 4+ letras prefijo, 3 o menos exacta.
+# "@hacer" se expande a hac*/hag*/hic*/hiz* (hacer, hago, haga, hice, hizo).
+_FRASES_BASE = [
+    (("tend*", "mano"), {"compasion": 2.0}),
+    (("tiend*", "mano"), {"compasion": 2.0}),
+    (("ech*", "mano"), {"compasion": 1.6}),
+    (("ech*", "cable"), {"compasion": 1.6}),
+    (("sosten*", "mano"), {"compasion": 1.6}),
+    (("dar|doy|da|dale|dame|entreg*|ofrec*|pas*|compart*|comparto",
+      "com*|beb*|raci*|pan|agua|trozo|bocata|bocadillo|aliment*|medicin*|pocion|venda*"),
+     {"compasion": 2.0}),
+    (("plant*", "cara"), {"valor": 2.0}),
+    (("abr*", "paso"), {"valor": 2.0}),
+    (("@hacer", "frente"), {"valor": 2.0}),
+    (("part*", "cara"), {"valor": 2.0}),
+    (("cabeza", "contra"), {"valor": 1.5}),
+    (("a", "golpes"), {"valor": 1.0}),
+    (("dar|doy|da|dale|darle", "espald"), {"duda": 1.5}),
+    (("dand*", "espald"), {"duda": 1.5}),
+    (("no", "@hacer", "nada"), {"duda": 2.5}),
+    (("sin", "@hacer", "nada"), {"duda": 2.5}),
+    (("@hacer", "ruido"), {"ingenio": 1.0}),
+    (("@hacer", "muert"), {"ingenio": 1.5, "duda": 0.8}),
+    (("fing*", "muert"), {"ingenio": 1.5}),
+    (("@hacer", "pas*", "por"), {"ingenio": 2.0}),
+    (("@hacer", "tonto"), {"ingenio": 1.2}),
+    (("@hacer", "cre*"), {"ingenio": 1.5}),
+    (("cuento", "chino"), {"ingenio": 1.5}),
+    (("salir", "corr*"), {"duda": 2.0}),
+    (("salgo", "corr*"), {"duda": 2.0}),
+    (("ech*", "corr*"), {"duda": 2.0}),
+    (("volv*", "atras"), {"duda": 1.5}),
+    (("vuelv*", "atras"), {"duda": 1.5}),
+    (("tir*", "toalla"), {"duda": 2.0}),
+    (("abandon*", "misi*"), {"duda": 2.5}),
+    (("ni", "cona"), {"duda": 2.0}),
+    (("ni", "loco"), {"duda": 2.0}),
+    (("ni", "hablar"), {"duda": 1.5}),
+    (("de", "ninguna", "manera"), {"duda": 1.5}),
+    (("pas*", "de", "todo"), {"duda": 2.5}),
+    (("no", "me", "meto"), {"duda": 2.0}),
+    (("@hacer", "lado"), {"duda": 1.5}),
+    (("no", "abr*", "puerta"), {"duda": 1.5}),
+    (("alz*|levant*", "manos"), {"duda": 1.0}),
+    (("entreg*", "arma*"), {"duda": 1.5}),
+    (("esper*", "ver"), {"duda": 1.5}),
+    (("decidir", "nada"), {"duda": 1.5}),
+    (("me", "asust*"), {"duda": 1.0}),
+    (("de", "largo"), {"sombra": 1.2, "duda": 0.5}),
+    (("sin", "piedad"), {"sombra": 1.5}),
+    (("sin", "compas*"), {"sombra": 1.5}),
+    (("sangre", "fria"), {"sombra": 1.5}),
+    (("solo", "para", "mi"), {"sombra": 1.5}),
+    (("no", "parte"), {"sombra": 1.5}),
+    (("sin", "reparti*"), {"sombra": 1.5}),
+    (("dej*", "tirad*"), {"sombra": 2.0}),
+    (("aprovech*", "de"), {"sombra": 1.2}),
+    (("aprovech*", "confianza"), {"sombra": 2.0}),
+    (("sac*", "dinero|pasta|monedas"), {"sombra": 1.5}),
+    (("tom*", "respiro"), {"descansar": 2.0}),
+    (("tom*", "aire"), {"descansar": 1.5}),
+    (("pas*", "noche"), {"descansar": 1.5}),
+    (("qued*", "dormid*"), {"descansar": 1.5}),
+    (("ech*", "dormir"), {"descansar": 1.2}),
+    (("pill*", "sueno"), {"descansar": 1.5}),
+    (("@hacer", "pausa"), {"descansar": 1.5}),
+    (("@hacer", "alto"), {"descansar": 1.5}),
+    (("mir*", "alrededor"), {"observar": 1.0}),
+    (("recorr*", "mirada"), {"observar": 2.0}),
+    (("ech*", "ojo"), {"observar": 1.5}),
+    (("qued*", "mirando"), {"observar": 1.5}),
+    (("pid*|ped*", "ayud*"), {"compasion": 0.5}),
+    (("pid*|ped*", "perdon"), {"compasion": 1.0}),
+    (("tir*", "lengua"), {"hablar": 1.5}),
+    (("tir*", "tejos"), {"hablar": 1.0}),
+    (("tir*", "pa"), {"moverse": 1.0}),
+    (("ve", "hasta"), {"moverse": 1.5}),
+    (("plant*", "en"), {"moverse": 0.8}),
+]
+
+
+def _expandir_frases(base):
+    salida = []
+    for patron, pesos in base:
+        if "@hacer" in patron:
+            for h in ("hac*", "hag*", "hic*", "hiz*"):
+                salida.append((tuple(h if x == "@hacer" else x for x in patron), pesos))
+        else:
+            salida.append((patron, pesos))
+    return salida
+
+
+FRASES = _expandir_frases(_FRASES_BASE)
+
+# Modificadores de dificultad: (raíces cercanas, delta, descripción).
+MODIFICADORES = [
+    (("ojos", "cerr"), +2, "a ciegas"),
+    (("cerr", "ojos"), +2, "a ciegas"),
+    (("ojos", "vend"), +2, "a ciegas"),
+    (("ciegas",), +2, "a ciegas"),
+    (("sin", "mirar"), +1, "sin mirar"),
+    (("espaldas",), +1, "de espaldas"),
+    (("descalz",), +1, "descalzo"),
+    (("desarmad",), +1, "sin armas"),
+    (("sin", "arma"), +1, "sin armas"),
+    (("sin", "luz"), +1, "sin luz"),
+    (("una", "mano"), +1, "con una mano"),
+    (("un", "pie"), +1, "a la pata coja"),
+    (("pata", "coja"), +1, "a la pata coja"),
+    (("sin", "pensar"), +1, "sin pensar"),
+    (("a", "lo", "loco"), +1, "a lo loco"),
+    (("desesper",), +1, "a la desesperada"),
+    (("imprudent",), +1, "con imprudencia"),
+    (("temerari",), +1, "con temeridad"),
+    (("borrach",), +1, "borracho"),
+    (("sin", "ayuda"), +1, "sin ayuda"),
+    (("con", "cuidado"), -1, "con cuidado"),
+    (("cautel",), -1, "con cautela"),
+    (("despacio",), -1, "despacio"),
+    (("lentamente",), -1, "lentamente"),
+    (("paso", "paso"), -1, "paso a paso"),
+    (("con", "calma"), -1, "con calma"),
+    (("tranquilamente",), -1, "con tranquilidad"),
+    (("paciencia",), -1, "con paciencia"),
+    (("en", "silencio"), -1, "en silencio"),
+    (("silenciosamente",), -1, "en silencio"),
+    (("sigilosamente",), -1, "con sigilo"),
+    (("sin", "ruido"), -1, "sin ruido"),
+    (("sin", "hacer", "ruido"), -1, "sin hacer ruido"),
+    (("bien", "preparad"), -1, "bien preparado"),
+    (("tras", "planear"), -1, "tras planearlo"),
+    (("con", "astucia"), -1, "con astucia"),
+]
+
+NEGADORES = {"no", "nunca", "jamas", "ni", "tampoco", "sin"}
+_IGNORADAS = {"apoyado", "apoyada", "apoyados", "apoyadas"}
+NEGACION_INVERSA = {"valor": ("duda", 0.7), "duda": ("valor", 0.7)}
+
+_RELLENO = {"el", "la", "los", "las", "un", "una", "unos", "unas", "de", "del", "al",
+            "a", "en", "con", "por", "para", "y", "o", "que", "se", "me", "te", "lo",
+            "le", "les", "mi", "mis", "tu", "tus", "su", "sus", "es", "ya", "muy",
+            "mas", "como", "si", "pero", "sin", "sobre", "hacia", "entre", "este",
+            "esta", "ese", "esa", "eso", "esto", "bien", "tan", "e", "u", "nos"}
+
+_CLITICOS = ("selo", "sela", "selos", "selas", "melo", "mela", "telo", "tela",
+             "nos", "les", "los", "las", "lo", "la", "le", "me", "te", "se")
+
+
+def _candidatas(token: str):
+    """El token y sus variantes sin pronombres pegados (atacalo -> ataca)."""
+    vistas = [token]
+    for _ in range(2):
+        nuevas = []
+        for t in vistas:
+            for c in _CLITICOS:
+                if t.endswith(c) and len(t) - len(c) >= 3:
+                    base = t[: -len(c)]
+                    if base not in vistas and base not in nuevas:
+                        nuevas.append(base)
+        vistas += nuevas
+    return vistas
+
+
+def _variantes_ortograficas(token: str):
+    """Formas alternativas de escribir lo mismo (ataka, ablar, uyo, aser...)."""
+    vs = [token]
+    if "k" in token:
+        vs.append(re.sub(r"k([eiy])", r"qu\1", token).replace("k", "c"))
+    if token[:1] in "aeiou":
+        vs.append("h" + token)
+    for a, b in (("v", "b"), ("b", "v"), ("ll", "y"), ("y", "ll"), ("s", "c"),
+                 ("c", "s"), ("z", "c"), ("s", "z"), ("g", "j"), ("j", "g")):
+        if a in token:
+            vs.append(token.replace(a, b, 1))
+    return vs
+
+
+def coincidencias(token: str) -> dict:
+    """{clase: peso} de un token (el mayor peso por clase)."""
+    mejor = {}
+    for variante in _variantes_ortograficas(token):
+        _sumar(mejor, variante)
+        if mejor:
+            break
+    return mejor
+
+
+def _sumar(mejor: dict, token: str) -> None:
+    for cand in _candidatas(token):
+        antes = len(mejor)
+        for clase, peso in _EXACTAS.get(cand, ()):
+            mejor[clase] = max(mejor.get(clase, 0.0), peso)
+        if len(cand) >= 3:
+            for raiz, clase, peso in _PREFIJOS:
+                if cand.startswith(raiz):
+                    mejor[clase] = max(mejor.get(clase, 0.0), peso)
+        if len(mejor) > antes:
+            return                      # la forma original manda sobre la que pierde su clítico
+
+
+# Vocabulario para corregir erratas leves: formas representativas.
+def _vocabulario():
+    palabras = set(_EXACTAS)
+    for raiz, _, _ in _PREFIJOS:
+        if len(raiz) >= 4:
+            palabras.update({raiz + "ar", raiz + "o", raiz + "a", raiz + "ando"})
+    return sorted(w for w in palabras if len(w) >= 5)
+
+
+_VOCABULARIO = _vocabulario()
+
+
+def _corregir(token: str):
+    """Intenta reconocer una palabra con una errata leve (atakar -> atacar)."""
+    if len(token) < 6 or token in _RELLENO:
+        return None
+    candidatos = [p for p in _VOCABULARIO
+                  if p[:2] == token[:2] and abs(len(p) - len(token)) <= 2]
+    cerca = difflib.get_close_matches(token, candidatos, n=1, cutoff=0.9)
+    return cerca[0] if cerca else None
+
+
+# --------------------------------------------------------------------------
+# Entidades: personajes, lugares y objetos del mundo actual
+# --------------------------------------------------------------------------
+PALABRAS_ENTIDAD = {
+    "mentor": "mentor maestro maestra guia tutor",
+    "aliado": "aliado aliada companero companera amigo amiga acompanante colega",
+    "heraldo": "heraldo mensajero",
+    "villano": "villano villana malvado malvada antagonista jefe enemigo enemiga archienemigo",
+    "hogar": "casa hogar aldea pueblo villa ciudad barrio distrito colonia estacion habitat caserio",
+    "umbral": "umbral puerta puente paso esclusa compuerta verja porton control vestibulo",
+    "camino": "camino bosque paramos marismas cinturon rutas nebulosa callejones calles carretera pantanos senda sendero",
+    "guarida": "guarida fortaleza torre nave base reactor mansion atico abadia sotano cripta ciudadela castillo",
+    "guardian": "guardian portero centinela vigilante cancerbero dron androide recepcionista enterrador",
+    "esbirros": "esbirros secuaces enemigos soldados matones lobos drones poseidos sombras muertos jinetes huargos mercenarios cazarrecompensas policias",
+    "meta": "tesoro reliquia objetivo artefacto",
+    "don": "don regalo amuleto daga farol crucifijo escudo implante modulo capa placa llave tarjeta frasco",
+    "herramienta": "arma espada arco baston pistola revolver hacha escopeta libreta multiherramienta",
+}
+PERSONAJES = ("mentor", "aliado", "heraldo", "villano")
+LUGARES = ("hogar", "umbral", "camino", "guarida")
+
+
+def _raiz(token: str) -> str:
+    return token
+
+
+def _variantes_numero(token: str):
+    if token.endswith("s") and len(token) > 4:
+        return [token, token[:-1]]
+    return [token, token + "s"]
+
+
+def _alias(w) -> dict:
+    """token normalizado -> conjunto de entidades que lo usan."""
+    alias = {}
+    pendientes = []
+
+    def poner(token, ent, variantes=True):
+        if len(token) >= 3 and token not in _RELLENO:
+            alias.setdefault(token, set()).add(ent)
+            if variantes:
+                pendientes.append((token, ent))
+
+    for ent, palabras in PALABRAS_ENTIDAD.items():
+        for p in palabras.split():
+            poner(p, ent, variantes=False)
+    for rol in PERSONAJES:
+        p = w.reparto[rol]
+        for t in _TOKEN.findall(f"{p.titulo} {p.nombre}"):
+            poner(normalizar_token(t), rol)
+    for ent in LUGARES:
+        for t in _TOKEN.findall(str(w.lugares[ent])):
+            poner(normalizar_token(t), ent)
+    for ent in ("meta", "don", "herramienta", "guardian", "esbirros"):
+        for t in _TOKEN.findall(str(w.objetos[ent])):
+            poner(normalizar_token(t), ent)
+    # singular/plural de lo derivado de nombres, sin pisar palabras ya asignadas
+    for token, ent in pendientes:
+        for v in _variantes_numero(token):
+            if v not in alias:
+                alias[v] = {ent}
+    return alias
+
+
+# --------------------------------------------------------------------------
+# Resultado del análisis
+# --------------------------------------------------------------------------
+@dataclass
+class Interpretacion:
+    frase: str
+    clase: str = "desconocida"
+    puntos: dict = field(default_factory=dict)
+    entidades: list = field(default_factory=list)
+    dd: int = 0                                  # ajuste de dificultad
+    mods: list = field(default_factory=list)     # fragmentos escritos por el jugador
+    mods_desc: list = field(default_factory=list)
+    opcion: object = None                        # índice entre las opciones visibles
+    puntaje_opcion: float = 0.0
+    bloqueo: object = None                       # texto si la acción es imposible
+
+    def a_registro(self) -> dict:
+        return {"txt": self.frase, "clase": self.clase, "ent": list(self.entidades),
+                "dd": self.dd, "mods": list(self.mods)}
+
+    @property
+    def es_exploracion(self) -> bool:
+        return self.clase in CLASES_EXPLORACION
+
+
+def _item_ok(item: str, cands) -> bool:
+    """Una raíz de patrón: `abc*` prefijo; 4+ letras prefijo; 3 o menos exacta."""
+    if "|" in item:
+        return any(_item_ok(alt, cands) for alt in item.split("|"))
+    if item.endswith("*"):
+        pref = item[:-1]
+        return any(c.startswith(pref) for c in cands)
+    if len(item) >= 4:
+        return any(c.startswith(item) for c in cands)
+    return item in cands
+
+
+def _ventana(norm, patron):
+    """Índices donde aparecen todas las raíces del patrón en una ventana corta."""
+    ancho = len(patron) + 3
+    cands = [_candidatas(t) for t in norm]
+    for ini in range(len(norm)):
+        ids, usados = [], set()
+        for item in patron:
+            hallado = None
+            for j in range(ini, min(len(norm), ini + ancho)):
+                if j not in usados and _item_ok(item, cands[j]):
+                    hallado = j
+                    break
+            if hallado is None:
+                break
+            usados.add(hallado)
+            ids.append(hallado)
+        else:
+            return ids
+    return None
+
+
+def _fragmento(orig, ids):
+    """Texto original que cubre los tokens `ids`, con su preposición delante."""
+    ini, fin = min(ids), max(ids)
+    previas = {"con", "los", "las", "el", "la", "a", "de", "sin", "en", "muy", "bien", "tan"}
+    quitar = 0
+    while ini > 0 and quitar < 2 and normalizar_token(orig[ini - 1]) in previas:
+        ini -= 1
+        quitar += 1
+    return " ".join(orig[ini:fin + 1])
+
+
+def _mult_pos(i: int) -> float:
+    return max(0.6, 1.0 - 0.04 * i)
+
+
+_DETERMINANTES = {"el", "la", "los", "las", "un", "una", "unos", "unas", "del", "al",
+                  "su", "sus", "tu", "tus", "mi", "mis", "este", "esta", "ese", "esa"}
+# Palabras que, tras un determinante, son sustantivo y no verbo ("el camino").
+_NOMBRES_AMBIGUOS = {"camino", "paso", "carga", "cargo", "marcha", "vuelta", "sueno",
+                     "corte", "mira", "rastro", "lleg", "salto"}
+_FORMAS_IR = {"voy", "vas", "va", "vamos", "van", "iba", "ire"}
+_BOTIN = {"todo", "botin", "oro", "dinero", "monedas", "recompensa", "tesoro",
+          "joya", "joyas", "cofre", "pasta", "premio", "parte", "ganancias"}
+_APROVECHADOS = {"senuelo", "cebo", "escudo", "carnada", "sacrificio", "moneda"}
+# Fuera del mundo del juego: si aparecen y nada del mundo, no es una acción.
+_FUERA_DE_MUNDO = {"telefono", "movil", "celular", "taxi", "pizza", "instagram",
+                   "whatsapp", "internet", "google", "wifi", "email", "facebook",
+                   "tiktok", "netflix", "futbol", "politica", "publico", "gasto",
+                   "narrador", "juego", "ordenador", "app", "tokio", "equipo",
+                   "fichar", "recortar", "videojuego", "youtube", "twitter"}
+COMPANEROS = ("aliado", "mentor", "heraldo")
+
+
+def _es_infinitivo(tok: str) -> bool:
+    return len(tok) > 3 and tok.endswith(("ar", "er", "ir", "arse", "erse", "irse"))
+
+
+def analizar(texto: str, w, esc=None, etiquetas=None, visibles=None) -> Interpretacion:
+    """Interpreta `texto` en el contexto del mundo `w` y de la escena `esc`."""
+    texto = " ".join(texto.split())
+    orig, norm = tokenizar(texto)
+    r = Interpretacion(frase=texto)
+    puntos = {c: 0.0 for c in CLASES}
+    alias = _alias(w)
+
+    # 1) Modificadores de dificultad. Sus palabras ("con calma", "sin mirar") no
+    #    cuentan después como intención.
+    enmascarados = set()
+    for patron, delta, desc in MODIFICADORES:
+        ids = _ventana(norm, patron)
+        if ids is not None and desc not in r.mods_desc:
+            r.dd += delta
+            r.mods_desc.append(desc)
+            r.mods.append(_fragmento(orig, ids))
+            enmascarados.update(ids)
+    r.dd = max(-2, min(3, r.dd))
+
+    # 2) Palabras sueltas, con negaciones y desambiguaciones sencillas.
+    for i, tok in enumerate(norm):
+        if i in enmascarados or tok in _IGNORADAS:
+            continue
+        if tok in _RELLENO and tok not in _EXACTAS:
+            continue
+        previo = norm[i - 1] if i else ""
+        if tok in _NOMBRES_AMBIGUOS and previo in _DETERMINANTES:
+            continue                                   # "el camino": sustantivo
+        if tok in _FORMAS_IR and i + 2 < len(norm) + 1 and \
+                norm[i + 1:i + 2] == ["a"] and i + 2 < len(norm) and \
+                _es_infinitivo(norm[i + 2]):
+            continue                                   # "voy a dormir": perífrasis
+        if tok.startswith("qued") and i + 1 < len(norm) and \
+                norm[i + 1].endswith(("ando", "iendo")):
+            continue                                   # "me quedo mirando"
+        m = coincidencias(tok)
+        if not m and tok not in alias:
+            corregido = _corregir(tok)
+            if corregido:
+                m = coincidencias(corregido)
+        if not m:
+            continue
+        negada = any(norm[j] in NEGADORES for j in range(max(0, i - 2), i))
+        for clase, peso in m.items():
+            if negada:
+                inv = NEGACION_INVERSA.get(clase)
+                if inv:
+                    puntos[inv[0]] += inv[1] * _mult_pos(i)
+                continue
+            puntos[clase] += peso * _mult_pos(i)
+
+    # 3) Frases hechas (no cuentan si las precede una negación, salvo que la lleven).
+    for patron, pesos in FRASES:
+        ids = _ventana(norm, patron)
+        if ids is None:
+            continue
+        lleva_negador = any(x in NEGADORES for x in patron)
+        if not lleva_negador and min(ids) > 0 and norm[min(ids) - 1] in NEGADORES:
+            continue
+        for clase, peso in pesos.items():
+            puntos[clase] += peso
+
+    # 4) Entidades nombradas.
+    vistas = []
+    for tok in norm:
+        for ent in sorted(alias.get(tok, ())):
+            if ent not in vistas:
+                vistas.append(ent)
+    r.entidades = vistas
+
+    # 5) Reglas que combinan intención y entidad.
+    quedarse = _ventana(norm, ("qued*",)) is not None
+    if quedarse and (_BOTIN & set(norm) or "meta" in vistas or "don" in vistas):
+        puntos["sombra"] += 2.0                  # quedarse con el botín: ambición
+        puntos["duda"] = 0.0
+    if any(c in vistas for c in COMPANEROS) and (_APROVECHADOS & set(norm)
+                                                 or _ventana(norm, ("sacrific*",))):
+        puntos["sombra"] += 2.0                  # usar a un compañero de escudo o cebo
+        puntos["ingenio"] = max(0.0, puntos["ingenio"] - 1.0)
+    if _FUERA_DE_MUNDO & set(norm) and not any(e in vistas for e in
+                                                PERSONAJES + ("hogar", "guardian", "esbirros")):
+        puntos = {c: 0.0 for c in CLASES}
+
+    # 6) Intención dominante.
+    r.puntos = {c: round(v, 3) for c, v in puntos.items() if v > 0}
+    if r.puntos:
+        r.clase = max(r.puntos, key=lambda c: (r.puntos[c], -_ORDEN[c]))
+        if r.puntos[r.clase] < 0.5:
+            r.clase = "desconocida"
+
+    # 7) Encaje con las opciones de la escena.
+    if esc is not None and visibles is not None and etiquetas is not None:
+        _elegir_opcion(r, norm, visibles, etiquetas)
+
+    # 8) Coherencia con el estado del mundo.
+    r.bloqueo = bloqueo(r, w, esc)
+    return r
+
+
+def _contenido(tokens):
+    return {t[:5] for t in tokens if len(t) >= 4 and t not in _RELLENO}
+
+
+def _elegir_opcion(r: Interpretacion, norm, visibles, etiquetas) -> None:
+    """Busca la opción de la escena que mejor encaja con la frase."""
+    if r.clase == "desconocida":
+        return
+    vec = {c: r.puntos.get(c, 0.0) for c in CLASES_ACCION}
+    for expl in CLASES_EXPLORACION:
+        for c, a in AFINIDAD.get(expl, {}).items():
+            vec[c] += a * r.puntos.get(expl, 0.0)
+    cima = max(vec.values()) if vec else 0.0
+    texto_tokens = _contenido(norm)
+    mejor, mejor_p = None, 0.0
+    for i, op in enumerate(visibles):
+        clase_op = next((c for c, e in ENFOQUE_DE.items() if e == op.enfoque), None)
+        s_int = (vec.get(clase_op, 0.0) / cima) if cima > 0 and clase_op else 0.0
+        if op.enfoque is None and not op.tag:
+            s_int = (vec.get("duda", 0.0) / cima) if cima > 0 else 0.0
+        _, etiqueta = etiquetas[i]
+        solape = len(texto_tokens & _contenido(tokenizar(etiqueta)[1]))
+        if r.es_exploracion and solape == 0:
+            continue             # mirar, hablar, ir... solo decide si nombra la opción
+        puntaje = s_int + 0.8 * min(solape, 3)
+        if puntaje > mejor_p:
+            mejor, mejor_p = i, puntaje
+    if mejor is not None and mejor_p >= 0.8:
+        r.opcion, r.puntaje_opcion = mejor, round(mejor_p, 2)
+
+
+# --------------------------------------------------------------------------
+# Coherencia: ¿se puede hacer esto ahora, en esta historia?
+# --------------------------------------------------------------------------
+def presente(w, esc, rol: str) -> bool:
+    """¿Está el personaje (u objeto) a mano en la escena actual?"""
+    if rol == "guardian":
+        return esc is not None and ("guardian" in esc.presentes
+                                    or (esc.id == "camino_de_vuelta"
+                                        and w.b("guardian_amigo")))
+    if rol in PERSONAJES:
+        return w.disponible(rol) or (esc is not None and rol in esc.presentes)
+    return True
+
+
+def _lugar_alcanzable(w, ent: str) -> bool:
+    e = w.etapa
+    if ent == "hogar":
+        return e <= 3 or e >= 11
+    if ent == "umbral":
+        return 4 <= e <= 10
+    if ent == "camino":
+        return e >= 5
+    if ent == "guarida":
+        return e >= 7
+    return True
+
+
+def bloqueo(r: Interpretacion, w, esc):
+    """Devuelve un texto si la acción es imposible ahora, o None."""
+    for rol in r.entidades:
+        if rol not in PERSONAJES:
+            continue
+        p = w.reparto[rol]
+        if r.clase in ("observar", "desconocida"):
+            continue                       # pensar o recordar a alguien siempre se puede
+        if r.clase in ("valor", "sombra") and rol in ("mentor", "aliado", "heraldo"):
+            if presente(w, esc, rol):
+                return (f"Alzas la mano contra {p.nombre}, pero algo te detiene: "
+                        f"esa clase de decisión pesa demasiado para tomarla a la ligera. "
+                        f"Cuando llegue el momento, tendrás que elegir de verdad.")
+        if not presente(w, esc, rol):
+            if not p.vivo:
+                return f"{p.nombre} ya no está para eso: murió, y lo sabes."
+            if rol == "villano":
+                return (f"{w.reparto['villano'].Cap} está lejos de aquí. Ahora tu "
+                        f"enemigo es lo que tienes delante.")
+            return f"{p.nombre} no está aquí en este momento."
+    if "guardian" in r.entidades and r.clase not in ("observar", "desconocida"):
+        if not presente(w, esc, "guardian"):
+            return "Aquí no hay ningún guardián con quien tratar."
+    if r.clase == "moverse":
+        for ent in r.entidades:
+            if ent in LUGARES and not _lugar_alcanzable(w, ent):
+                return (f"Todavía no puedes ir a {w.lugares[ent].a}: "
+                        f"el camino hasta allí aún no ha llegado.")
+    return None

@@ -6,7 +6,8 @@ partida). Por eso la misma etapa cuenta cosas distintas según quién viva,
 quién viaje con el héroe y qué haya decidido el jugador antes.
 """
 
-from . import acto1, acto2, acto3
+from . import acto1, acto2, acto3, libre
+from .efectos import vigor
 from .final import epilogo
 from .modelo import Bloque, Capitulo, CRECEN
 
@@ -70,50 +71,89 @@ def elegir_escena(w, modo, ids):
     return w.rng.choices(candidatas, [e.peso for e in candidatas])[0]
 
 
-def jugar_escena(w, esc, ui, capitulo):
-    """Muestra una escena, pide una decisión, la resuelve y aplica sus efectos."""
+def jugar_escena(w, esc, ses, capitulo):
+    """Muestra una escena y la resuelve con las acciones del jugador.
+
+    El jugador puede encadenar interludios (mirar, hablar, descansar...) y
+    termina la escena con una decisión: una opción, o una frase suya que encaja
+    con una opción.
+    """
     w.ambiente = w.nuevo_ambiente()
     w.usar_fuentes(esc.fuentes)
+    w.ventaja = 0
+    w.libres_escena = 0
     texto = w.renderizar(esc.texto, esc.menciona)
     visibles = [o for o in esc.opciones if o.visible is None or o.visible(w)]
     etiquetas = [(o.rotulo(), w.renderizar([o.etiqueta], esc.menciona)[0])
                  for o in visibles]
 
-    ui.escena(texto, esc.fuentes)
-    indice = ui.elegir(etiquetas)
-    opcion = visibles[indice]
+    ses.escena(texto, esc.fuentes, esc.critica)
+    bloque = Bloque(esc.id, texto, None, [], esc.fuentes)
+    capitulo.bloques.append(bloque)
 
-    tirada, exito = None, True
-    if opcion.dif is not None:
-        tirada = w.tirar(opcion.enfoque, opcion.dif, opcion.amenaza)
-        exito = tirada.exito
+    while True:
+        reg = ses.obtener(esc, visibles, etiquetas)
+        if reg["k"] != "int":
+            break
+        parrafos, tirada, enfoque = libre.ejecutar(w, esc, reg)
+        bloque.libres.append((reg["txt"], parrafos))
+        ses.interludio(reg["txt"], parrafos, tirada, enfoque)
+
+    es_libre = reg["k"] == "libre"
+    opcion = visibles[reg["i"]]
+    if reg.get("sal"):                     # «otra suerte»: el dado cambia, el resto no
+        w.rng.seed(f"{w.params.semilla}:{ses.indice_actual}:{reg['sal']}")
+
+    if es_libre:
+        tirada, exito, castigo = libre.tirada_de_decision(w, opcion, reg)
+    else:
+        tirada, exito, castigo = None, True, False
+        if opcion.dif is not None:
+            tirada = w.tirar(opcion.enfoque, opcion.dif, opcion.amenaza)
+            exito = tirada.exito
+    if tirada is not None:
+        reg["azar"] = True
     resultado = opcion.ok if (exito or opcion.mal is None) else opcion.mal
 
+    parrafos = list(resultado.parrafos)
+    if es_libre:
+        parrafos = libre.envoltura(reg, exito) + parrafos
     # Se renderiza ANTES de aplicar los efectos: el texto de una muerte todavía
     # puede nombrar a quien muere.
-    desenlace = w.renderizar(resultado.parrafos, esc.menciona)
+    desenlace = w.renderizar(parrafos, esc.menciona)
     for efecto in resultado.efectos:
         efecto(w)
+    if castigo:
+        vigor(-1)(w)
+        desenlace.append("Hacerlo así te costó más de lo previsto.")
+    if es_libre:
+        desenlace += libre.hazana(w, reg, exito)
     if exito and opcion.enfoque in CRECEN:
         w.crecer(opcion.enfoque)
 
-    ui.resultado(desenlace, tirada, opcion.enfoque)
-    capitulo.bloques.append(Bloque(esc.id, texto, etiquetas[indice][1],
-                                   desenlace, esc.fuentes))
+    ses.resultado(desenlace, tirada, opcion.enfoque)
+    bloque.eleccion = reg.get("lbl") or etiquetas[reg["i"]][1]
+    bloque.resultado = desenlace
+    bloque.notas = list(w.notas_pendientes)
+    w.notas_pendientes.clear()
 
 
-def jugar(w, ui):
-    """Juega la historia completa y devuelve el `Final`."""
-    ui.inicio(w)
+def jugar(w, ses):
+    """Juega la historia completa y devuelve el `Final`.
+
+    `ses` es la sesión (o cualquier objeto con su misma interfaz): le pide las
+    acciones del jugador y le cuenta lo que ocurre.
+    """
+    ses.inicio(w)
     for etapa in range(1, 12):
         w.etapa = etapa
         capitulo = Capitulo(etapa, ETAPAS[etapa])
-        ui.capitulo(etapa, ETAPAS[etapa])
+        ses.capitulo(etapa, ETAPAS[etapa])
         for modo, ids in PLAN[etapa]:
             esc = elegir_escena(w, modo, ids)
             if esc is None:
                 continue
-            jugar_escena(w, esc, ui, capitulo)
+            jugar_escena(w, esc, ses, capitulo)
             if w.vigor <= 0:
                 break
         w.cronica.append(capitulo)
@@ -123,8 +163,9 @@ def jugar(w, ui):
     final = epilogo(w)
     capitulo = Capitulo(12, ETAPAS[12])
     capitulo.bloques.append(Bloque("epilogo", final.parrafos, None, [],
-                                   final.fuentes))
+                                   final.fuentes, notas=list(w.notas_pendientes)))
+    w.notas_pendientes.clear()
     w.cronica.append(capitulo)
     w.usar_fuentes(final.fuentes)
-    ui.final(final, w)
+    ses.final(final, w)
     return final

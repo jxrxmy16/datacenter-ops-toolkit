@@ -140,6 +140,9 @@ class Escena:
     requiere: Optional[Condicion] = None
     peso: int = 1
     fuentes: tuple = ()        # ((clave_fuente, detalle), ...)
+    critica: bool = False      # momento crítico: solo opciones, sin texto libre
+    urgente: bool = False      # no hay tiempo de charlar ni de descansar
+    presentes: tuple = ()      # roles físicamente presentes aunque aún no viajen con el héroe
 
 
 @dataclass
@@ -165,6 +168,8 @@ class Bloque:
     eleccion: Optional[str]
     resultado: list
     fuentes: tuple = ()
+    libres: list = field(default_factory=list)   # [(frase, [párrafos])]
+    notas: list = field(default_factory=list)    # notas del autor (/nota)
 
 
 @dataclass
@@ -222,6 +227,13 @@ class Mundo:
     avisos: list = field(default_factory=list)
     ambiente: str = ""
     _ambientes_vistos: set = field(default_factory=set)
+    ventaja: int = 0                   # -1 a la dificultad de la próxima tirada
+    libres_escena: int = 0             # acciones libres gastadas en esta escena
+    charlas: set = field(default_factory=set)      # (rol, etapa) ya conversados
+    descansos: set = field(default_factory=set)    # etapas en las que ya se descansó
+    observados: set = field(default_factory=set)   # pistas ya reveladas
+    notas_pendientes: list = field(default_factory=list)
+    renombres: dict = field(default_factory=dict)  # nombre antiguo -> nuevo
 
     # --- consultas ---------------------------------------------------------
     @property
@@ -263,9 +275,10 @@ class Mundo:
         return n
 
     # --- cambios de estado -------------------------------------------------
-    def tirar(self, enfoque, dificultad, con_amenaza=False) -> Tirada:
+    def tirar(self, enfoque, dificultad, con_amenaza=False, ajuste=0) -> Tirada:
         dif = dificultad(self) if callable(dificultad) else dificultad
-        dif += AJUSTE_DIFICULTAD
+        dif += AJUSTE_DIFICULTAD + ajuste - self.ventaja
+        self.ventaja = 0
         if con_amenaza:
             dif += min(2, self.amenaza)
         dado = self.rng.randint(1, 6)
@@ -328,6 +341,35 @@ class Mundo:
                     f"etapa {self.etapa}: se nombra a '{rol}' sin que esté "
                     f"disponible: {salida[0][:50] if salida else ''}")
         return salida
+
+    def instantanea(self) -> dict:
+        """Estado completo y comparable del mundo (para pruebas y depuración)."""
+        import hashlib
+        return {
+            "etapa": self.etapa, "vigor": self.vigor, "amenaza": self.amenaza,
+            "atributos": dict(self.atributos),
+            "banderas": sorted(self.banderas),
+            "inventario": sorted(self.inventario),
+            "grupo": sorted(self.grupo),
+            "ventaja": self.ventaja,
+            "reparto": {r: (p.nombre, p.vivo, p.confianza)
+                        for r, p in sorted(self.reparto.items())},
+            "azar": hashlib.md5(repr(self.rng.getstate()).encode()).hexdigest(),
+            "texto": [(c.etapa, [(b.escena, b.texto, b.eleccion, b.resultado,
+                                  b.libres, b.notas) for b in c.bloques])
+                      for c in self.cronica],
+        }
+
+    def renombrar(self, rol: str, nuevo: str) -> str:
+        """Cambia el nombre de un personaje; devuelve el nombre anterior."""
+        p = self.reparto[rol]
+        viejo = p.nombre
+        p.nombre = nuevo
+        for k, v in list(self.renombres.items()):   # A->B y luego B->C: A->C
+            if v == viejo:
+                self.renombres[k] = nuevo
+        self.renombres[viejo] = nuevo
+        return viejo
 
     def titulo(self) -> str:
         if self.params.trama == "monstruo":

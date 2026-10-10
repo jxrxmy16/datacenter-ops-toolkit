@@ -13,7 +13,7 @@ ESCENAS = [
 
     # ------------------------------------------------------------------ 6
     Escena(
-        id="aliado_inesperado", etapa=6, menciona=("aliado",),
+        id="aliado_inesperado", etapa=6, presentes=("aliado",), menciona=("aliado",),
         fuentes=(
             ("propp", "el auxiliar: quien acompaña y ayuda al héroe"),
             ("greimas", "el actante «ayudante» frente al «oponente»"),
@@ -124,7 +124,7 @@ ESCENAS = [
     ),
 
     Escena(
-        id="emboscada", etapa=6,
+        id="emboscada", etapa=6, urgente=True,
         fuentes=(
             ("propp", "el combate con el agresor y las tareas difíciles"),
             ("vogler", "pruebas en el camino: el mundo especial pone a prueba "
@@ -260,7 +260,7 @@ ESCENAS = [
     ),
 
     Escena(
-        id="traicion_prevista", etapa=7, participan=("aliado",),
+        id="traicion_prevista", etapa=7, critica=True, urgente=True, participan=("aliado",),
         requiere=lambda w: w.con("aliado") and _traidor(w) and w.b("sospecha"),
         fuentes=(
             ("vogler", "el cambiaformas: el aliado cuya lealtad es dudosa"),
@@ -311,7 +311,7 @@ ESCENAS = [
     ),
 
     Escena(
-        id="traicion_sorpresa", etapa=7, participan=("aliado",),
+        id="traicion_sorpresa", etapa=7, critica=True, urgente=True, participan=("aliado",),
         requiere=lambda w: (w.con("aliado") and _traidor(w)
                             and not w.b("sospecha")),
         fuentes=(
@@ -367,7 +367,7 @@ ESCENAS = [
     ),
 
     Escena(
-        id="sacrificio_mentor", etapa=7, participan=("mentor",),
+        id="sacrificio_mentor", etapa=7, critica=True, urgente=True, participan=("mentor",),
         requiere=con("mentor"),
         fuentes=(
             ("vogler", "el mentor cede el paso: el héroe debe sostenerse solo"),
@@ -422,7 +422,7 @@ ESCENAS = [
 
     # ------------------------------------------------------------------ 8
     Escena(
-        id="prueba_suprema", etapa=8, participan=("villano",),
+        id="prueba_suprema", etapa=8, critica=True, urgente=True, participan=("villano",),
         menciona=("mentor", "aliado"),
         fuentes=(
             ("campbell", "la reconciliación con el padre: el héroe se enfrenta "
@@ -524,7 +524,7 @@ ESCENAS = [
 
     # ------------------------------------------------------------------ 9
     Escena(
-        id="recompensa", etapa=9, menciona=("villano",),
+        id="recompensa", etapa=9, critica=True, urgente=True, menciona=("villano",),
         requiere=lambda w: w.villano_fuera(),
         fuentes=(
             ("vogler", "la recompensa: el héroe toma la espada"),

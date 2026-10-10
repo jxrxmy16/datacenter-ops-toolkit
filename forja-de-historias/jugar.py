@@ -2,11 +2,15 @@
 """Forja de Historias: un narrador interactivo de consola, sin inteligencia artificial.
 
 Uso:
-    python jugar.py                 partida interactiva con menús
+    python jugar.py                 partida interactiva (continúa la última si la hay)
+    python jugar.py --nueva         empieza de cero aunque haya una partida guardada
     python jugar.py --aleatorio     todos los parámetros al azar
     python jugar.py --demo          una partida entera que se juega sola
     python jugar.py --semilla 42    repite exactamente un mundo
     python jugar.py --notas         muestra de qué obra sale cada escena
+
+Durante la partida puedes elegir un número o escribir lo que quieres hacer.
+Escribe /ayuda para ver los comandos (deshacer, guardar, reintentar...).
 """
 
 import argparse
@@ -15,13 +19,14 @@ import sys
 from pathlib import Path
 
 from forja.consola import Consola, Demo
-from forja.generador import crear_mundo, nombre_al_azar
-from forja.libro import guardar
+from forja.generador import nombre_al_azar
 from forja.lexico import ARQUETIPOS, FALLAS, GENEROS, TONOS, TRAMAS
 from forja.modelo import Params
-from forja.motor import jugar
+from forja.sesion import ErrorCarga, Salir, Sesion, leer_guardado
 
-CARPETA_LIBROS = Path(__file__).resolve().parent / "historias"
+RAIZ = Path(__file__).resolve().parent
+CARPETA_LIBROS = RAIZ / "historias"
+CARPETA_PARTIDAS = RAIZ / "partidas"
 PRONOMBRES = [("f", "ella", ""), ("m", "él", ""), ("n", "elle", "")]
 
 
@@ -67,9 +72,23 @@ def pedir_parametros(ui, args):
                   semilla)
 
 
+def _partida_en_curso(ui, args):
+    """Ofrece continuar la partida automática; devuelve el guardado o None."""
+    if args.demo or args.nueva or args.aleatorio or args.semilla is not None:
+        return None
+    auto = leer_guardado(CARPETA_PARTIDAS / "auto.json")
+    if not auto or auto.get("terminada"):
+        return None
+    pregunta = (f"Hay una partida en curso de {auto['heroe']} («{auto['titulo']}», "
+                f"capítulo {auto['capitulo']}, {auto['hora']}). ¿Continuarla?")
+    return auto if ui.si_no(pregunta) else None
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--semilla", type=int, help="repite un mundo concreto")
+    ap.add_argument("--nueva", action="store_true",
+                    help="empieza de cero aunque haya una partida guardada")
     ap.add_argument("--aleatorio", action="store_true",
                     help="elige todos los parámetros al azar")
     ap.add_argument("--demo", action="store_true",
@@ -82,26 +101,38 @@ def main(argv=None):
                     help="no ofrece guardar el libro al terminar")
     args = ap.parse_args(argv)
 
-    semilla = args.semilla if args.semilla is not None else random.randrange(10**6)
-    args.semilla = semilla
+    semilla_demo = args.semilla if args.semilla is not None else random.randrange(10**6)
     if args.demo:
-        ui = Demo(semilla, color=not args.sin_color, notas=args.notas)
+        args.semilla = semilla_demo
+        ui = Demo(semilla_demo, color=not args.sin_color, notas=args.notas)
     else:
         ui = Consola(color=not args.sin_color, notas=args.notas,
                      pausas=not args.sin_pausas)
 
+    ses = None
     try:
-        w = crear_mundo(pedir_parametros(ui, args))
-        final = jugar(w, ui)
-        ui.bibliografia(w)
-        if args.no_guardar or args.demo:
-            return 0
-        r = input("\n¿Guardar tu historia como libro (Markdown)? [S/n] ").strip()
-        if r.lower() not in ("n", "no"):
-            ruta = guardar(w, final, CARPETA_LIBROS)
-            print(f"Guardado en: {ruta}")
-    except (KeyboardInterrupt, EOFError):
-        print("\n\nLa historia queda en pausa. Hasta pronto.")
+        auto = _partida_en_curso(ui, args)
+        if auto:
+            params, registros = Params(**auto["params"]), auto["registros"]
+        else:
+            params, registros = pedir_parametros(ui, args), []
+        ses = Sesion(ui, params, CARPETA_PARTIDAS, CARPETA_LIBROS)
+        ses.guardar_auto = not args.demo
+        ses.reanudar(registros)
+        try:
+            final = ses.ejecutar()
+        except ErrorCarga as exc:
+            print(f"\nNo pude retomar esa partida ({exc}). Empezamos una nueva.")
+            ses = Sesion(ui, pedir_parametros(ui, args), CARPETA_PARTIDAS, CARPETA_LIBROS)
+            final = ses.ejecutar()
+        ui.bibliografia(ses.w)
+        if not (args.no_guardar or args.demo):
+            if ui.si_no("¿Guardar tu historia como libro (Markdown)?"):
+                print(f"Guardado en: {ses.guardar_libro(final)}")
+    except (Salir, KeyboardInterrupt, EOFError):
+        print("\n\nLa historia queda en pausa"
+              + (" (guardada en «auto»: vuelve a ejecutar jugar.py para seguir)."
+                 if ses is not None and ses.guardar_auto else "."))
     return 0
 
 

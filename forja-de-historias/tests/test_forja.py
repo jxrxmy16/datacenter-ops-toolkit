@@ -9,6 +9,7 @@ plantillas). Es la comprobación mecánica de que el relato "tiene lógica".
 import random
 import re
 import sys
+import tempfile
 import unittest
 from collections import Counter
 from pathlib import Path
@@ -23,7 +24,8 @@ from forja.gramatica import Nom                                  # noqa: E402
 from forja.lexico import ARQUETIPOS, FALLAS, GENEROS, TONOS, TRAMAS  # noqa: E402
 from forja.libro import a_markdown                               # noqa: E402
 from forja.modelo import Params                                  # noqa: E402
-from forja.motor import ESCENAS, PLAN, jugar                     # noqa: E402
+from forja.motor import ESCENAS, PLAN                            # noqa: E402
+from forja.sesion import Sesion                                  # noqa: E402
 
 
 def parametros_aleatorios(semilla):
@@ -36,10 +38,20 @@ def parametros_aleatorios(semilla):
                   semilla)
 
 
+CARPETA_TEMPORAL = Path(tempfile.mkdtemp(prefix="forja-test-"))
+
+
+def nueva_sesion(semilla, estrategia="azar", guion=None, params=None, **kw):
+    ses = Sesion(Muda(semilla, estrategia, guion, **kw),
+                 params or parametros_aleatorios(semilla), CARPETA_TEMPORAL)
+    ses.guardar_auto = False
+    return ses
+
+
 def jugar_partida(semilla, estrategia="azar"):
-    w = crear_mundo(parametros_aleatorios(semilla))
-    final = jugar(w, Muda(semilla, estrategia))
-    return w, final
+    ses = nueva_sesion(semilla, estrategia)
+    final = ses.ejecutar()
+    return ses.w, final
 
 
 def texto_completo(w):

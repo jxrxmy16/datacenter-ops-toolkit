@@ -1,3 +1,6 @@
 __pycache__/
 *.pyc
 historias/
+partidas/
+# el .gitignore de la raíz del repositorio ignora *.json; estos datos son parte de las pruebas
+!tests/datos/*.json

@@ -17,7 +17,7 @@ ESCENAS = [
 
     # ----------------------------------------------------------------- 10
     Escena(
-        id="camino_de_vuelta", etapa=10, menciona=("aliado", "mentor"),
+        id="camino_de_vuelta", etapa=10, urgente=True, menciona=("aliado", "mentor"),
         fuentes=(
             ("propp", "la persecución y el socorro"),
             ("campbell", "la huida mágica y el auxilio exterior"),
@@ -84,7 +84,7 @@ ESCENAS = [
 
     # ----------------------------------------------------------------- 11
     Escena(
-        id="ultimo_asalto", etapa=11, participan=("villano",),
+        id="ultimo_asalto", etapa=11, critica=True, urgente=True, participan=("villano",),
         requiere=lambda w: not w.villano_fuera(),
         menciona=("aliado", "mentor"),
         fuentes=(
@@ -148,7 +148,7 @@ ESCENAS = [
     ),
 
     Escena(
-        id="la_voz", etapa=11, menciona=("mentor", "aliado", "villano"),
+        id="la_voz", etapa=11, critica=True, urgente=True, menciona=("mentor", "aliado", "villano"),
         fuentes=(
             ("vogler", "la resurrección: la purga final y el renacimiento del "
                        "héroe"),

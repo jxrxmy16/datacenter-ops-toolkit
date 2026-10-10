@@ -95,7 +95,7 @@ ESCENAS = [
 
     # ------------------------------------------------------------------ 3
     Escena(
-        id="rechazo_consecuencias", etapa=3, participan=("heraldo",),
+        id="rechazo_consecuencias", etapa=3, critica=True, urgente=True, participan=("heraldo",),
         requiere=si("rechaza"),
         fuentes=(
             ("campbell", "el rechazo de la llamada y su coste"),
@@ -185,7 +185,7 @@ ESCENAS = [
 
     # ------------------------------------------------------------------ 4
     Escena(
-        id="mentor_don", etapa=4, menciona=("mentor",),
+        id="mentor_don", etapa=4, presentes=("mentor",), menciona=("mentor",),
         fuentes=(
             ("propp", "la primera función del donante: el que prueba al héroe "
                       "y le entrega un objeto o un consejo"),
@@ -240,7 +240,7 @@ ESCENAS = [
     ),
 
     Escena(
-        id="mentor_rescate", etapa=4, menciona=("mentor",),
+        id="mentor_rescate", etapa=4, presentes=("mentor",), menciona=("mentor",),
         fuentes=(
             ("propp", "el donante y el héroe: aquí el favor va al revés, es el "
                       "héroe quien debe ganarse al donante"),
@@ -294,7 +294,7 @@ ESCENAS = [
 
     # ------------------------------------------------------------------ 5
     Escena(
-        id="guardian_umbral", etapa=5,
+        id="guardian_umbral", etapa=5, presentes=("guardian",),
         fuentes=(
             ("campbell", "el cruce del primer umbral y su guardián"),
             ("vogler", "el guardián del umbral, que prueba si el héroe merece "
