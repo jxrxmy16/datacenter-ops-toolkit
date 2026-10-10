@@ -6,7 +6,7 @@ juego va armando una historia que cambia en cada partida y que **se mantiene
 lógica dentro de su universo**. Al terminar puedes guardarla como un libro.
 
 No usa redes neuronales, ni APIs, ni internet, ni dependencias: solo Python 3.8+
-y su biblioteca estándar. Los textos están escritos a mano; la variedad sale de
+y su biblioteca estándar (probado en 3.11, 3.12 y 3.13). Los textos están escritos a mano; la variedad sale de
 combinar reglas, léxicos y el estado del mundo.
 
 ## Jugar
@@ -22,6 +22,38 @@ python jugar.py --notas          # muestra de qué obra sale cada escena
 En Windows: `py jugar.py`. Durante la partida, `n` activa o desactiva las notas de
 fuentes y `q` sale. Al final se ofrece guardar el libro en `historias/`.
 Hay un libro ya jugado en [`ejemplos/`](ejemplos/el-expediente-sombra-1541.md).
+
+## Jugar en Android
+
+La forma más cómoda es **Termux**, una terminal para Android. Instálala desde
+[F-Droid](https://f-droid.org/packages/com.termux/) (la versión de Google Play
+está desactualizada). Luego, dentro de Termux:
+
+```
+pkg update && pkg install -y git python
+git clone -b claude/peaceful-cori-nibpuy https://github.com/jxrxmy16/datacenter-ops-toolkit.git
+cd datacenter-ops-toolkit/forja-de-historias
+python jugar.py
+```
+
+O, con el script que instala Python si falta: `sh termux.sh`.
+
+- **Pantalla**: el texto se ajusta al ancho (mínimo 40 columnas). En vertical
+  cabe; en horizontal queda más cómodo.
+- **Teclado**: basta con teclear el número de la opción y Enter.
+- **Tu libro**: se guarda en `historias/`. Para sacarlo a la carpeta de
+  Descargas: `termux-setup-storage` (una vez) y
+  `cp historias/*.md ~/storage/downloads/`.
+- **Sin Git**: descarga el ZIP del repositorio desde el navegador, descomprímelo
+  y entra en la carpeta `forja-de-historias`.
+
+Alternativa sin terminal: **Pydroid 3** (Play Store). Abre la carpeta
+`forja-de-historias` completa (no solo `jugar.py`) y ejecuta `jugar.py`; el
+color se desactiva solo.
+
+> No he podido probarlo en un teléfono real: lo verifiqué simulando una pantalla
+> de 42 columnas sin color y con Python 3.11-3.13. Si algo falla en tu móvil,
+> dime el mensaje de error.
 
 ## Cómo es una partida
 
