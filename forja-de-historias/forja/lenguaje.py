@@ -39,6 +39,7 @@ AFINIDAD = {
     "descansar": {"duda": 0.5},
 }
 
+MAX_CARACTERES = 300          # una acción es una línea; más se recorta
 _TOKEN = re.compile(r"[\wáéíóúüñÁÉÍÓÚÜÑ]+", re.UNICODE)
 
 
@@ -202,15 +203,13 @@ LEXICO_TEXTO = {
     """,
 }
 
-# --- índices ---------------------------------------------------------------
+# --- índices: se construyen en `reconstruir()` (al final de esta sección) ------
 _PREFIJOS = []            # (raiz, clase, peso)
+_PREF_POR_INICIO = {}     # primeras 3 letras -> [(raiz, clase, peso)]
 _EXACTAS = {}             # palabra -> [(clase, peso)]
-for _clase, _txt in LEXICO_TEXTO.items():
-    _pref, _exac = _leer(_txt)
-    _PREFIJOS += [(r, _clase, p) for r, p in _pref.items()]
-    for _w, _p in _exac.items():
-        _EXACTAS.setdefault(_w, []).append((_clase, _p))
-_PREFIJOS.sort(key=lambda t: -len(t[0]))
+FRASES = []
+_VOCABULARIO = []
+_VOCAB_POR_INICIO = {}
 
 # Frases: todas las raíces deben aparecer cerca (en cualquier orden).
 # Cada raíz: `abc*` prefijo, `a|b` alternativas, 4+ letras prefijo, 3 o menos exacta.
@@ -305,7 +304,6 @@ def _expandir_frases(base):
     return salida
 
 
-FRASES = _expandir_frases(_FRASES_BASE)
 
 # Modificadores de dificultad: (raíces cercanas, delta, descripción).
 MODIFICADORES = [
@@ -406,33 +404,160 @@ def _sumar(mejor: dict, token: str) -> None:
         for clase, peso in _EXACTAS.get(cand, ()):
             mejor[clase] = max(mejor.get(clase, 0.0), peso)
         if len(cand) >= 3:
-            for raiz, clase, peso in _PREFIJOS:
+            for raiz, clase, peso in _PREF_POR_INICIO.get(cand[:3], ()):
                 if cand.startswith(raiz):
                     mejor[clase] = max(mejor.get(clase, 0.0), peso)
         if len(mejor) > antes:
             return                      # la forma original manda sobre la que pierde su clítico
 
 
-# Vocabulario para corregir erratas leves: formas representativas.
-def _vocabulario():
-    palabras = set(_EXACTAS)
-    for raiz, _, _ in _PREFIJOS:
-        if len(raiz) >= 4:
-            palabras.update({raiz + "ar", raiz + "o", raiz + "a", raiz + "ando"})
-    return sorted(w for w in palabras if len(w) >= 5)
-
-
-_VOCABULARIO = _vocabulario()
-
-
 def _corregir(token: str):
     """Intenta reconocer una palabra con una errata leve (atakar -> atacar)."""
     if len(token) < 6 or token in _RELLENO:
         return None
-    candidatos = [p for p in _VOCABULARIO
-                  if p[:2] == token[:2] and abs(len(p) - len(token)) <= 2]
+    candidatos = [p for p in _VOCAB_POR_INICIO.get(token[:2], ())
+                  if abs(len(p) - len(token)) <= 2]
     cerca = difflib.get_close_matches(token, candidatos, n=1, cutoff=0.9)
     return cerca[0] if cerca else None
+
+
+# --------------------------------------------------------------------------
+# Construcción de los índices (léxico base + vocabulario ampliado)
+# --------------------------------------------------------------------------
+def raices_de_verbo(spec: str):
+    """De un infinitivo saca sus raíces: (prefijos, formas exactas, peso).
+
+    "almorzar|almuerz"  raíz regular (almorz) y raíz irregular (almuerz)
+    "tomar:0.6"         con peso
+    Las raíces de menos de 4 letras son demasiado ambiguas para ser prefijo:
+    se convierten en formas exactas conjugadas.
+    """
+    cuerpo, _, p = spec.partition(":")
+    peso = float(p) if p else 1.0
+    base, *irreg = [quitar_tildes(x).strip() for x in cuerpo.split("|")]
+    if base.endswith("se"):
+        base = base[:-2]
+    tipo = base[-2:]
+    if tipo not in _FORMAS or len(base) < 3:
+        return set(), ({base} if base else set()), peso
+    raiz = base[:-2]
+    cand = {raiz} | {i for i in irreg if i}
+    if base.endswith("car"):
+        cand.add(raiz[:-1] + "qu")
+    elif base.endswith("gar"):
+        cand.add(raiz + "u")
+    elif base.endswith("zar"):
+        cand.add(raiz[:-1] + "c")
+    elif base.endswith(("ger", "gir")):
+        cand.add(raiz[:-1] + "j")
+    prefijos, exactas = set(), {base}
+    for c in cand:
+        if len(c) >= 4:
+            prefijos.add(c)
+        elif c:
+            exactas.update(conjugar(c, tipo))
+    return prefijos, exactas, peso
+
+
+def _extras_de_entorno():
+    """Vocabularios adicionales: rutas JSON en FORJA_LEXICO_EXTRA (separadas por os.pathsep)."""
+    import json
+    import os
+    fuentes = []
+    for ruta in filter(None, os.environ.get("FORJA_LEXICO_EXTRA", "").split(os.pathsep)):
+        try:
+            with open(ruta, encoding="utf-8") as f:
+                fuentes.append(json.load(f))
+        except (OSError, ValueError):
+            pass
+    return fuentes
+
+
+def _partir_peso(item: str):
+    palabra, _, p = item.partition(":")
+    try:
+        return palabra, (float(p) if p else 1.0)
+    except ValueError:
+        return palabra, 1.0
+
+
+def reconstruir(extra=None) -> None:
+    """(Re)construye los índices. `extra` es un vocabulario adicional opcional."""
+    global _PREFIJOS, _PREF_POR_INICIO, _EXACTAS, FRASES, _VOCABULARIO, _VOCAB_POR_INICIO
+    from .vocabulario import VOCABULARIO as base
+    fuentes = [base] + _extras_de_entorno() + ([extra] if extra else [])
+
+    prefijos = {}                       # (raiz, clase) -> peso
+    exactas = {}                        # (palabra, clase) -> peso
+    frases = list(_FRASES_BASE)
+    vocab = set()
+
+    def poner_prefijo(raiz, clase, peso):
+        if len(raiz) >= 3:
+            k = (raiz, clase)
+            prefijos[k] = max(prefijos.get(k, 0.0), peso)
+
+    def poner_exacta(palabra, clase, peso):
+        if palabra:
+            k = (palabra, clase)
+            exactas[k] = max(exactas.get(k, 0.0), peso)
+
+    for clase, txt in LEXICO_TEXTO.items():
+        pref, exac = _leer(txt)
+        for r, pw in pref.items():
+            poner_prefijo(r, clase, pw)
+        for w_, pw in exac.items():
+            poner_exacta(w_, clase, pw)
+
+    for fuente in fuentes:
+        for clase, datos in (fuente or {}).items():
+            if clase not in CLASES or not isinstance(datos, dict):
+                continue
+            for spec in datos.get("verbos", ()):
+                pref, exac, pw = raices_de_verbo(spec)
+                for r in pref:
+                    poner_prefijo(r, clase, pw)
+                for e in exac:
+                    poner_exacta(e, clase, pw)
+                vocab.update(e for e in exac if len(e) >= 5)
+            for item in datos.get("raices", ()):
+                r, pw = _partir_peso(quitar_tildes(item).strip())
+                if len(r) >= 4 and " " not in r:      # menos de 4 letras: demasiado ambiguo
+                    poner_prefijo(r, clase, pw)
+            for item in datos.get("exactas", ()):
+                e, pw = _partir_peso(quitar_tildes(item).strip())
+                if e and " " not in e:
+                    poner_exacta(e, clase, pw)
+            for entrada in datos.get("frases", ()):
+                try:
+                    patron, peso = entrada
+                    patron = tuple(x if ("*" in x or "|" in x or x == "@hacer")
+                                   else quitar_tildes(x) for x in patron)
+                    frases.append((patron, {clase: float(peso)}))
+                except (TypeError, ValueError):
+                    pass
+
+    _PREFIJOS = sorted(((r, c, pw) for (r, c), pw in prefijos.items()),
+                       key=lambda t: -len(t[0]))
+    _PREF_POR_INICIO = {}
+    for r, c, pw in _PREFIJOS:
+        _PREF_POR_INICIO.setdefault(r[:3], []).append((r, c, pw))
+    _EXACTAS = {}
+    for (w_, c), pw in exactas.items():
+        _EXACTAS.setdefault(w_, []).append((c, pw))
+    FRASES = _expandir_frases(frases)
+
+    vocab.update(w_ for w_ in _EXACTAS if len(w_) >= 5)
+    for r, _, _ in _PREFIJOS:
+        if len(r) >= 4:
+            vocab.update({r + "ar", r + "o", r + "a", r + "ando"})
+    _VOCABULARIO = sorted(w_ for w_ in vocab if len(w_) >= 5)
+    _VOCAB_POR_INICIO = {}
+    for w_ in _VOCABULARIO:
+        _VOCAB_POR_INICIO.setdefault(w_[:2], []).append(w_)
+
+
+reconstruir()
 
 
 # --------------------------------------------------------------------------
@@ -596,7 +721,7 @@ def _es_infinitivo(tok: str) -> bool:
 
 def analizar(texto: str, w, esc=None, etiquetas=None, visibles=None) -> Interpretacion:
     """Interpreta `texto` en el contexto del mundo `w` y de la escena `esc`."""
-    texto = " ".join(texto.split())
+    texto = " ".join(texto.split())[:MAX_CARACTERES]
     orig, norm = tokenizar(texto)
     r = Interpretacion(frase=texto)
     puntos = {c: 0.0 for c in CLASES}
