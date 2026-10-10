@@ -1,0 +1,4482 @@
+[
+{
+"frase": "Me arrodillo junto al heraldo malherido y le vendo las heridas con manos temblorosas",
+"clase": "compasion",
+"modificador": "ninguno",
+"objetivo": "heraldo",
+"origen": "compasion"
+},
+{
+"frase": "Extiendo la mano al guardián caído para ayudarlo a incorporarse",
+"clase": "compasion",
+"modificador": "ninguno",
+"objetivo": "guardian",
+"origen": "compasion"
+},
+{
+"frase": "Perdono al villano desde lo más hondo de mi alma",
+"clase": "compasion",
+"modificador": "ninguno",
+"objetivo": "villano",
+"origen": "compasion"
+},
+{
+"frase": "Estrecho entre mis brazos al aliado que sollozaba y le susurro que no está solo",
+"clase": "compasion",
+"modificador": "ninguno",
+"objetivo": "aliado",
+"origen": "compasion"
+},
+{
+"frase": "Parto mi último mendrugo y se lo doy al mentor hambriento",
+"clase": "compasion",
+"modificador": "ninguno",
+"objetivo": "mentor",
+"origen": "compasion"
+},
+{
+"frase": "Le presto mi oído al anciano mentor mientras desahoga su pena",
+"clase": "compasion",
+"modificador": "ninguno",
+"objetivo": "mentor",
+"origen": "compasion"
+},
+{
+"frase": "Cargo a cuestas al aliado malherido hasta ponerlo a salvo",
+"clase": "compasion",
+"modificador": "ninguno",
+"objetivo": "aliado",
+"origen": "compasion"
+},
+{
+"frase": "Enjugo las lágrimas del heraldo con la manga de mi capa",
+"clase": "compasion",
+"modificador": "ninguno",
+"objetivo": "heraldo",
+"origen": "compasion"
+},
+{
+"frase": "Vierto mi cantimplora entera en los labios resecos del guardián",
+"clase": "compasion",
+"modificador": "ninguno",
+"objetivo": "guardian",
+"origen": "compasion"
+},
+{
+"frase": "Sano con mis manos las llagas del esbirro moribundo",
+"clase": "compasion",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "compasion"
+},
+{
+"frase": "Tiendo mi manto sobre el pobre peregrino que tirita de frío",
+"clase": "compasion",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "compasion"
+},
+{
+"frase": "Rescato al niño atrapado entre los escombros sin pensar en mi propia vida",
+"clase": "compasion",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "compasion"
+},
+{
+"frase": "Tomo la mano del aliado y le juro que todo saldrá bien",
+"clase": "compasion",
+"modificador": "ninguno",
+"objetivo": "aliado",
+"origen": "compasion"
+},
+{
+"frase": "Compadecido, bajo la espada y ofrezco agua al enemigo derrotado",
+"clase": "compasion",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "compasion"
+},
+{
+"frase": "Le doy mi abrigo al heraldo, que se muere de frío",
+"clase": "compasion",
+"modificador": "ninguno",
+"objetivo": "heraldo",
+"origen": "compasion"
+},
+{
+"frase": "Acompaño al guardián en su duelo, con la mano posada sobre su coraza",
+"clase": "compasion",
+"modificador": "ninguno",
+"objetivo": "guardian",
+"origen": "compasion"
+},
+{
+"frase": "Con calma, sin interrumpir, escucho el lamento del mentor",
+"clase": "compasion",
+"modificador": "facil",
+"objetivo": "mentor",
+"origen": "compasion"
+},
+{
+"frase": "Curo las heridas del aliado con hierbas, despacio y con ternura",
+"clase": "compasion",
+"modificador": "facil",
+"objetivo": "aliado",
+"origen": "compasion"
+},
+{
+"frase": "Velo toda la noche el sueño febril del viajero herido",
+"clase": "compasion",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "compasion"
+},
+{
+"frase": "Le ofrezco al villano una segunda oportunidad: mi mano abierta en vez de un puño",
+"clase": "compasion",
+"modificador": "ninguno",
+"objetivo": "villano",
+"origen": "compasion"
+},
+{
+"frase": "Comparto mi ración con los esbirros famélicos, que también son hijos de alguien",
+"clase": "compasion",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "compasion"
+},
+{
+"frase": "Lloro con el pueblo arrasado y reparto lo poco que tengo entre los supervivientes",
+"clase": "compasion",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "compasion"
+},
+{
+"frase": "Arropo al heraldo con mi capa mientras duerme, para que no pase frío",
+"clase": "compasion",
+"modificador": "ninguno",
+"objetivo": "heraldo",
+"origen": "compasion"
+},
+{
+"frase": "Cojo en brazos al cachorro herido y corro a curarlo",
+"clase": "compasion",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "compasion"
+},
+{
+"frase": "Socorro a la anciana caída en el camino sin dudarlo un instante",
+"clase": "compasion",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "compasion"
+},
+{
+"frase": "Ofrezco mi hombro para llorar al aliado que lo ha perdido todo",
+"clase": "compasion",
+"modificador": "ninguno",
+"objetivo": "aliado",
+"origen": "compasion"
+},
+{
+"frase": "A ciegas, tanteando en la oscuridad, busco al aliado herido para auxiliarlo",
+"clase": "compasion",
+"modificador": "dificil",
+"objetivo": "aliado",
+"origen": "compasion"
+},
+{
+"frase": "Sin armas y con las manos desnudas, saco al guardián de entre las llamas",
+"clase": "compasion",
+"modificador": "dificil",
+"objetivo": "guardian",
+"origen": "compasion"
+},
+{
+"frase": "Con una sola mano sostengo al niño desfallecido y lo acuno contra mi pecho",
+"clase": "compasion",
+"modificador": "dificil",
+"objetivo": "ninguno",
+"origen": "compasion"
+},
+{
+"frase": "Descalzo sobre la nieve, llevo al mentor enfermo hasta la posada",
+"clase": "compasion",
+"modificador": "dificil",
+"objetivo": "mentor",
+"origen": "compasion"
+},
+{
+"frase": "Con el estómago vacío, le doy mi última manzana al niño hambriento",
+"clase": "compasion",
+"modificador": "dificil",
+"objetivo": "ninguno",
+"origen": "compasion"
+},
+{
+"frase": "Sin ayuda de nadie, arrastro al viejo moribundo hasta la aldea para salvarlo",
+"clase": "compasion",
+"modificador": "dificil",
+"objetivo": "ninguno",
+"origen": "compasion"
+},
+{
+"frase": "Aun borracho, consuelo al aliado que sollozaba en la taberna",
+"clase": "compasion",
+"modificador": "dificil",
+"objetivo": "aliado",
+"origen": "compasion"
+},
+{
+"frase": "Con cautela, me acerco al lobo herido y le saco la espina de la pata",
+"clase": "compasion",
+"modificador": "facil",
+"objetivo": "ninguno",
+"origen": "compasion"
+},
+{
+"frase": "Con mucha delicadeza limpio la herida del esbirro capturado",
+"clase": "compasion",
+"modificador": "facil",
+"objetivo": "enemigos",
+"origen": "compasion"
+},
+{
+"frase": "Despacito, para no asustarla, tiendo la mano a la criatura temblorosa",
+"clase": "compasion",
+"modificador": "facil",
+"objetivo": "ninguno",
+"origen": "compasion"
+},
+{
+"frase": "Con calma hago sentar al guardián angustiado y escucho su historia",
+"clase": "compasion",
+"modificador": "facil",
+"objetivo": "guardian",
+"origen": "compasion"
+},
+{
+"frase": "Con ternura vendo el ala rota del pajarillo",
+"clase": "compasion",
+"modificador": "facil",
+"objetivo": "ninguno",
+"origen": "compasion"
+},
+{
+"frase": "En voz bajita arrullo al niño asustado hasta que se duerme",
+"clase": "compasion",
+"modificador": "facil",
+"objetivo": "ninguno",
+"origen": "compasion"
+},
+{
+"frase": "Con mucho tacto, doy ánimo al heraldo desmoralizado",
+"clase": "compasion",
+"modificador": "facil",
+"objetivo": "heraldo",
+"origen": "compasion"
+},
+{
+"frase": "Perdono de corazón la traición de mi aliado",
+"clase": "compasion",
+"modificador": "ninguno",
+"objetivo": "aliado",
+"origen": "compasion"
+},
+{
+"frase": "Pongo la mano en el hombro del mentor y le digo que no hay rencor",
+"clase": "compasion",
+"modificador": "ninguno",
+"objetivo": "mentor",
+"origen": "compasion"
+},
+{
+"frase": "Amparo a los desvalidos de esta aldea y les dejo mi bolsa de monedas",
+"clase": "compasion",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "compasion"
+},
+{
+"frase": "Sirvo caldo caliente al forastero aterido de frío",
+"clase": "compasion",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "compasion"
+},
+{
+"frase": "Tiro del brazo del aliado que se hunde en el fango y lo saco a pulso",
+"clase": "compasion",
+"modificador": "ninguno",
+"objetivo": "aliado",
+"origen": "compasion"
+},
+{
+"frase": "Me apiado del villano vencido y le curo la herida en vez de rematarlo",
+"clase": "compasion",
+"modificador": "ninguno",
+"objetivo": "villano",
+"origen": "compasion"
+},
+{
+"frase": "Hago de enfermero junto al heraldo febril y le refresco la frente con un paño",
+"clase": "compasion",
+"modificador": "ninguno",
+"objetivo": "heraldo",
+"origen": "compasion"
+},
+{
+"frase": "Regalo el tesoro entero a los huérfanos del pueblo para que coman",
+"clase": "compasion",
+"modificador": "ninguno",
+"objetivo": "objeto",
+"origen": "compasion"
+},
+{
+"frase": "Gasto la poción curativa en el guardián moribundo en vez de guardarla para mí",
+"clase": "compasion",
+"modificador": "ninguno",
+"objetivo": "guardian",
+"origen": "compasion"
+},
+{
+"frase": "Entrego mi don curativo para aliviar el sufrimiento de los enfermos",
+"clase": "compasion",
+"modificador": "ninguno",
+"objetivo": "objeto",
+"origen": "compasion"
+},
+{
+"frase": "Envaino el acero y escucho el lamento de los esbirros, que solo quieren volver a casa",
+"clase": "compasion",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "compasion"
+},
+{
+"frase": "Me quito la capa y la echo sobre los hombros de la viuda que tirita",
+"clase": "compasion",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "compasion"
+},
+{
+"frase": "Consuelo a la madre que llora a su hijo y lloro con ella",
+"clase": "compasion",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "compasion"
+},
+{
+"frase": "Acaricio el pelo del niño perdido y le prometo llevarlo con su familia",
+"clase": "compasion",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "compasion"
+},
+{
+"frase": "Me desvivo por el aliado: le doy de beber y le bajo la fiebre",
+"clase": "compasion",
+"modificador": "ninguno",
+"objetivo": "aliado",
+"origen": "compasion"
+},
+{
+"frase": "Echo una mano a un forastero que no puede con su carga",
+"clase": "compasion",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "compasion"
+},
+{
+"frase": "Le doy cobijo en mi campamento a los refugiados sin hogar",
+"clase": "compasion",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "compasion"
+},
+{
+"frase": "Doy de comer al caballo flaco y le hablo bajito para tranquilizarlo",
+"clase": "compasion",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "compasion"
+},
+{
+"frase": "Guío a los aldeanos hacia terreno firme y los pongo a salvo del derrumbe",
+"clase": "compasion",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "compasion"
+},
+{
+"frase": "Me siento junto al heraldo abatido y lo dejo desahogarse hasta quedarse sin lágrimas",
+"clase": "compasion",
+"modificador": "ninguno",
+"objetivo": "heraldo",
+"origen": "compasion"
+},
+{
+"frase": "Dormir un rato",
+"clase": "descansar",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "descansar"
+},
+{
+"frase": "Descansar",
+"clase": "descansar",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "descansar"
+},
+{
+"frase": "Comer algo",
+"clase": "descansar",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "descansar"
+},
+{
+"frase": "Acampar aquí",
+"clase": "descansar",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "descansar"
+},
+{
+"frase": "Sentarme un rato",
+"clase": "descansar",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "descansar"
+},
+{
+"frase": "Echar una siesta",
+"clase": "descansar",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "descansar"
+},
+{
+"frase": "Recuperar el aliento",
+"clase": "descansar",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "descansar"
+},
+{
+"frase": "Hacer una pausa",
+"clase": "descansar",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "descansar"
+},
+{
+"frase": "Reposar un momento",
+"clase": "descansar",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "descansar"
+},
+{
+"frase": "Tomo un respiro",
+"clase": "descansar",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "descansar"
+},
+{
+"frase": "Me tumbo a dormir",
+"clase": "descansar",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "descansar"
+},
+{
+"frase": "Armo el campamento",
+"clase": "descansar",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "descansar"
+},
+{
+"frase": "Cenar junto al fuego",
+"clase": "descansar",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "descansar"
+},
+{
+"frase": "Hago noche aquí",
+"clase": "descansar",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "descansar"
+},
+{
+"frase": "Pego una cabezada",
+"clase": "descansar",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "descansar"
+},
+{
+"frase": "Me recuesto un poco",
+"clase": "descansar",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "descansar"
+},
+{
+"frase": "Me echo un sueñito",
+"clase": "descansar",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "descansar"
+},
+{
+"frase": "Tomo asiento",
+"clase": "descansar",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "descansar"
+},
+{
+"frase": "Me acuesto",
+"clase": "descansar",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "descansar"
+},
+{
+"frase": "Almorzar",
+"clase": "descansar",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "descansar"
+},
+{
+"frase": "Merendar algo",
+"clase": "descansar",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "descansar"
+},
+{
+"frase": "Desayunar",
+"clase": "descansar",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "descansar"
+},
+{
+"frase": "Como el pan",
+"clase": "descansar",
+"modificador": "ninguno",
+"objetivo": "objeto",
+"origen": "descansar"
+},
+{
+"frase": "Me zampo el bocadillo",
+"clase": "descansar",
+"modificador": "ninguno",
+"objetivo": "objeto",
+"origen": "descansar"
+},
+{
+"frase": "Me siento en una roca",
+"clase": "descansar",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "descansar"
+},
+{
+"frase": "Duermo bajo un árbol",
+"clase": "descansar",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "descansar"
+},
+{
+"frase": "Pernoctar en la posada",
+"clase": "descansar",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "descansar"
+},
+{
+"frase": "Me relajo un rato",
+"clase": "descansar",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "descansar"
+},
+{
+"frase": "Me tiendo en la hierba",
+"clase": "descansar",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "descansar"
+},
+{
+"frase": "Recobrar fuerzas durmiendo",
+"clase": "descansar",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "descansar"
+},
+{
+"frase": "Hacer un alto en el camino",
+"clase": "descansar",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "descansar"
+},
+{
+"frase": "Paro a tomar aire",
+"clase": "descansar",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "descansar"
+},
+{
+"frase": "Me doy un descansito",
+"clase": "descansar",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "descansar"
+},
+{
+"frase": "Duermo hasta que amanezca",
+"clase": "descansar",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "descansar"
+},
+{
+"frase": "Monto la tienda y me duermo",
+"clase": "descansar",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "descansar"
+},
+{
+"frase": "Descanso junto a mi aliado",
+"clase": "descansar",
+"modificador": "ninguno",
+"objetivo": "aliado",
+"origen": "descansar"
+},
+{
+"frase": "Me siento junto al mentor a descansar",
+"clase": "descansar",
+"modificador": "ninguno",
+"objetivo": "mentor",
+"origen": "descansar"
+},
+{
+"frase": "Dormir la noche entera",
+"clase": "descansar",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "descansar"
+},
+{
+"frase": "Me pongo a roncar un rato",
+"clase": "descansar",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "descansar"
+},
+{
+"frase": "Me tomo un tentempié",
+"clase": "descansar",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "descansar"
+},
+{
+"frase": "Pico algo de comida",
+"clase": "descansar",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "descansar"
+},
+{
+"frase": "Pegar un pestañazo",
+"clase": "descansar",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "descansar"
+},
+{
+"frase": "Duermo en el establo",
+"clase": "descansar",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "descansar"
+},
+{
+"frase": "Reponer fuerzas",
+"clase": "descansar",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "descansar"
+},
+{
+"frase": "Cierro los ojos y duermo",
+"clase": "descansar",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "descansar"
+},
+{
+"frase": "Duermo con calma",
+"clase": "descansar",
+"modificador": "facil",
+"objetivo": "ninguno",
+"origen": "descansar"
+},
+{
+"frase": "Descanso en silencio",
+"clase": "descansar",
+"modificador": "facil",
+"objetivo": "ninguno",
+"origen": "descansar"
+},
+{
+"frase": "Como despacio",
+"clase": "descansar",
+"modificador": "facil",
+"objetivo": "ninguno",
+"origen": "descansar"
+},
+{
+"frase": "Acampo con cuidado",
+"clase": "descansar",
+"modificador": "facil",
+"objetivo": "ninguno",
+"origen": "descansar"
+},
+{
+"frase": "Me tumbo despacio a descansar",
+"clase": "descansar",
+"modificador": "facil",
+"objetivo": "ninguno",
+"origen": "descansar"
+},
+{
+"frase": "Hago una pausa con calma",
+"clase": "descansar",
+"modificador": "facil",
+"objetivo": "ninguno",
+"origen": "descansar"
+},
+{
+"frase": "Ceno con calma",
+"clase": "descansar",
+"modificador": "facil",
+"objetivo": "ninguno",
+"origen": "descansar"
+},
+{
+"frase": "Me siento a descansar con calma",
+"clase": "descansar",
+"modificador": "facil",
+"objetivo": "ninguno",
+"origen": "descansar"
+},
+{
+"frase": "Duermo sin manta",
+"clase": "descansar",
+"modificador": "dificil",
+"objetivo": "ninguno",
+"origen": "descansar"
+},
+{
+"frase": "Acampo sin fuego",
+"clase": "descansar",
+"modificador": "dificil",
+"objetivo": "ninguno",
+"origen": "descansar"
+},
+{
+"frase": "Duermo a la intemperie",
+"clase": "descansar",
+"modificador": "dificil",
+"objetivo": "ninguno",
+"origen": "descansar"
+},
+{
+"frase": "Descanso de espaldas a la puerta",
+"clase": "descansar",
+"modificador": "dificil",
+"objetivo": "ninguno",
+"origen": "descansar"
+},
+{
+"frase": "Duermo descalzo en el suelo",
+"clase": "descansar",
+"modificador": "dificil",
+"objetivo": "ninguno",
+"origen": "descansar"
+},
+{
+"frase": "Descanso sin armas",
+"clase": "descansar",
+"modificador": "dificil",
+"objetivo": "ninguno",
+"origen": "descansar"
+},
+{
+"frase": "Duermo de pie",
+"clase": "descansar",
+"modificador": "dificil",
+"objetivo": "ninguno",
+"origen": "descansar"
+},
+{
+"frase": "me echo a correr sin mirar atrás",
+"clase": "duda",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "duda"
+},
+{
+"frase": "me tomo el palo antes de que me vean",
+"clase": "duda",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "duda"
+},
+{
+"frase": "me escondo detrás de unos barriles y rezo para que no me vean",
+"clase": "duda",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "duda"
+},
+{
+"frase": "no entro ni loco a esa cueva",
+"clase": "duda",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "duda"
+},
+{
+"frase": "me hago el muerto hasta que se vayan",
+"clase": "duda",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "duda"
+},
+{
+"frase": "que vaya otro, yo no me meto en esto",
+"clase": "duda",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "duda"
+},
+{
+"frase": "le doy la espalda al viejo y me largo",
+"clase": "duda",
+"modificador": "ninguno",
+"objetivo": "mentor",
+"origen": "duda"
+},
+{
+"frase": "me rajo, esto no es para mí",
+"clase": "duda",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "duda"
+},
+{
+"frase": "me echo para atrás en el último momento",
+"clase": "duda",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "duda"
+},
+{
+"frase": "me quedo esperando a ver qué pasa",
+"clase": "duda",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "duda"
+},
+{
+"frase": "levanto las manos y me rindo",
+"clase": "duda",
+"modificador": "ninguno",
+"objetivo": "villano",
+"origen": "duda"
+},
+{
+"frase": "tiro el arma al suelo y me entrego",
+"clase": "duda",
+"modificador": "ninguno",
+"objetivo": "villano",
+"origen": "duda"
+},
+{
+"frase": "rechazo la misión, que busquen a otro héroe",
+"clase": "duda",
+"modificador": "ninguno",
+"objetivo": "heraldo",
+"origen": "duda"
+},
+{
+"frase": "le digo al guardián que mejor regreso mañana",
+"clase": "duda",
+"modificador": "ninguno",
+"objetivo": "guardian",
+"origen": "duda"
+},
+{
+"frase": "me regreso por donde vine, no pienso seguir",
+"clase": "duda",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "duda"
+},
+{
+"frase": "me quedo en cama hasta que todo esto pase",
+"clase": "duda",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "duda"
+},
+{
+"frase": "me acobardo y salgo disparado hacia el pueblo",
+"clase": "duda",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "duda"
+},
+{
+"frase": "me meto debajo de la cama y no salgo",
+"clase": "duda",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "duda"
+},
+{
+"frase": "no quiero saber nada de esa profecía, cierro la puerta",
+"clase": "duda",
+"modificador": "ninguno",
+"objetivo": "heraldo",
+"origen": "duda"
+},
+{
+"frase": "huyo despavorido por el callejón, descalzo y a oscuras",
+"clase": "duda",
+"modificador": "dificil",
+"objetivo": "enemigos",
+"origen": "duda"
+},
+{
+"frase": "mejor lo dejo pasar y no me meto en problemas",
+"clase": "duda",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "duda"
+},
+{
+"frase": "me hago bolita en un rincón y espero",
+"clase": "duda",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "duda"
+},
+{
+"frase": "paso de la espada, no la voy a tocar",
+"clase": "duda",
+"modificador": "ninguno",
+"objetivo": "objeto",
+"origen": "duda"
+},
+{
+"frase": "ni de chiste acepto ese encargo",
+"clase": "duda",
+"modificador": "ninguno",
+"objetivo": "mentor",
+"origen": "duda"
+},
+{
+"frase": "me pelo de este lugar antes de que sea tarde",
+"clase": "duda",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "duda"
+},
+{
+"frase": "retrocedo despacito sin hacer ruido",
+"clase": "duda",
+"modificador": "facil",
+"objetivo": "enemigos",
+"origen": "duda"
+},
+{
+"frase": "me escondo en silencio entre los arbustos",
+"clase": "duda",
+"modificador": "facil",
+"objetivo": "enemigos",
+"origen": "duda"
+},
+{
+"frase": "aguardo con calma a que el villano se marche",
+"clase": "duda",
+"modificador": "facil",
+"objetivo": "villano",
+"origen": "duda"
+},
+{
+"frase": "me escabullo con cautela por la puerta trasera",
+"clase": "duda",
+"modificador": "facil",
+"objetivo": "lugar",
+"origen": "duda"
+},
+{
+"frase": "huyo a ciegas entre los árboles",
+"clase": "duda",
+"modificador": "dificil",
+"objetivo": "lugar",
+"origen": "duda"
+},
+{
+"frase": "huyo sin armas, sin mirar atrás",
+"clase": "duda",
+"modificador": "dificil",
+"objetivo": "enemigos",
+"origen": "duda"
+},
+{
+"frase": "me escondo bien borracho tras la barra",
+"clase": "duda",
+"modificador": "dificil",
+"objetivo": "lugar",
+"origen": "duda"
+},
+{
+"frase": "me retiro de espaldas, sin quitarle la vista al villano",
+"clase": "duda",
+"modificador": "dificil",
+"objetivo": "villano",
+"origen": "duda"
+},
+{
+"frase": "me niego a seguir al heraldo",
+"clase": "duda",
+"modificador": "ninguno",
+"objetivo": "heraldo",
+"origen": "duda"
+},
+{
+"frase": "me niego a cruzar el puente",
+"clase": "duda",
+"modificador": "ninguno",
+"objetivo": "guardian",
+"origen": "duda"
+},
+{
+"frase": "mejor me hago a un lado y dejo que otros peleen",
+"clase": "duda",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "duda"
+},
+{
+"frase": "me achico ante el villano y bajo la mirada",
+"clase": "duda",
+"modificador": "ninguno",
+"objetivo": "villano",
+"origen": "duda"
+},
+{
+"frase": "no me animo, mejor me quedo en casa",
+"clase": "duda",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "duda"
+},
+{
+"frase": "me hago el desentendido cuando mi aliado pide ayuda",
+"clase": "duda",
+"modificador": "ninguno",
+"objetivo": "aliado",
+"origen": "duda"
+},
+{
+"frase": "dejo al aliado atrás y salgo huyendo",
+"clase": "duda",
+"modificador": "ninguno",
+"objetivo": "aliado",
+"origen": "duda"
+},
+{
+"frase": "tiro la toalla, no puedo con esto",
+"clase": "duda",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "duda"
+},
+{
+"frase": "doy media vuelta despacio y me voy por donde vine",
+"clase": "duda",
+"modificador": "facil",
+"objetivo": "ninguno",
+"origen": "duda"
+},
+{
+"frase": "me escondo en el armario con cuidado hasta que amanezca",
+"clase": "duda",
+"modificador": "facil",
+"objetivo": "lugar",
+"origen": "duda"
+},
+{
+"frase": "le ruego al mentor que me deje fuera de esto",
+"clase": "duda",
+"modificador": "ninguno",
+"objetivo": "mentor",
+"origen": "duda"
+},
+{
+"frase": "me hago humo con los ojos cerrados",
+"clase": "duda",
+"modificador": "dificil",
+"objetivo": "ninguno",
+"origen": "duda"
+},
+{
+"frase": "rechazo el tesoro, seguro está maldito",
+"clase": "duda",
+"modificador": "ninguno",
+"objetivo": "objeto",
+"origen": "duda"
+},
+{
+"frase": "espero a que amaine la tormenta bajo un árbol",
+"clase": "duda",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "duda"
+},
+{
+"frase": "me trepo a un árbol para esconderme",
+"clase": "duda",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "duda"
+},
+{
+"frase": "huyo con el rabo entre las patas",
+"clase": "duda",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "duda"
+},
+{
+"frase": "me bajo de este barco, yo me salgo",
+"clase": "duda",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "duda"
+},
+{
+"frase": "me aguanto las ganas de pelear y me retiro",
+"clase": "duda",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "duda"
+},
+{
+"frase": "no pienso enfrentarme al guardián, me voy",
+"clase": "duda",
+"modificador": "ninguno",
+"objetivo": "guardian",
+"origen": "duda"
+},
+{
+"frase": "me tapo la cabeza con la manta y finjo que no pasa nada",
+"clase": "duda",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "duda"
+},
+{
+"frase": "dejo todo para mañana, hoy no estoy para héroe",
+"clase": "duda",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "duda"
+},
+{
+"frase": "me aparto del camino y dejo que el villano pase",
+"clase": "duda",
+"modificador": "ninguno",
+"objetivo": "villano",
+"origen": "duda"
+},
+{
+"frase": "le devuelvo la espada al mentor, no la quiero",
+"clase": "duda",
+"modificador": "ninguno",
+"objetivo": "mentor",
+"origen": "duda"
+},
+{
+"frase": "me entrego sin armas y sin chistar",
+"clase": "duda",
+"modificador": "dificil",
+"objetivo": "villano",
+"origen": "duda"
+},
+{
+"frase": "me quedo callado y no hago nada",
+"clase": "duda",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "duda"
+},
+{
+"frase": "me escondo con mucho cuidado bajo la carreta",
+"clase": "duda",
+"modificador": "facil",
+"objetivo": "lugar",
+"origen": "duda"
+},
+{
+"frase": "espero tranquilo y en silencio a que pase la ronda",
+"clase": "duda",
+"modificador": "facil",
+"objetivo": "enemigos",
+"origen": "duda"
+},
+{
+"frase": "¿Este juego trae tutorial o nos lanzamos al vacío como siempre?",
+"clase": "desconocida",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "fuera"
+},
+{
+"frase": "jajajajajaja qué buen narrador, de verdad, un genio",
+"clase": "desconocida",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "fuera"
+},
+{
+"frase": "xxxxxxxxx",
+"clase": "desconocida",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "fuera"
+},
+{
+"frase": "Pido una pizza cuatro quesos a domicilio, sin piña por favor",
+"clase": "desconocida",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "fuera"
+},
+{
+"frase": "Mejor saco el móvil y busco el mapa en Google",
+"clase": "desconocida",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "fuera"
+},
+{
+"frase": "42",
+"clase": "desconocida",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "fuera"
+},
+{
+"frase": "Buenos días, querido narrador, ¿cómo amaneciste hoy?",
+"clase": "desconocida",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "fuera"
+},
+{
+"frase": "¿Cuánto falta para que esto se ponga interesante?",
+"clase": "desconocida",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "fuera"
+},
+{
+"frase": "Qué rollo de historia, ya me aburrí",
+"clase": "desconocida",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "fuera"
+},
+{
+"frase": "Esto en mi pueblo no pasa ni en fiestas patronales.",
+"clase": "desconocida",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "fuera"
+},
+{
+"frase": "¿Y el wifi de por aquí es gratuito o cobran?",
+"clase": "desconocida",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "fuera"
+},
+{
+"frase": "¿Quién ganó el partido de ayer, por cierto?",
+"clase": "desconocida",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "fuera"
+},
+{
+"frase": "3.14159265",
+"clase": "desconocida",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "fuera"
+},
+{
+"frase": "asdfghjkl",
+"clase": "desconocida",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "fuera"
+},
+{
+"frase": "Mi móvil está al 3% de batería, qué drama",
+"clase": "desconocida",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "fuera"
+},
+{
+"frase": "Me parece fatal que no haya un botón para ir al baño",
+"clase": "desconocida",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "fuera"
+},
+{
+"frase": "¿Por qué siempre me toca a mí? Qué cansancio de trama.",
+"clase": "desconocida",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "fuera"
+},
+{
+"frase": "No entiendo nada, ¿alguien me explica el argumento?",
+"clase": "desconocida",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "fuera"
+},
+{
+"frase": "Probando, probando, uno, dos, tres... ¿se oye esto?",
+"clase": "desconocida",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "fuera"
+},
+{
+"frase": "¿Qué hora es en la vida real? Tengo que cenar.",
+"clase": "desconocida",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "fuera"
+},
+{
+"frase": "Pido un Uber para llegar al próximo pueblo",
+"clase": "desconocida",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "fuera"
+},
+{
+"frase": "Menudo guion, mis sobrinos de siete años escriben mejor.",
+"clase": "desconocida",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "fuera"
+},
+{
+"frase": "100 200 300 400",
+"clase": "desconocida",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "fuera"
+},
+{
+"frase": "Mi gato acaba de pisar el teclado, perdón",
+"clase": "desconocida",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "fuera"
+},
+{
+"frase": "¿Hay modo vacaciones pagadas o solo dificultad normal?",
+"clase": "desconocida",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "fuera"
+},
+{
+"frase": "Eso que cuentas tiene menos sentido que mi horóscopo.",
+"clase": "desconocida",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "fuera"
+},
+{
+"frase": "Mando un WhatsApp a mi madre pidiendo consejo",
+"clase": "desconocida",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "fuera"
+},
+{
+"frase": "Pagaría por un resumen de lo que acaba de pasar.",
+"clase": "desconocida",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "fuera"
+},
+{
+"frase": "Tu narrativa suena a anuncio de colchones.",
+"clase": "desconocida",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "fuera"
+},
+{
+"frase": "¿Cuál es la capital de Mongolia? Es curiosidad.",
+"clase": "desconocida",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "fuera"
+},
+{
+"frase": "ñoño ñoño ñoño",
+"clase": "desconocida",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "fuera"
+},
+{
+"frase": "Exijo un reembolso, esto no era lo que anunciaban.",
+"clase": "desconocida",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "fuera"
+},
+{
+"frase": "¿Hay modo multijugador o este marrón es solo mío?",
+"clase": "desconocida",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "fuera"
+},
+{
+"frase": "Esto merece una reseña de una estrella en TripAdvisor.",
+"clase": "desconocida",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "fuera"
+},
+{
+"frase": "Feliz cumpleaños a mí, que hoy cumplo años de verdad.",
+"clase": "desconocida",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "fuera"
+},
+{
+"frase": "¿Esto es un sueño o simplemente mala calidad de guion?",
+"clase": "desconocida",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "fuera"
+},
+{
+"frase": "Perdona, ¿puedes bajar un poco el volumen del narrador?",
+"clase": "desconocida",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "fuera"
+},
+{
+"frase": "Eh... ¿y ahora qué se supone que pasa?",
+"clase": "desconocida",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "fuera"
+},
+{
+"frase": "Quiero el libro de reclamaciones, esto es un desastre.",
+"clase": "desconocida",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "fuera"
+},
+{
+"frase": "Qué calor hace hoy en Valencia, ¿verdad?",
+"clase": "desconocida",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "fuera"
+},
+{
+"frase": "Pregunto al mentor cuántos centinelas custodian el paso y cada cuánto rotan.",
+"clase": "hablar",
+"modificador": "ninguno",
+"objetivo": "mentor",
+"origen": "hablar"
+},
+{
+"frase": "Interrogo al heraldo sobre quién firmó el mensaje y por qué vía llegó.",
+"clase": "hablar",
+"modificador": "ninguno",
+"objetivo": "heraldo",
+"origen": "hablar"
+},
+{
+"frase": "Saludo con cortesía al guardián y me presento.",
+"clase": "hablar",
+"modificador": "facil",
+"objetivo": "guardian",
+"origen": "hablar"
+},
+{
+"frase": "Le expongo al aliado, punto por punto, el plan de asalto.",
+"clase": "hablar",
+"modificador": "ninguno",
+"objetivo": "aliado",
+"origen": "hablar"
+},
+{
+"frase": "Consulto con el mentor el orden de ataque más eficiente contra los esbirros.",
+"clase": "hablar",
+"modificador": "ninguno",
+"objetivo": "mentor",
+"origen": "hablar"
+},
+{
+"frase": "Insto al heraldo a repetir palabra por palabra el mensaje del villano.",
+"clase": "hablar",
+"modificador": "ninguno",
+"objetivo": "heraldo",
+"origen": "hablar"
+},
+{
+"frase": "Grito al villano que conozco la ubicación exacta del tesoro.",
+"clase": "hablar",
+"modificador": "ninguno",
+"objetivo": "villano",
+"origen": "hablar"
+},
+{
+"frase": "Informo al aliado de los tres ángulos muertos que detecté en la muralla.",
+"clase": "hablar",
+"modificador": "ninguno",
+"objetivo": "aliado",
+"origen": "hablar"
+},
+{
+"frase": "Sondeo al guardián con preguntas sobre sus turnos y sus relevos.",
+"clase": "hablar",
+"modificador": "ninguno",
+"objetivo": "guardian",
+"origen": "hablar"
+},
+{
+"frase": "Respondo al heraldo que aceptamos sus condiciones, salvo el plazo.",
+"clase": "hablar",
+"modificador": "ninguno",
+"objetivo": "heraldo",
+"origen": "hablar"
+},
+{
+"frase": "Aclaro al mentor, con cifras, cuántas provisiones nos quedan.",
+"clase": "hablar",
+"modificador": "ninguno",
+"objetivo": "mentor",
+"origen": "hablar"
+},
+{
+"frase": "Llamo a voces a mi aliado desde la otra orilla del río.",
+"clase": "hablar",
+"modificador": "ninguno",
+"objetivo": "aliado",
+"origen": "hablar"
+},
+{
+"frase": "Indago con el mentor qué rutas de abastecimiento usa el villano.",
+"clase": "hablar",
+"modificador": "ninguno",
+"objetivo": "mentor",
+"origen": "hablar"
+},
+{
+"frase": "Cuento al aliado la secuencia exacta de la emboscada que planeo.",
+"clase": "hablar",
+"modificador": "ninguno",
+"objetivo": "aliado",
+"origen": "hablar"
+},
+{
+"frase": "Departo con el guardián sobre las rutas alternativas que él conoce.",
+"clase": "hablar",
+"modificador": "ninguno",
+"objetivo": "guardian",
+"origen": "hablar"
+},
+{
+"frase": "Solicito al mentor su parecer sobre dividir al grupo en dos células.",
+"clase": "hablar",
+"modificador": "ninguno",
+"objetivo": "mentor",
+"origen": "hablar"
+},
+{
+"frase": "Recito al heraldo las coordenadas del punto de encuentro.",
+"clase": "hablar",
+"modificador": "ninguno",
+"objetivo": "heraldo",
+"origen": "hablar"
+},
+{
+"frase": "Vocifero a los enemigos: ¿quién manda aquí y cuántos son?",
+"clase": "hablar",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "hablar"
+},
+{
+"frase": "Charlo con el aliado sobre la logística del regreso.",
+"clase": "hablar",
+"modificador": "ninguno",
+"objetivo": "aliado",
+"origen": "hablar"
+},
+{
+"frase": "Sonsaco al heraldo todo lo que sabe del paradero del villano.",
+"clase": "hablar",
+"modificador": "ninguno",
+"objetivo": "heraldo",
+"origen": "hablar"
+},
+{
+"frase": "Averiguo con el mentor el alcance y la cadencia del arma.",
+"clase": "hablar",
+"modificador": "ninguno",
+"objetivo": "mentor",
+"origen": "hablar"
+},
+{
+"frase": "Narro al mentor el desarrollo completo de la jornada, hora por hora.",
+"clase": "hablar",
+"modificador": "ninguno",
+"objetivo": "mentor",
+"origen": "hablar"
+},
+{
+"frase": "Me dirijo al guardián para preguntarle el horario de paso.",
+"clase": "hablar",
+"modificador": "ninguno",
+"objetivo": "guardian",
+"origen": "hablar"
+},
+{
+"frase": "Hago una consulta al aliado: ¿cuántos hombres reúne antes del alba?",
+"clase": "hablar",
+"modificador": "ninguno",
+"objetivo": "aliado",
+"origen": "hablar"
+},
+{
+"frase": "Transmito al aliado la contraseña y la hora de la señal.",
+"clase": "hablar",
+"modificador": "ninguno",
+"objetivo": "aliado",
+"origen": "hablar"
+},
+{
+"frase": "Contesto al villano que su oferta carece de garantías verificables.",
+"clase": "hablar",
+"modificador": "ninguno",
+"objetivo": "villano",
+"origen": "hablar"
+},
+{
+"frase": "Alerto a gritos al aliado: se acerca una patrulla por el este.",
+"clase": "hablar",
+"modificador": "ninguno",
+"objetivo": "aliado",
+"origen": "hablar"
+},
+{
+"frase": "Converso con calma con el guardián del umbral sobre su oficio.",
+"clase": "hablar",
+"modificador": "facil",
+"objetivo": "guardian",
+"origen": "hablar"
+},
+{
+"frase": "Con cuidado, cuestiono al heraldo sobre la autenticidad del sello del mensaje.",
+"clase": "hablar",
+"modificador": "facil",
+"objetivo": "heraldo",
+"origen": "hablar"
+},
+{
+"frase": "Explico al mentor mi hipótesis sobre el punto débil del villano.",
+"clase": "hablar",
+"modificador": "ninguno",
+"objetivo": "mentor",
+"origen": "hablar"
+},
+{
+"frase": "Detallo al aliado los tiempos de cada fase de la operación.",
+"clase": "hablar",
+"modificador": "ninguno",
+"objetivo": "aliado",
+"origen": "hablar"
+},
+{
+"frase": "Pregunto a un lugareño cuál es el camino menos vigilado hacia el umbral.",
+"clase": "hablar",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "hablar"
+},
+{
+"frase": "Interpelo a los esbirros: ¿quién les paga y cuánto?",
+"clase": "hablar",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "hablar"
+},
+{
+"frase": "Susurro al aliado el plan de contingencia para que nadie más lo oiga.",
+"clase": "hablar",
+"modificador": "facil",
+"objetivo": "aliado",
+"origen": "hablar"
+},
+{
+"frase": "Platico con el mentor acerca de alternativas al plan original.",
+"clase": "hablar",
+"modificador": "ninguno",
+"objetivo": "mentor",
+"origen": "hablar"
+},
+{
+"frase": "Doy parte al mentor de las bajas y los recursos que restan.",
+"clase": "hablar",
+"modificador": "ninguno",
+"objetivo": "mentor",
+"origen": "hablar"
+},
+{
+"frase": "Hago al guardián tres preguntas encadenadas para detectar contradicciones.",
+"clase": "hablar",
+"modificador": "ninguno",
+"objetivo": "guardian",
+"origen": "hablar"
+},
+{
+"frase": "De espaldas y sin armas, le digo al villano que su plan tiene fisuras.",
+"clase": "hablar",
+"modificador": "dificil",
+"objetivo": "villano",
+"origen": "hablar"
+},
+{
+"frase": "Pido consejo al mentor sobre cómo cruzar el umbral sin alertar a nadie.",
+"clase": "hablar",
+"modificador": "ninguno",
+"objetivo": "mentor",
+"origen": "hablar"
+},
+{
+"frase": "Replico al heraldo que el plazo propuesto es inviable por razones logísticas.",
+"clase": "hablar",
+"modificador": "ninguno",
+"objetivo": "heraldo",
+"origen": "hablar"
+},
+{
+"frase": "Le tiro de la lengua al guardián sobre quién autoriza las excepciones de paso.",
+"clase": "hablar",
+"modificador": "ninguno",
+"objetivo": "guardian",
+"origen": "hablar"
+},
+{
+"frase": "Confirmo al aliado, de viva voz, el punto y la hora de encuentro.",
+"clase": "hablar",
+"modificador": "ninguno",
+"objetivo": "aliado",
+"origen": "hablar"
+},
+{
+"frase": "Dialogo con el villano para ganar tiempo mientras se completa el cerco.",
+"clase": "hablar",
+"modificador": "ninguno",
+"objetivo": "villano",
+"origen": "hablar"
+},
+{
+"frase": "Clamo por el mentor desde lo alto del risco.",
+"clase": "hablar",
+"modificador": "ninguno",
+"objetivo": "mentor",
+"origen": "hablar"
+},
+{
+"frase": "Relato al guardián cuál es mi propósito y quién me envía.",
+"clase": "hablar",
+"modificador": "ninguno",
+"objetivo": "guardian",
+"origen": "hablar"
+},
+{
+"frase": "Rindo informe verbal al aliado sobre el estado del equipo.",
+"clase": "hablar",
+"modificador": "ninguno",
+"objetivo": "aliado",
+"origen": "hablar"
+},
+{
+"frase": "Requiero del heraldo una descripción detallada de la guarnición.",
+"clase": "hablar",
+"modificador": "ninguno",
+"objetivo": "heraldo",
+"origen": "hablar"
+},
+{
+"frase": "Enuncio ante el aliado los criterios para elegir la ruta de retirada.",
+"clase": "hablar",
+"modificador": "ninguno",
+"objetivo": "aliado",
+"origen": "hablar"
+},
+{
+"frase": "Someto a preguntas al esbirro capturado, sin armas, sobre las rondas nocturnas.",
+"clase": "hablar",
+"modificador": "dificil",
+"objetivo": "enemigos",
+"origen": "hablar"
+},
+{
+"frase": "Inquiero al guardián, de espaldas y descalzo, cuál es la contraseña del día.",
+"clase": "hablar",
+"modificador": "dificil",
+"objetivo": "guardian",
+"origen": "hablar"
+},
+{
+"frase": "Lanzo una pregunta al vacío de la cueva: ¿quién anda ahí?",
+"clase": "hablar",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "hablar"
+},
+{
+"frase": "Alzo la voz hacia la torre: ¿hay alguien arriba?",
+"clase": "hablar",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "hablar"
+},
+{
+"frase": "Hablo despacio con el mentor y le desgloso el plan por fases.",
+"clase": "hablar",
+"modificador": "facil",
+"objetivo": "mentor",
+"origen": "hablar"
+},
+{
+"frase": "Con cautela, tanteo al heraldo sobre quién más conoce el mensaje.",
+"clase": "hablar",
+"modificador": "facil",
+"objetivo": "heraldo",
+"origen": "hablar"
+},
+{
+"frase": "Aviso con tacto al aliado de que su plan tiene un fallo de sincronía.",
+"clase": "hablar",
+"modificador": "facil",
+"objetivo": "aliado",
+"origen": "hablar"
+},
+{
+"frase": "Con paciencia, le comento al mentor qué rutas de retirada necesito conocer.",
+"clase": "hablar",
+"modificador": "facil",
+"objetivo": "mentor",
+"origen": "hablar"
+},
+{
+"frase": "Pese a la borrachera, refiero al mentor lo averiguado sobre el villano.",
+"clase": "hablar",
+"modificador": "dificil",
+"objetivo": "mentor",
+"origen": "hablar"
+},
+{
+"frase": "A ciegas en la niebla, doy voces a mi aliado para ubicarlo.",
+"clase": "hablar",
+"modificador": "dificil",
+"objetivo": "aliado",
+"origen": "hablar"
+},
+{
+"frase": "Con una mano atada, parlamento con el villano sobre el rescate.",
+"clase": "hablar",
+"modificador": "dificil",
+"objetivo": "villano",
+"origen": "hablar"
+},
+{
+"frase": "Sin ayuda ni testigos, exijo explicaciones al guardián sobre el cierre del paso.",
+"clase": "hablar",
+"modificador": "dificil",
+"objetivo": "guardian",
+"origen": "hablar"
+},
+{
+"frase": "me hago pasar x el guardia nuevo pa q me dejen entrar",
+"clase": "ingenio",
+"modificador": "ninguno",
+"objetivo": "guardian",
+"origen": "ingenio"
+},
+{
+"frase": "le meto un cuento al guardian d q soy el cobrador del rey",
+"clase": "ingenio",
+"modificador": "ninguno",
+"objetivo": "guardian",
+"origen": "ingenio"
+},
+{
+"frase": "tiro una piedra pa q miren pa otro lado",
+"clase": "ingenio",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "ingenio"
+},
+{
+"frase": "me disfrazo d sirviente y me cuelo en la fiesta del villano",
+"clase": "ingenio",
+"modificador": "ninguno",
+"objetivo": "villano",
+"origen": "ingenio"
+},
+{
+"frase": "con calma le vendo la moto al villano con una historia falsa",
+"clase": "ingenio",
+"modificador": "facil",
+"objetivo": "villano",
+"origen": "ingenio"
+},
+{
+"frase": "pongo una trampa d cuerdas en el pasillo pa los esbirros",
+"clase": "ingenio",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "ingenio"
+},
+{
+"frase": "saboteo la catapulta en silencio cortandole las cuerdas",
+"clase": "ingenio",
+"modificador": "facil",
+"objetivo": "ninguno",
+"origen": "ingenio"
+},
+{
+"frase": "maquino un plan con mi aliado pa colarnos x la cocina",
+"clase": "ingenio",
+"modificador": "ninguno",
+"objetivo": "aliado",
+"origen": "ingenio"
+},
+{
+"frase": "me hago el loco y distraigo a los esvirros mientras mi aliado escapa",
+"clase": "ingenio",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "ingenio"
+},
+{
+"frase": "le paso un mapa falso al villano pa q se pierda",
+"clase": "ingenio",
+"modificador": "ninguno",
+"objetivo": "villano",
+"origen": "ingenio"
+},
+{
+"frase": "farol total sin armas les digo q tengo un ejercito detras",
+"clase": "ingenio",
+"modificador": "dificil",
+"objetivo": "enemigos",
+"origen": "ingenio"
+},
+{
+"frase": "aprovecho el barranco pa q los esbirros se caigan solos",
+"clase": "ingenio",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "ingenio"
+},
+{
+"frase": "borracho negocio con el guardian ofreciendole la mitad del botin",
+"clase": "ingenio",
+"modificador": "dificil",
+"objetivo": "guardian",
+"origen": "ingenio"
+},
+{
+"frase": "imito la voz del rey pa dar una orden falsa",
+"clase": "ingenio",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "ingenio"
+},
+{
+"frase": "me enfundo el uniforme d un soldado pa q nadie me reconozca",
+"clase": "ingenio",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "ingenio"
+},
+{
+"frase": "falsifico con una sola mano un salvo conducto firmado x el heraldo",
+"clase": "ingenio",
+"modificador": "dificil",
+"objetivo": "heraldo",
+"origen": "ingenio"
+},
+{
+"frase": "relleno el cofre con piedras pa q el villano se lleve el cambiazo",
+"clase": "ingenio",
+"modificador": "ninguno",
+"objetivo": "objeto",
+"origen": "ingenio"
+},
+{
+"frase": "prendo una humareda falsa pa q crean q hay incendio",
+"clase": "ingenio",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "ingenio"
+},
+{
+"frase": "levanto un puente con una puerta vieja pa cruzar el rio",
+"clase": "ingenio",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "ingenio"
+},
+{
+"frase": "engano al villano diciendole q su mano derecha lo traiciono",
+"clase": "ingenio",
+"modificador": "ninguno",
+"objetivo": "villano",
+"origen": "ingenio"
+},
+{
+"frase": "me hago el muerto xq asi los esbirros se confian",
+"clase": "ingenio",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "ingenio"
+},
+{
+"frase": "le echo somnifero al vino d los guardias xq asi pasamos",
+"clase": "ingenio",
+"modificador": "ninguno",
+"objetivo": "guardian",
+"origen": "ingenio"
+},
+{
+"frase": "le propongo al villano un trato q no puede rechazar",
+"clase": "ingenio",
+"modificador": "ninguno",
+"objetivo": "villano",
+"origen": "ingenio"
+},
+{
+"frase": "sin ayuda desvio el rio pa inundar su campamento",
+"clase": "ingenio",
+"modificador": "dificil",
+"objetivo": "enemigos",
+"origen": "ingenio"
+},
+{
+"frase": "mando a mi aliado d senuelo y yo entro x atras con cautela",
+"clase": "ingenio",
+"modificador": "facil",
+"objetivo": "aliado",
+"origen": "ingenio"
+},
+{
+"frase": "finjo rendirme pa q bajen la guardia",
+"clase": "ingenio",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "ingenio"
+},
+{
+"frase": "hago trampa en las cartas con el guardian pa ganarle el paso",
+"clase": "ingenio",
+"modificador": "ninguno",
+"objetivo": "guardian",
+"origen": "ingenio"
+},
+{
+"frase": "cargo los dados y apuesto el amuleto jaja",
+"clase": "ingenio",
+"modificador": "ninguno",
+"objetivo": "objeto",
+"origen": "ingenio"
+},
+{
+"frase": "tenso una cuerda a ras d suelo descalzo pa q tropiecen",
+"clase": "ingenio",
+"modificador": "dificil",
+"objetivo": "enemigos",
+"origen": "ingenio"
+},
+{
+"frase": "tb me pongo barba falsa y un sombrero pa q no me reconozcan",
+"clase": "ingenio",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "ingenio"
+},
+{
+"frase": "regateo con el mercader hasta sacarle la espada a mitad d precio",
+"clase": "ingenio",
+"modificador": "ninguno",
+"objetivo": "objeto",
+"origen": "ingenio"
+},
+{
+"frase": "invento q soy sobrino del rey",
+"clase": "ingenio",
+"modificador": "ninguno",
+"objetivo": "guardian",
+"origen": "ingenio"
+},
+{
+"frase": "dejo una pista falsa pa q me busquen en el norte",
+"clase": "ingenio",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "ingenio"
+},
+{
+"frase": "los guio al pantano pa q se atasquen",
+"clase": "ingenio",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "ingenio"
+},
+{
+"frase": "me infiltro con cautela en el castillo en la caravana d comida",
+"clase": "ingenio",
+"modificador": "facil",
+"objetivo": "lugar",
+"origen": "ingenio"
+},
+{
+"frase": "con cuidado reescribo el mensaje del heraldo antes d q lo entregue",
+"clase": "ingenio",
+"modificador": "facil",
+"objetivo": "heraldo",
+"origen": "ingenio"
+},
+{
+"frase": "suelto los caballos pa armar lio y escaparnos",
+"clase": "ingenio",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "ingenio"
+},
+{
+"frase": "le doy una moneda falsa al guardia q ni se entera",
+"clase": "ingenio",
+"modificador": "ninguno",
+"objetivo": "guardian",
+"origen": "ingenio"
+},
+{
+"frase": "siembro mentiras xq asi el villano se pelea con sus secuaces",
+"clase": "ingenio",
+"modificador": "ninguno",
+"objetivo": "villano",
+"origen": "ingenio"
+},
+{
+"frase": "deslumbro a los guardias con un espejo",
+"clase": "ingenio",
+"modificador": "ninguno",
+"objetivo": "guardian",
+"origen": "ingenio"
+},
+{
+"frase": "engatuso al heraldo pa q me deje leer el pergamino",
+"clase": "ingenio",
+"modificador": "ninguno",
+"objetivo": "heraldo",
+"origen": "ingenio"
+},
+{
+"frase": "sin ayuda organizo una enboscada con rocas sueltas en la cuesta",
+"clase": "ingenio",
+"modificador": "dificil",
+"objetivo": "enemigos",
+"origen": "ingenio"
+},
+{
+"frase": "a ciegas aflojo los tornillos del trono antes d q llegue el villano",
+"clase": "ingenio",
+"modificador": "dificil",
+"objetivo": "villano",
+"origen": "ingenio"
+},
+{
+"frase": "conbenzo a mi aliado d q finja ser el prisionero",
+"clase": "ingenio",
+"modificador": "ninguno",
+"objetivo": "aliado",
+"origen": "ingenio"
+},
+{
+"frase": "le tiendo una celada al villano con el tesoro d cebo",
+"clase": "ingenio",
+"modificador": "ninguno",
+"objetivo": "villano",
+"origen": "ingenio"
+},
+{
+"frase": "bluffeo con una espada d madera pintada",
+"clase": "ingenio",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "ingenio"
+},
+{
+"frase": "en silencio mezclo pimienta en la sopa d los esbirros pa q estornuden",
+"clase": "ingenio",
+"modificador": "facil",
+"objetivo": "enemigos",
+"origen": "ingenio"
+},
+{
+"frase": "atasco la chimenea pa sacarlos con el humo",
+"clase": "ingenio",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "ingenio"
+},
+{
+"frase": "simulo ser el mensajero del villano",
+"clase": "ingenio",
+"modificador": "ninguno",
+"objetivo": "villano",
+"origen": "ingenio"
+},
+{
+"frase": "grito pidiendo ayuda falsa pa atraer a los esbirros",
+"clase": "ingenio",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "ingenio"
+},
+{
+"frase": "monto un teatrillo con mi aliado pa q piensen q peleamos",
+"clase": "ingenio",
+"modificador": "ninguno",
+"objetivo": "aliado",
+"origen": "ingenio"
+},
+{
+"frase": "le planto la llave del tesoro a un esbirro pa inculparlo",
+"clase": "ingenio",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "ingenio"
+},
+{
+"frase": "muevo las senales del camino pa q se pierdan",
+"clase": "ingenio",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "ingenio"
+},
+{
+"frase": "cavo un hoyo con una mano y lo disimulo con ramas",
+"clase": "ingenio",
+"modificador": "dificil",
+"objetivo": "lugar",
+"origen": "ingenio"
+},
+{
+"frase": "distraigo al carcelero con una pregunta tonta y le cambio las llaves x unas falsas",
+"clase": "ingenio",
+"modificador": "ninguno",
+"objetivo": "guardian",
+"origen": "ingenio"
+},
+{
+"frase": "le ofrezco monedas al esbirro mas flojo pa q me cubra",
+"clase": "ingenio",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "ingenio"
+},
+{
+"frase": "provoco un derrumbe con la palanca pa cortarles el paso",
+"clase": "ingenio",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "ingenio"
+},
+{
+"frase": "me valgo d la niebla pa q se ataquen entre ellos",
+"clase": "ingenio",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "ingenio"
+},
+{
+"frase": "invoco el nombre del mentor pa q se crean mi mentira",
+"clase": "ingenio",
+"modificador": "ninguno",
+"objetivo": "mentor",
+"origen": "ingenio"
+},
+{
+"frase": "con calma engrupo a los esbirros diciendo q el villano los llama",
+"clase": "ingenio",
+"modificador": "facil",
+"objetivo": "enemigos",
+"origen": "ingenio"
+},
+{
+"frase": "Ni loco me escondo: le caigo encima al villano a mandobles.",
+"clase": "valor",
+"modificador": "ninguno",
+"objetivo": "villano",
+"origen": "mixtas"
+},
+{
+"frase": "Calculo el ángulo, corto la cuerda del candelabro y se lo dejo caer a los esbirros.",
+"clase": "ingenio",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "mixtas"
+},
+{
+"frase": "Ayúdale al mentor a ponerse de pie y véndale la herida con mi capa.",
+"clase": "compasion",
+"modificador": "ninguno",
+"objetivo": "mentor",
+"origen": "mixtas"
+},
+{
+"frase": "Me escabullo entre las sombras del corredor, rozando la pared, sin hacer ruido.",
+"clase": "sombra",
+"modificador": "facil",
+"objetivo": "lugar",
+"origen": "mixtas"
+},
+{
+"frase": "No sé, wey, esto me huele raro; mejor lo pienso dos veces antes de seguir.",
+"clase": "duda",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "mixtas"
+},
+{
+"frase": "Con paciencia, anoto mentalmente cuántos vigilantes hay, cada cuánto rotan y por dónde patrullan.",
+"clase": "observar",
+"modificador": "facil",
+"objetivo": "enemigos",
+"origen": "mixtas"
+},
+{
+"frase": "Le pregunto al mentor qué carajos se supone que debo hacer ahora.",
+"clase": "hablar",
+"modificador": "ninguno",
+"objetivo": "mentor",
+"origen": "mixtas"
+},
+{
+"frase": "Me pego una siesta bajo el árbol mientras se calma todo.",
+"clase": "descansar",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "mixtas"
+},
+{
+"frase": "Avanzo en silencio rumbo al norte siguiendo el río hasta el puente.",
+"clase": "moverse",
+"modificador": "facil",
+"objetivo": "lugar",
+"origen": "mixtas"
+},
+{
+"frase": "Si el primero me embiste, lo parto en dos y sigo con el siguiente.",
+"clase": "valor",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "mixtas"
+},
+{
+"frase": "Tiendo una trampa de aceite y soga en el pasillo antes de que lleguen.",
+"clase": "ingenio",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "mixtas"
+},
+{
+"frase": "Le perdono la vida al esbirro herido, aunque me sobren motivos para rematarlo.",
+"clase": "compasion",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "mixtas"
+},
+{
+"frase": "Le choreo la llave al guardián mientras ronca como un oso.",
+"clase": "sombra",
+"modificador": "ninguno",
+"objetivo": "guardian",
+"origen": "mixtas"
+},
+{
+"frase": "Me quedo parado frente al umbral, sin decidirme, con el corazón en la boca.",
+"clase": "duda",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "mixtas"
+},
+{
+"frase": "Inspecciono el arma con lupa, buscando grietas, marcas o inscripciones raras.",
+"clase": "observar",
+"modificador": "ninguno",
+"objetivo": "objeto",
+"origen": "mixtas"
+},
+{
+"frase": "Parlamento con el villano para proponerle un trato antes de que corra sangre.",
+"clase": "hablar",
+"modificador": "ninguno",
+"objetivo": "villano",
+"origen": "mixtas"
+},
+{
+"frase": "Me tumbo junto al fuego, me saco las botas y dejo que el cuerpo se afloje.",
+"clase": "descansar",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "mixtas"
+},
+{
+"frase": "Salgo del bosque caminando con los ojos cerrados.",
+"clase": "moverse",
+"modificador": "dificil",
+"objetivo": "lugar",
+"origen": "mixtas"
+},
+{
+"frase": "Me le planto al guardián y lo reto a duelo, que sea lo que Dios quiera.",
+"clase": "valor",
+"modificador": "ninguno",
+"objetivo": "guardian",
+"origen": "mixtas"
+},
+{
+"frase": "Con cuidado improviso una palanca con una rama y levanto la losa del mecanismo.",
+"clase": "ingenio",
+"modificador": "facil",
+"objetivo": "lugar",
+"origen": "mixtas"
+},
+{
+"frase": "Me apiado del villano caído y le tiendo la mano en vez de rematarlo.",
+"clase": "compasion",
+"modificador": "ninguno",
+"objetivo": "villano",
+"origen": "mixtas"
+},
+{
+"frase": "Me camuflo entre la gente con la capucha calada para que nadie me reconozca.",
+"clase": "sombra",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "mixtas"
+},
+{
+"frase": "¿Y si el mentor me está mintiendo? No me cierra nada de todo esto.",
+"clase": "duda",
+"modificador": "ninguno",
+"objetivo": "mentor",
+"origen": "mixtas"
+},
+{
+"frase": "Escudriño las paredes de la sala en busca de palancas o pasadizos ocultos.",
+"clase": "observar",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "mixtas"
+},
+{
+"frase": "Charlo largo y tendido con el heraldo sobre lo que vio en el camino.",
+"clase": "hablar",
+"modificador": "ninguno",
+"objetivo": "heraldo",
+"origen": "mixtas"
+},
+{
+"frase": "Acampo aquí esta noche, repongo energías y retomo todo mañana.",
+"clase": "descansar",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "mixtas"
+},
+{
+"frase": "Me mando para la montaña por el sendero de las cabras.",
+"clase": "moverse",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "mixtas"
+},
+{
+"frase": "Me trenzo a trompadas con los esbirros, sin arma ni escudo, a lo macho.",
+"clase": "valor",
+"modificador": "dificil",
+"objetivo": "enemigos",
+"origen": "mixtas"
+},
+{
+"frase": "Sin ayuda, mido el puente y lo serrucho a medias para que ceda bajo los esbirros.",
+"clase": "ingenio",
+"modificador": "dificil",
+"objetivo": "enemigos",
+"origen": "mixtas"
+},
+{
+"frase": "Le doy mi último trago de agua al heraldo, que se ve fatal.",
+"clase": "compasion",
+"modificador": "ninguno",
+"objetivo": "heraldo",
+"origen": "mixtas"
+},
+{
+"frase": "Apago la antorcha de un soplido y me fundo con la oscuridad.",
+"clase": "sombra",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "mixtas"
+},
+{
+"frase": "Titubeo con la mano en el pomo, sin saber si abrir o dar media vuelta.",
+"clase": "duda",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "mixtas"
+},
+{
+"frase": "Aguzo el oído para captar de qué hablan los esbirros tras la puerta.",
+"clase": "observar",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "mixtas"
+},
+{
+"frase": "Le saco información a mi aliado a punta de preguntas, hasta el último detalle.",
+"clase": "hablar",
+"modificador": "ninguno",
+"objetivo": "aliado",
+"origen": "mixtas"
+},
+{
+"frase": "Me siento a recobrar el aliento y a tomar agüita, que vengo hecho polvo.",
+"clase": "descansar",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "mixtas"
+},
+{
+"frase": "Trepo la muralla agarrándome de las enredaderas, con una sola mano.",
+"clase": "moverse",
+"modificador": "dificil",
+"objetivo": "lugar",
+"origen": "mixtas"
+},
+{
+"frase": "No huyo, me quedo a pelear aunque me tiemblen las rodillas.",
+"clase": "valor",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "mixtas"
+},
+{
+"frase": "Si ordeno las runas de menor a mayor, la puerta debería ceder.",
+"clase": "ingenio",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "mixtas"
+},
+{
+"frase": "Consuelo al aliado, que anda hecho un manojo de nervios, y le doy palmaditas.",
+"clase": "compasion",
+"modificador": "ninguno",
+"objetivo": "aliado",
+"origen": "mixtas"
+},
+{
+"frase": "Me agazapo tras las cajas hasta que el esbirro me dé la espalda y me cuelo.",
+"clase": "sombra",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "mixtas"
+},
+{
+"frase": "Algo no me cuadra con el heraldo; desconfío de cada palabra que soltó.",
+"clase": "duda",
+"modificador": "ninguno",
+"objetivo": "heraldo",
+"origen": "mixtas"
+},
+{
+"frase": "Con calma, examino al guardián de arriba abajo para hallar su punto débil.",
+"clase": "observar",
+"modificador": "facil",
+"objetivo": "guardian",
+"origen": "mixtas"
+},
+{
+"frase": "Le explico al guardián, con buenas razones, por qué debería dejarme cruzar.",
+"clase": "hablar",
+"modificador": "ninguno",
+"objetivo": "guardian",
+"origen": "mixtas"
+},
+{
+"frase": "Me echo una pestañita en la posada y ya mañana veo qué hago con el villano.",
+"clase": "descansar",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "mixtas"
+},
+{
+"frase": "Pego la carrera hacia la salida, que esto se va a poner feo.",
+"clase": "moverse",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "mixtas"
+},
+{
+"frase": "Atácalo ya, carajo, antes de que llame a sus esbirros.",
+"clase": "valor",
+"modificador": "ninguno",
+"objetivo": "villano",
+"origen": "mixtas"
+},
+{
+"frase": "Armo un plan: señuelo por el flanco, humo en la entrada, salida por el desagüe.",
+"clase": "ingenio",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "mixtas"
+},
+{
+"frase": "Reparto mi ración entre los heridos, aunque yo también tenga el estómago vacío.",
+"clase": "compasion",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "mixtas"
+},
+{
+"frase": "Le levanto el monedero al heraldo con dos dedos, sin que note nada.",
+"clase": "sombra",
+"modificador": "ninguno",
+"objetivo": "heraldo",
+"origen": "mixtas"
+},
+{
+"frase": "Me rasco la cabeza dudando si vale la pena o me estoy metiendo en un lío.",
+"clase": "duda",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "mixtas"
+},
+{
+"frase": "A oscuras y sin lámpara, trato de distinguir siluetas en el fondo de la cueva.",
+"clase": "observar",
+"modificador": "dificil",
+"objetivo": "lugar",
+"origen": "mixtas"
+},
+{
+"frase": "No los ataco: prefiero negociar con los esbirros y ver qué quieren.",
+"clase": "hablar",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "mixtas"
+},
+{
+"frase": "Me recuesto despacito sobre el pasto y dejo la mente en blanco un rato.",
+"clase": "descansar",
+"modificador": "facil",
+"objetivo": "lugar",
+"origen": "mixtas"
+},
+{
+"frase": "Cruzo el río a nado aunque venga helado, para llegar a la otra orilla.",
+"clase": "moverse",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "mixtas"
+},
+{
+"frase": "Medio borracho, le hago frente al villano con la espada en alto y sin pestañear.",
+"clase": "valor",
+"modificador": "dificil",
+"objetivo": "villano",
+"origen": "mixtas"
+},
+{
+"frase": "Ni peleo ni huyo: uso el espejo para encandilar al guardián con el reflejo del sol.",
+"clase": "ingenio",
+"modificador": "ninguno",
+"objetivo": "guardian",
+"origen": "mixtas"
+},
+{
+"frase": "Despacito y con ternura, le saco la flecha del hombro a mi aliado.",
+"clase": "compasion",
+"modificador": "facil",
+"objetivo": "aliado",
+"origen": "mixtas"
+},
+{
+"frase": "Descalzo y a hurtadillas me meto en la torre del villano a birlar el tesoro.",
+"clase": "sombra",
+"modificador": "dificil",
+"objetivo": "objeto",
+"origen": "mixtas"
+},
+{
+"frase": "Me fijo en cada trazo del mapa que traigo en la mochila.",
+"clase": "observar",
+"modificador": "ninguno",
+"objetivo": "objeto",
+"origen": "mixtas"
+},
+{
+"frase": "Con mucha calma le pido al mentor que me explique lo del amuleto.",
+"clase": "hablar",
+"modificador": "facil",
+"objetivo": "mentor",
+"origen": "mixtas"
+},
+{
+"frase": "Hago run hasta el pueblo más cercano",
+"clase": "moverse",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "moverse"
+},
+{
+"frase": "Fast travel a la entrada del bosque",
+"clase": "moverse",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "moverse"
+},
+{
+"frase": "Sigo el trail hasta las montañas del norte",
+"clase": "moverse",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "moverse"
+},
+{
+"frase": "Me tiro un sprint hasta la puerta de la ciudad",
+"clase": "moverse",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "moverse"
+},
+{
+"frase": "Salgo del bosque caminando a ciegas",
+"clase": "moverse",
+"modificador": "dificil",
+"objetivo": "lugar",
+"origen": "moverse"
+},
+{
+"frase": "Voy directo al waypoint del mapa",
+"clase": "moverse",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "moverse"
+},
+{
+"frase": "Hago un dash hacia la salida",
+"clase": "moverse",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "moverse"
+},
+{
+"frase": "Me trepo al muro de la fortaleza",
+"clase": "moverse",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "moverse"
+},
+{
+"frase": "Bajo por la escalera hasta el sótano",
+"clase": "moverse",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "moverse"
+},
+{
+"frase": "Cruzo el puente colgante",
+"clase": "moverse",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "moverse"
+},
+{
+"frase": "Me acerco al viejo mentor",
+"clase": "moverse",
+"modificador": "ninguno",
+"objetivo": "mentor",
+"origen": "moverse"
+},
+{
+"frase": "Me alejo del villano a toda pastilla",
+"clase": "moverse",
+"modificador": "ninguno",
+"objetivo": "villano",
+"origen": "moverse"
+},
+{
+"frase": "Hago backtrack hasta la taberna",
+"clase": "moverse",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "moverse"
+},
+{
+"frase": "Avanzo por el pasillo en silencio",
+"clase": "moverse",
+"modificador": "facil",
+"objetivo": "lugar",
+"origen": "moverse"
+},
+{
+"frase": "Me mando a la torre del norte",
+"clase": "moverse",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "moverse"
+},
+{
+"frase": "Escalo la colina hasta la cima",
+"clase": "moverse",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "moverse"
+},
+{
+"frase": "Me largo de aquí rumbo al este",
+"clase": "moverse",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "moverse"
+},
+{
+"frase": "Atravieso el río a nado",
+"clase": "moverse",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "moverse"
+},
+{
+"frase": "Vuelvo al campamento base con calma",
+"clase": "moverse",
+"modificador": "facil",
+"objetivo": "lugar",
+"origen": "moverse"
+},
+{
+"frase": "Entro al dungeon por la puerta lateral",
+"clase": "moverse",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "moverse"
+},
+{
+"frase": "Camino de espaldas hasta la salida",
+"clase": "moverse",
+"modificador": "dificil",
+"objetivo": "lugar",
+"origen": "moverse"
+},
+{
+"frase": "Me acerco al aliado que está junto a la fogata",
+"clase": "moverse",
+"modificador": "ninguno",
+"objetivo": "aliado",
+"origen": "moverse"
+},
+{
+"frase": "Me meto por el callejón hasta el muelle",
+"clase": "moverse",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "moverse"
+},
+{
+"frase": "Cruzo el umbral y paso al otro lado",
+"clase": "moverse",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "moverse"
+},
+{
+"frase": "Descalzo, cruzo el desierto hacia la ciudadela",
+"clase": "moverse",
+"modificador": "dificil",
+"objetivo": "lugar",
+"origen": "moverse"
+},
+{
+"frase": "Hago speedrun por la selva hasta el templo",
+"clase": "moverse",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "moverse"
+},
+{
+"frase": "Salgo pitando de la taberna",
+"clase": "moverse",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "moverse"
+},
+{
+"frase": "Me teletransporto al piso de arriba",
+"clase": "moverse",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "moverse"
+},
+{
+"frase": "Remonto el río hasta su nacimiento",
+"clase": "moverse",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "moverse"
+},
+{
+"frase": "Sigo al heraldo hasta el castillo",
+"clase": "moverse",
+"modificador": "ninguno",
+"objetivo": "heraldo",
+"origen": "moverse"
+},
+{
+"frase": "Camino con calma hacia el santuario",
+"clase": "moverse",
+"modificador": "facil",
+"objetivo": "lugar",
+"origen": "moverse"
+},
+{
+"frase": "Pego la vuelta y regreso al pueblo",
+"clase": "moverse",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "moverse"
+},
+{
+"frase": "Rusheo hacia el portón principal",
+"clase": "moverse",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "moverse"
+},
+{
+"frase": "Me muevo con WASD hasta la puerta del fondo",
+"clase": "moverse",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "moverse"
+},
+{
+"frase": "Tiro pa'l norte por el camino real",
+"clase": "moverse",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "moverse"
+},
+{
+"frase": "Me acerco al guardián del puente",
+"clase": "moverse",
+"modificador": "ninguno",
+"objetivo": "guardian",
+"origen": "moverse"
+},
+{
+"frase": "Me dirijo hacia donde brilla el tesoro",
+"clase": "moverse",
+"modificador": "ninguno",
+"objetivo": "objeto",
+"origen": "moverse"
+},
+{
+"frase": "Bajo al foso por la cuerda con una sola mano",
+"clase": "moverse",
+"modificador": "dificil",
+"objetivo": "lugar",
+"origen": "moverse"
+},
+{
+"frase": "Hago un mad dash hasta la salida de emergencia",
+"clase": "moverse",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "moverse"
+},
+{
+"frase": "Recorro el túnel de punta a punta",
+"clase": "moverse",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "moverse"
+},
+{
+"frase": "Atravieso el bosque sin armas hasta la aldea",
+"clase": "moverse",
+"modificador": "dificil",
+"objetivo": "lugar",
+"origen": "moverse"
+},
+{
+"frase": "Doy media vuelta y vuelvo por donde vine",
+"clase": "moverse",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "moverse"
+},
+{
+"frase": "Salgo de la cueva gateando",
+"clase": "moverse",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "moverse"
+},
+{
+"frase": "Me aparto de los esbirros y corro hacia el norte",
+"clase": "moverse",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "moverse"
+},
+{
+"frase": "Voy a pie hasta la ciudad vecina, nada de mounts",
+"clase": "moverse",
+"modificador": "dificil",
+"objetivo": "lugar",
+"origen": "moverse"
+},
+{
+"frase": "Subo las escaleras de la torre de dos en dos",
+"clase": "moverse",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "moverse"
+},
+{
+"frase": "Me adentro en la mazmorra",
+"clase": "moverse",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "moverse"
+},
+{
+"frase": "Atravieso la niebla rumbo al faro",
+"clase": "moverse",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "moverse"
+},
+{
+"frase": "Avanzo despacio por el sendero embarrado",
+"clase": "moverse",
+"modificador": "facil",
+"objetivo": "lugar",
+"origen": "moverse"
+},
+{
+"frase": "Deshago el camino hasta el último checkpoint",
+"clase": "moverse",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "moverse"
+},
+{
+"frase": "Me planto en casa del mentor cuanto antes",
+"clase": "moverse",
+"modificador": "ninguno",
+"objetivo": "mentor",
+"origen": "moverse"
+},
+{
+"frase": "Salto de tejado en tejado hasta la plaza",
+"clase": "moverse",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "moverse"
+},
+{
+"frase": "Cruzo el puente tambaleándome, borracho como una cuba",
+"clase": "moverse",
+"modificador": "dificil",
+"objetivo": "lugar",
+"origen": "moverse"
+},
+{
+"frase": "Entro a la ciudad por la puerta trasera",
+"clase": "moverse",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "moverse"
+},
+{
+"frase": "Camino de puntillas hasta la salida",
+"clase": "moverse",
+"modificador": "facil",
+"objetivo": "lugar",
+"origen": "moverse"
+},
+{
+"frase": "Escalo la pared de la montaña sin soga",
+"clase": "moverse",
+"modificador": "dificil",
+"objetivo": "lugar",
+"origen": "moverse"
+},
+{
+"frase": "Voy rumbo al castillo del villano",
+"clase": "moverse",
+"modificador": "ninguno",
+"objetivo": "villano",
+"origen": "moverse"
+},
+{
+"frase": "Paso al otro lado del valle",
+"clase": "moverse",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "moverse"
+},
+{
+"frase": "Echo a andar hacia la costa",
+"clase": "moverse",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "moverse"
+},
+{
+"frase": "Avanzo con cautela hasta el umbral",
+"clase": "moverse",
+"modificador": "facil",
+"objetivo": "lugar",
+"origen": "moverse"
+},
+{
+"frase": "Echo un vistazo a la sala, a ver si hay algo menos feo que el decorado",
+"clase": "observar",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "observar"
+},
+{
+"frase": "Examino la espada con lupa, no vaya a ser tan falsa como mis promesas",
+"clase": "observar",
+"modificador": "ninguno",
+"objetivo": "objeto",
+"origen": "observar"
+},
+{
+"frase": "Aguzo el oído por si el villano tropieza con su propia capa",
+"clase": "observar",
+"modificador": "ninguno",
+"objetivo": "villano",
+"origen": "observar"
+},
+{
+"frase": "Husmeo el aire a ver si huele a destino trágico",
+"clase": "observar",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "observar"
+},
+{
+"frase": "Me pongo a pensar un ratito, que dicen que es gratis",
+"clase": "observar",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "observar"
+},
+{
+"frase": "Rastreo las huellas de los esbirros, que seguro no son de zapatos",
+"clase": "observar",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "observar"
+},
+{
+"frase": "Escudriño al mentor por si lleva el manual de instrucciones escondido",
+"clase": "observar",
+"modificador": "ninguno",
+"objetivo": "mentor",
+"origen": "observar"
+},
+{
+"frase": "Repaso mentalmente lo que dijo el heraldo, aunque fuera un rollo",
+"clase": "observar",
+"modificador": "ninguno",
+"objetivo": "heraldo",
+"origen": "observar"
+},
+{
+"frase": "Fisgo por la rendija a ver qué hace el guardián",
+"clase": "observar",
+"modificador": "ninguno",
+"objetivo": "guardian",
+"origen": "observar"
+},
+{
+"frase": "Le doy un repaso visual al cofre, que no me fío ni de mi reflejo",
+"clase": "observar",
+"modificador": "ninguno",
+"objetivo": "objeto",
+"origen": "observar"
+},
+{
+"frase": "Vigilo a los esbirros desde aquí con mi mejor cara de palo",
+"clase": "observar",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "observar"
+},
+{
+"frase": "Rebusco en la memoria a ver si este tipo me suena de algo",
+"clase": "observar",
+"modificador": "ninguno",
+"objetivo": "villano",
+"origen": "observar"
+},
+{
+"frase": "Catalogo con la vista cada rincón, como si fuera a comprarlo",
+"clase": "observar",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "observar"
+},
+{
+"frase": "Atiendo al silencio a ver si el bosque me suelta algún chisme",
+"clase": "observar",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "observar"
+},
+{
+"frase": "Barro el suelo con la mirada buscando pistas, que el detective soy yo",
+"clase": "observar",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "observar"
+},
+{
+"frase": "Mido de reojo al aliado, por si me la juega",
+"clase": "observar",
+"modificador": "ninguno",
+"objetivo": "aliado",
+"origen": "observar"
+},
+{
+"frase": "Doy vueltas en la cabeza al plan, aunque no exista plan",
+"clase": "observar",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "observar"
+},
+{
+"frase": "Reparo en lo raro que es que nadie me haya atacado todavía",
+"clase": "observar",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "observar"
+},
+{
+"frase": "Oteo despacio el horizonte por si asoma algún problema nuevo",
+"clase": "observar",
+"modificador": "facil",
+"objetivo": "lugar",
+"origen": "observar"
+},
+{
+"frase": "Escruto la cara del villano a ver si le tiembla el ojo al mentir",
+"clase": "observar",
+"modificador": "ninguno",
+"objetivo": "villano",
+"origen": "observar"
+},
+{
+"frase": "Observo el entorno con calma, que nadie me paga por correr",
+"clase": "observar",
+"modificador": "facil",
+"objetivo": "lugar",
+"origen": "observar"
+},
+{
+"frase": "Olfateo el ambiente con los ojos cerrados, como un topo con ínfulas",
+"clase": "observar",
+"modificador": "dificil",
+"objetivo": "lugar",
+"origen": "observar"
+},
+{
+"frase": "Hago memoria de todo lo vivido por si se me escapó algo",
+"clase": "observar",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "observar"
+},
+{
+"frase": "Tanteo con la vista el terreno, a ver dónde esconden la trampa",
+"clase": "observar",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "observar"
+},
+{
+"frase": "Escucho en silencio, tras el muro, lo que cuchichean los esbirros",
+"clase": "observar",
+"modificador": "facil",
+"objetivo": "enemigos",
+"origen": "observar"
+},
+{
+"frase": "Contemplo el paisaje buscando algo sospechoso, que de bonito ya sé que no",
+"clase": "observar",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "observar"
+},
+{
+"frase": "Analizo las runas del arma, aunque solo entienda los dibujitos",
+"clase": "observar",
+"modificador": "ninguno",
+"objetivo": "objeto",
+"origen": "observar"
+},
+{
+"frase": "Chequeo la sala por si hay trampas, que ya me llevé un susto",
+"clase": "observar",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "observar"
+},
+{
+"frase": "Tomo nota mental de las salidas, como buen cobarde estratégico",
+"clase": "observar",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "observar"
+},
+{
+"frase": "Me pongo en plan Sherlock y busco indicios",
+"clase": "observar",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "observar"
+},
+{
+"frase": "Vigilo la entrada sin ayuda, con ojo de lince o de gato aburrido",
+"clase": "observar",
+"modificador": "dificil",
+"objetivo": "lugar",
+"origen": "observar"
+},
+{
+"frase": "Desmenuzo el mensaje del heraldo, que huele a gato encerrado",
+"clase": "observar",
+"modificador": "ninguno",
+"objetivo": "heraldo",
+"origen": "observar"
+},
+{
+"frase": "Reviso el tesoro con una sola mano, por si trae la maldición de serie",
+"clase": "observar",
+"modificador": "dificil",
+"objetivo": "objeto",
+"origen": "observar"
+},
+{
+"frase": "Rumio la situación; algo no me cuadra y quiero saber qué",
+"clase": "observar",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "observar"
+},
+{
+"frase": "Miro al mentor sin decir ni pío, a ver si se delata",
+"clase": "observar",
+"modificador": "facil",
+"objetivo": "mentor",
+"origen": "observar"
+},
+{
+"frase": "Peino el terreno con la vista en busca de emboscadas",
+"clase": "observar",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "observar"
+},
+{
+"frase": "Sondeo la penumbra con la vista a ver si algo me devuelve la mirada",
+"clase": "observar",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "observar"
+},
+{
+"frase": "Pego la oreja a la puerta con cautela, pura curiosidad profesional",
+"clase": "observar",
+"modificador": "facil",
+"objetivo": "lugar",
+"origen": "observar"
+},
+{
+"frase": "Hago inventario mental de lo que me rodea",
+"clase": "observar",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "observar"
+},
+{
+"frase": "Me rasco la barbilla pensando en el enigma, como todo sabio de feria",
+"clase": "observar",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "observar"
+},
+{
+"frase": "Vuelvo a mirar el arma por si le salió una grieta desde ayer",
+"clase": "observar",
+"modificador": "ninguno",
+"objetivo": "objeto",
+"origen": "observar"
+},
+{
+"frase": "Compruebo de reojo si alguien me sigue",
+"clase": "observar",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "observar"
+},
+{
+"frase": "Espío al guardián de espaldas, usando el reflejo de mi cuchara",
+"clase": "observar",
+"modificador": "dificil",
+"objetivo": "guardian",
+"origen": "observar"
+},
+{
+"frase": "Desde el tejado, avizoro los movimientos del enemigo",
+"clase": "observar",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "observar"
+},
+{
+"frase": "Me fijo en los detalles que otros pasarían por alto, genio que es uno",
+"clase": "observar",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "observar"
+},
+{
+"frase": "Me devano los sesos intentando adivinar qué trama el villano",
+"clase": "observar",
+"modificador": "ninguno",
+"objetivo": "villano",
+"origen": "observar"
+},
+{
+"frase": "Curioseo por los alrededores a ver qué encuentro",
+"clase": "observar",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "observar"
+},
+{
+"frase": "Recorro con la vista las paredes, despacio, no sea que muerdan",
+"clase": "observar",
+"modificador": "facil",
+"objetivo": "lugar",
+"origen": "observar"
+},
+{
+"frase": "Tomo el pulso a la situación sin mover un dedo",
+"clase": "observar",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "observar"
+},
+{
+"frase": "Trato de recordar dónde vi antes este símbolo",
+"clase": "observar",
+"modificador": "ninguno",
+"objetivo": "objeto",
+"origen": "observar"
+},
+{
+"frase": "Pongo la lupa en el sello del tesoro, a ver si dice 'maldito'",
+"clase": "observar",
+"modificador": "ninguno",
+"objetivo": "objeto",
+"origen": "observar"
+},
+{
+"frase": "Reflexiono sobre las palabras del mentor, tan crípticas que dan risa",
+"clase": "observar",
+"modificador": "ninguno",
+"objetivo": "mentor",
+"origen": "observar"
+},
+{
+"frase": "Con cautela, no pierdo de vista al aliado por si se cambia de bando",
+"clase": "observar",
+"modificador": "facil",
+"objetivo": "aliado",
+"origen": "observar"
+},
+{
+"frase": "Miro las huellas de barro, a ver si el villano calza del 46",
+"clase": "observar",
+"modificador": "ninguno",
+"objetivo": "villano",
+"origen": "observar"
+},
+{
+"frase": "Hago de centinela sin armas ni ayuda; mirar, solo mirar",
+"clase": "observar",
+"modificador": "dificil",
+"objetivo": "lugar",
+"origen": "observar"
+},
+{
+"frase": "Escucho con atención el zumbido de este sitio, que no suena normal",
+"clase": "observar",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "observar"
+},
+{
+"frase": "Me detengo a mirar los pájaros: si huyen, malo",
+"clase": "observar",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "observar"
+},
+{
+"frase": "Medio borracho, intento recordar el rostro del villano",
+"clase": "observar",
+"modificador": "dificil",
+"objetivo": "villano",
+"origen": "observar"
+},
+{
+"frase": "Releo despacio la nota del heraldo, buscando la letra pequeña",
+"clase": "observar",
+"modificador": "facil",
+"objetivo": "heraldo",
+"origen": "observar"
+},
+{
+"frase": "Descalzo y todo, inspecciono el techo por si hay cámaras",
+"clase": "observar",
+"modificador": "dificil",
+"objetivo": "lugar",
+"origen": "observar"
+},
+{
+"frase": "Quisiera quedarme con todo el tesoro y no repartirlo con mis compañeros.",
+"clase": "sombra",
+"modificador": "ninguno",
+"objetivo": "objeto",
+"origen": "sombra"
+},
+{
+"frase": "Le ruego que me entregue su bolsa de monedas, de lo contrario lamentará haberme conocido.",
+"clase": "sombra",
+"modificador": "ninguno",
+"objetivo": "guardian",
+"origen": "sombra"
+},
+{
+"frase": "Voy a dejar abandonado al aliado herido, pues retrasa mi huida.",
+"clase": "sombra",
+"modificador": "ninguno",
+"objetivo": "aliado",
+"origen": "sombra"
+},
+{
+"frase": "Empujaré a mi compañero hacia los esbirros para que me sirva de escudo.",
+"clase": "sombra",
+"modificador": "ninguno",
+"objetivo": "aliado",
+"origen": "sombra"
+},
+{
+"frase": "Con sigilo, sustraeré la espada del mentor mientras duerme.",
+"clase": "sombra",
+"modificador": "facil",
+"objetivo": "mentor",
+"origen": "sombra"
+},
+{
+"frase": "Amenazaré al guardián con revelar sus secretos si no me permite pasar.",
+"clase": "sombra",
+"modificador": "ninguno",
+"objetivo": "guardian",
+"origen": "sombra"
+},
+{
+"frase": "Chantajearé al heraldo con lo que sé de su pasado para que me pague.",
+"clase": "sombra",
+"modificador": "ninguno",
+"objetivo": "heraldo",
+"origen": "sombra"
+},
+{
+"frase": "Traicionaré al mentor entregándolo al villano a cambio de una recompensa.",
+"clase": "sombra",
+"modificador": "ninguno",
+"objetivo": "mentor",
+"origen": "sombra"
+},
+{
+"frase": "Procederé a saquear las pertenencias de los caídos antes de que lleguen los demás.",
+"clase": "sombra",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "sombra"
+},
+{
+"frase": "Me aprovecharé de la bondad de mi aliado para que cargue con todo el peso.",
+"clase": "sombra",
+"modificador": "ninguno",
+"objetivo": "aliado",
+"origen": "sombra"
+},
+{
+"frase": "Engañaré a los aldeanos para quedarme con sus ahorros.",
+"clase": "sombra",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "sombra"
+},
+{
+"frase": "Abandonaré a mis amigos en plena tormenta y huiré con el botín.",
+"clase": "sombra",
+"modificador": "ninguno",
+"objetivo": "aliado",
+"origen": "sombra"
+},
+{
+"frase": "Me quedaré con la parte del botín que corresponde a mis compañeros.",
+"clase": "sombra",
+"modificador": "ninguno",
+"objetivo": "objeto",
+"origen": "sombra"
+},
+{
+"frase": "Le arrebataré el amuleto al mentor aunque tenga que lastimarlo.",
+"clase": "sombra",
+"modificador": "ninguno",
+"objetivo": "mentor",
+"origen": "sombra"
+},
+{
+"frase": "Con cuidado, registraré los bolsillos del guardián dormido y me llevaré todo.",
+"clase": "sombra",
+"modificador": "facil",
+"objetivo": "guardian",
+"origen": "sombra"
+},
+{
+"frase": "Utilizaré a la muchacha del pueblo como escudo humano frente a los esbirros.",
+"clase": "sombra",
+"modificador": "ninguno",
+"objetivo": "aliado",
+"origen": "sombra"
+},
+{
+"frase": "Ofreceré a mi aliado como moneda de cambio al villano para salvar mi pellejo.",
+"clase": "sombra",
+"modificador": "ninguno",
+"objetivo": "villano",
+"origen": "sombra"
+},
+{
+"frase": "Pediré dinero al heraldo bajo falsas promesas y jamás se lo devolveré.",
+"clase": "sombra",
+"modificador": "ninguno",
+"objetivo": "heraldo",
+"origen": "sombra"
+},
+{
+"frase": "Me llevaré el tesoro y dejaré a todos los demás sin nada.",
+"clase": "sombra",
+"modificador": "ninguno",
+"objetivo": "objeto",
+"origen": "sombra"
+},
+{
+"frase": "Dejaré tirado al mentor en el camino, porque ya no me resulta de utilidad.",
+"clase": "sombra",
+"modificador": "ninguno",
+"objetivo": "mentor",
+"origen": "sombra"
+},
+{
+"frase": "Obligaré al guardián, bajo amenaza de muerte, a que me abra la puerta.",
+"clase": "sombra",
+"modificador": "ninguno",
+"objetivo": "guardian",
+"origen": "sombra"
+},
+{
+"frase": "Con delicadeza, hurtaré la bolsa de mi aliado mientras descansa junto a la hoguera.",
+"clase": "sombra",
+"modificador": "facil",
+"objetivo": "aliado",
+"origen": "sombra"
+},
+{
+"frase": "Estafaré a los mercaderes vendiéndoles un mapa falso a precio de oro.",
+"clase": "sombra",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "sombra"
+},
+{
+"frase": "Exigiré al heraldo una compensación económica o difundiré rumores sobre su honra.",
+"clase": "sombra",
+"modificador": "ninguno",
+"objetivo": "heraldo",
+"origen": "sombra"
+},
+{
+"frase": "Vaciaré los bolsillos del herido sin el menor remordimiento.",
+"clase": "sombra",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "sombra"
+},
+{
+"frase": "Cobraré una fortuna a mi aliado por mi ayuda, aprovechando su desesperación.",
+"clase": "sombra",
+"modificador": "ninguno",
+"objetivo": "aliado",
+"origen": "sombra"
+},
+{
+"frase": "Soltaré la cuerda de mi compañero para aligerar mi propio peso.",
+"clase": "sombra",
+"modificador": "ninguno",
+"objetivo": "aliado",
+"origen": "sombra"
+},
+{
+"frase": "Mentiré al mentor para quedarme con la recompensa que le corresponde a él.",
+"clase": "sombra",
+"modificador": "ninguno",
+"objetivo": "mentor",
+"origen": "sombra"
+},
+{
+"frase": "Enfrentaré a mis compañeros entre sí para llevarme yo todo el oro.",
+"clase": "sombra",
+"modificador": "ninguno",
+"objetivo": "aliado",
+"origen": "sombra"
+},
+{
+"frase": "Me apropiaré del don que el mentor reservaba para otra persona.",
+"clase": "sombra",
+"modificador": "ninguno",
+"objetivo": "objeto",
+"origen": "sombra"
+},
+{
+"frase": "Intimidaré a los vecinos con mi arma hasta que me entreguen sus provisiones.",
+"clase": "sombra",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "sombra"
+},
+{
+"frase": "Sacrificaré a mi aliado con tal de salvarme yo.",
+"clase": "sombra",
+"modificador": "ninguno",
+"objetivo": "aliado",
+"origen": "sombra"
+},
+{
+"frase": "Despojaré de sus joyas a los difuntos del salón.",
+"clase": "sombra",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "sombra"
+},
+{
+"frase": "Venderé la ubicación del refugio al villano a cambio de oro.",
+"clase": "sombra",
+"modificador": "ninguno",
+"objetivo": "villano",
+"origen": "sombra"
+},
+{
+"frase": "Mantendré en secreto el hallazgo para disfrutar yo solo de la riqueza.",
+"clase": "sombra",
+"modificador": "ninguno",
+"objetivo": "objeto",
+"origen": "sombra"
+},
+{
+"frase": "Aprovecharé que el heraldo está enfermo para exigirle su fortuna.",
+"clase": "sombra",
+"modificador": "ninguno",
+"objetivo": "heraldo",
+"origen": "sombra"
+},
+{
+"frase": "Dejaré a los niños del poblado a su suerte, pues mi seguridad es lo primero.",
+"clase": "sombra",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "sombra"
+},
+{
+"frase": "Tomaré prestado sin permiso el caballo del mentor y no pienso devolverlo.",
+"clase": "sombra",
+"modificador": "ninguno",
+"objetivo": "mentor",
+"origen": "sombra"
+},
+{
+"frase": "Amenazaré con incendiar la aldea si no me entregan lo que pido.",
+"clase": "sombra",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "sombra"
+},
+{
+"frase": "En silencio, sustraeré las monedas de la caja del heraldo.",
+"clase": "sombra",
+"modificador": "facil",
+"objetivo": "heraldo",
+"origen": "sombra"
+},
+{
+"frase": "Con toda calma, abandonaré a mis compañeros dentro de la cueva.",
+"clase": "sombra",
+"modificador": "facil",
+"objetivo": "aliado",
+"origen": "sombra"
+},
+{
+"frase": "Aun sin armas, amenazaré al guardián con delatarlo si no me deja cruzar.",
+"clase": "sombra",
+"modificador": "dificil",
+"objetivo": "guardian",
+"origen": "sombra"
+},
+{
+"frase": "Con una sola mano, arrebataré el tesoro al heraldo.",
+"clase": "sombra",
+"modificador": "dificil",
+"objetivo": "heraldo",
+"origen": "sombra"
+},
+{
+"frase": "Descalzo como estoy, huiré con el botín dejando atrás a mis amigos.",
+"clase": "sombra",
+"modificador": "dificil",
+"objetivo": "aliado",
+"origen": "sombra"
+},
+{
+"frase": "A ciegas, tantearé el suelo para despojar a los caídos de sus pertenencias.",
+"clase": "sombra",
+"modificador": "dificil",
+"objetivo": "lugar",
+"origen": "sombra"
+},
+{
+"frase": "Sin ayuda de nadie, me adueñaré de todo el botín.",
+"clase": "sombra",
+"modificador": "dificil",
+"objetivo": "objeto",
+"origen": "sombra"
+},
+{
+"frase": "Aunque haya bebido más de la cuenta, chantajearé al mentor para sacarle dinero.",
+"clase": "sombra",
+"modificador": "dificil",
+"objetivo": "mentor",
+"origen": "sombra"
+},
+{
+"frase": "Dándole la espalda, abandonaré al aliado a merced de los esbirros.",
+"clase": "sombra",
+"modificador": "dificil",
+"objetivo": "aliado",
+"origen": "sombra"
+},
+{
+"frase": "Con cautela, iré sustrayendo monedas de los puestos del mercado.",
+"clase": "sombra",
+"modificador": "facil",
+"objetivo": "lugar",
+"origen": "sombra"
+},
+{
+"frase": "Con cuidado, envenenaré la copa de mi aliado para quedarme con su parte.",
+"clase": "sombra",
+"modificador": "facil",
+"objetivo": "aliado",
+"origen": "sombra"
+},
+{
+"frase": "Delataré a mi aliado ante el villano para obtener su favor.",
+"clase": "sombra",
+"modificador": "ninguno",
+"objetivo": "villano",
+"origen": "sombra"
+},
+{
+"frase": "Pienso timar al guardián prometiéndole un pago que nunca recibirá.",
+"clase": "sombra",
+"modificador": "ninguno",
+"objetivo": "guardian",
+"origen": "sombra"
+},
+{
+"frase": "Dejaré que mis compañeros caigan en la trampa mientras yo me quedo con el tesoro.",
+"clase": "sombra",
+"modificador": "ninguno",
+"objetivo": "aliado",
+"origen": "sombra"
+},
+{
+"frase": "Presionaré al mentor con amenazas hasta que me entregue todos sus ahorros.",
+"clase": "sombra",
+"modificador": "ninguno",
+"objetivo": "mentor",
+"origen": "sombra"
+},
+{
+"frase": "Haré que mi aliado cargue con la culpa de mi fechoría.",
+"clase": "sombra",
+"modificador": "ninguno",
+"objetivo": "aliado",
+"origen": "sombra"
+},
+{
+"frase": "Despacio, para no levantar sospechas, desvalijaré la casa del mentor mientras está ausente.",
+"clase": "sombra",
+"modificador": "facil",
+"objetivo": "mentor",
+"origen": "sombra"
+},
+{
+"frase": "Pisotearé sin piedad al enemigo caído y le quitaré hasta el último centavo.",
+"clase": "sombra",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "sombra"
+},
+{
+"frase": "Me esconderé detrás de mi aliado y lo dejaré recibir todos los golpes.",
+"clase": "sombra",
+"modificador": "ninguno",
+"objetivo": "aliado",
+"origen": "sombra"
+},
+{
+"frase": "Me guardaré el dinero de la expedición y diré a los demás que se perdió.",
+"clase": "sombra",
+"modificador": "ninguno",
+"objetivo": "objeto",
+"origen": "sombra"
+},
+{
+"frase": "Negaré el agua al viajero sediento para quedármela toda yo.",
+"clase": "sombra",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "sombra"
+},
+{
+"frase": "Cargo con el hombro contra el esbirro más cercano hasta mandarlo al suelo",
+"clase": "valor",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "valor"
+},
+{
+"frase": "Desenvaino mi arma y me abalanzo sobre el villano sin pensármelo dos veces",
+"clase": "valor",
+"modificador": "ninguno",
+"objetivo": "villano",
+"origen": "valor"
+},
+{
+"frase": "Me planto ante el guardián, firme como un roble, sin ceder ni un palmo",
+"clase": "valor",
+"modificador": "ninguno",
+"objetivo": "guardian",
+"origen": "valor"
+},
+{
+"frase": "Le suelto un mamporro al primer esbirro que se me acerca",
+"clase": "valor",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "valor"
+},
+{
+"frase": "Echo abajo la puerta atrancada a patadas hasta que los goznes revientan",
+"clase": "valor",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "valor"
+},
+{
+"frase": "Aguanto el embate del enemigo apretando los dientes, sin retroceder un solo paso",
+"clase": "valor",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "valor"
+},
+{
+"frase": "Dejo caer un tajo descendente que parte en dos al primero que se interponga",
+"clase": "valor",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "valor"
+},
+{
+"frase": "Le arreo con el pomo de la espada en plena cara al villano",
+"clase": "valor",
+"modificador": "ninguno",
+"objetivo": "villano",
+"origen": "valor"
+},
+{
+"frase": "Voy a por el villano sin arma alguna, a puño limpio",
+"clase": "valor",
+"modificador": "dificil",
+"objetivo": "villano",
+"origen": "valor"
+},
+{
+"frase": "Tumbo al guardián de un golpe seco en las rodillas",
+"clase": "valor",
+"modificador": "ninguno",
+"objetivo": "guardian",
+"origen": "valor"
+},
+{
+"frase": "Cierro filas junto a mi aliado y rechazamos a los esbirros a mandobles",
+"clase": "valor",
+"modificador": "ninguno",
+"objetivo": "aliado",
+"origen": "valor"
+},
+{
+"frase": "Aporreo el escudo del enemigo hasta hacerlo astillas",
+"clase": "valor",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "valor"
+},
+{
+"frase": "Fuerzo la verja tirando con ambas manos hasta que los barrotes ceden",
+"clase": "valor",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "valor"
+},
+{
+"frase": "Me defiendo a golpes de los esbirros que me rodean, con la espalda contra la pared",
+"clase": "valor",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "valor"
+},
+{
+"frase": "Me arrojo contra el guardián con los ojos cerrados, a lo que salga",
+"clase": "valor",
+"modificador": "dificil",
+"objetivo": "guardian",
+"origen": "valor"
+},
+{
+"frase": "Parto el casco del enemigo de un hachazo",
+"clase": "valor",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "valor"
+},
+{
+"frase": "Le propino un cabezazo al esbirro que me agarra por la espalda",
+"clase": "valor",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "valor"
+},
+{
+"frase": "Me enfrento al villano cara a cara, sin dar un paso atrás",
+"clase": "valor",
+"modificador": "ninguno",
+"objetivo": "villano",
+"origen": "valor"
+},
+{
+"frase": "Resisto el empellón de la bestia con el escudo en alto y las piernas clavadas",
+"clase": "valor",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "valor"
+},
+{
+"frase": "Le rompo la crisma al primero que se atreva a ponerme una mano encima",
+"clase": "valor",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "valor"
+},
+{
+"frase": "Arremeto contra la turba con la espada en una mano y la antorcha en la otra",
+"clase": "valor",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "valor"
+},
+{
+"frase": "Lanzo un grito de guerra y me meto de lleno en la refriega",
+"clase": "valor",
+"modificador": "ninguno",
+"objetivo": "ninguno",
+"origen": "valor"
+},
+{
+"frase": "Le enchufo un revés con el dorso de la mano al guardián",
+"clase": "valor",
+"modificador": "ninguno",
+"objetivo": "guardian",
+"origen": "valor"
+},
+{
+"frase": "Tiro abajo el muro de piedra a mazazos, golpe tras golpe",
+"clase": "valor",
+"modificador": "ninguno",
+"objetivo": "lugar",
+"origen": "valor"
+},
+{
+"frase": "Me niego a ceder terreno y devuelvo golpe por golpe al villano",
+"clase": "valor",
+"modificador": "ninguno",
+"objetivo": "villano",
+"origen": "valor"
+},
+{
+"frase": "Estampo el puño contra la mandíbula del esbirro",
+"clase": "valor",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "valor"
+},
+{
+"frase": "Agarro al heraldo del cuello y lo empotro contra la pared",
+"clase": "valor",
+"modificador": "ninguno",
+"objetivo": "heraldo",
+"origen": "valor"
+},
+{
+"frase": "Ataco a mi mentor con todas mis fuerzas para demostrarle mi temple",
+"clase": "valor",
+"modificador": "ninguno",
+"objetivo": "mentor",
+"origen": "valor"
+},
+{
+"frase": "Blando la espada a dos manos y la hago caer sobre el esbirro",
+"clase": "valor",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "valor"
+},
+{
+"frase": "Descargo la maza sobre el cofre blindado hasta reventarle las bisagras",
+"clase": "valor",
+"modificador": "ninguno",
+"objetivo": "objeto",
+"origen": "valor"
+},
+{
+"frase": "Me lanzo de cabeza contra la horda sin mirar cuántos son",
+"clase": "valor",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "valor"
+},
+{
+"frase": "Abro el cordón de esbirros a empujones y codazos",
+"clase": "valor",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "valor"
+},
+{
+"frase": "Hago frente a la criatura que emerge de la niebla, puños en alto",
+"clase": "valor",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "valor"
+},
+{
+"frase": "Encajo sin pestañear el golpe del guardián y le devuelvo otro peor",
+"clase": "valor",
+"modificador": "ninguno",
+"objetivo": "guardian",
+"origen": "valor"
+},
+{
+"frase": "Vacío el cargador contra los matones que cruzan la calle",
+"clase": "valor",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "valor"
+},
+{
+"frase": "Rompo la botella contra la barra y se la clavo al matón",
+"clase": "valor",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "valor"
+},
+{
+"frase": "Disparo ambos cañones de la escopeta a bocajarro contra la criatura",
+"clase": "valor",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "valor"
+},
+{
+"frase": "Me arremango y me pongo a repartir leña entre los esbirros",
+"clase": "valor",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "valor"
+},
+{
+"frase": "Me lío a tortas con los matones del villano",
+"clase": "valor",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "valor"
+},
+{
+"frase": "Sostengo la línea a pie firme mientras la horda se estrella contra mi escudo",
+"clase": "valor",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "valor"
+},
+{
+"frase": "Salgo a darle una paliza al villano",
+"clase": "valor",
+"modificador": "ninguno",
+"objetivo": "villano",
+"origen": "valor"
+},
+{
+"frase": "Zurro a los esbirros con la vara hasta que huyen despavoridos",
+"clase": "valor",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "valor"
+},
+{
+"frase": "Hundo la daga en el costado del enemigo sin soltar la presa",
+"clase": "valor",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "valor"
+},
+{
+"frase": "Sigo en pie tras el golpe del villano, escupo sangre y levanto otra vez los puños",
+"clase": "valor",
+"modificador": "ninguno",
+"objetivo": "villano",
+"origen": "valor"
+},
+{
+"frase": "Me bato en duelo con el guardián hasta que uno de los dos caiga",
+"clase": "valor",
+"modificador": "ninguno",
+"objetivo": "guardian",
+"origen": "valor"
+},
+{
+"frase": "Acometo a los esbirros a lanzazos como si no hubiera mañana",
+"clase": "valor",
+"modificador": "ninguno",
+"objetivo": "enemigos",
+"origen": "valor"
+},
+{
+"frase": "Me lo juego todo y golpeo al villano, aunque apenas me tenga en pie",
+"clase": "valor",
+"modificador": "ninguno",
+"objetivo": "villano",
+"origen": "valor"
+},
+{
+"frase": "Peleo contra los esbirros con una sola mano",
+"clase": "valor",
+"modificador": "dificil",
+"objetivo": "enemigos",
+"origen": "valor"
+},
+{
+"frase": "Borracho como una cuba, me enzarzo a puñetazos con el villano",
+"clase": "valor",
+"modificador": "dificil",
+"objetivo": "villano",
+"origen": "valor"
+},
+{
+"frase": "Descalzo sobre el barro, empujo y derribo al esbirro que me corta el paso",
+"clase": "valor",
+"modificador": "dificil",
+"objetivo": "enemigos",
+"origen": "valor"
+},
+{
+"frase": "Sin ayuda de nadie, presento batalla a toda la banda del villano",
+"clase": "valor",
+"modificador": "dificil",
+"objetivo": "enemigos",
+"origen": "valor"
+},
+{
+"frase": "Con un brazo inutilizado, sigo golpeando al esbirro con el otro",
+"clase": "valor",
+"modificador": "dificil",
+"objetivo": "enemigos",
+"origen": "valor"
+},
+{
+"frase": "Sin escudo ni armadura, soporto la carga de los enemigos pecho al frente",
+"clase": "valor",
+"modificador": "dificil",
+"objetivo": "enemigos",
+"origen": "valor"
+},
+{
+"frase": "A ciegas y a oscuras, reparto mandobles a mi alrededor",
+"clase": "valor",
+"modificador": "dificil",
+"objetivo": "enemigos",
+"origen": "valor"
+},
+{
+"frase": "Con calma, tomo aire y suelto un mandoble certero sobre el esbirro",
+"clase": "valor",
+"modificador": "facil",
+"objetivo": "enemigos",
+"origen": "valor"
+},
+{
+"frase": "Con cautela, mido la distancia y alanceo al guardián",
+"clase": "valor",
+"modificador": "facil",
+"objetivo": "guardian",
+"origen": "valor"
+},
+{
+"frase": "Despacio y sin bajar la guardia, empujo al enemigo hasta acorralarlo",
+"clase": "valor",
+"modificador": "facil",
+"objetivo": "enemigos",
+"origen": "valor"
+},
+{
+"frase": "Con el arma ya a punto, ataco al villano de frente",
+"clase": "valor",
+"modificador": "facil",
+"objetivo": "villano",
+"origen": "valor"
+},
+{
+"frase": "Sin prisas, afianzo los pies y detengo la embestida del guardián",
+"clase": "valor",
+"modificador": "facil",
+"objetivo": "guardian",
+"origen": "valor"
+},
+{
+"frase": "Con el escudo bien preparado y el paso firme, embisto la línea enemiga",
+"clase": "valor",
+"modificador": "facil",
+"objetivo": "enemigos",
+"origen": "valor"
+}
+]
