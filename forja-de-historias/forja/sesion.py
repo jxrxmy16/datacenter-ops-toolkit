@@ -62,6 +62,7 @@ Comandos (empiezan por /):
   /notas              muestra u oculta las fuentes de cada escena
   /confirmar          activa o desactiva la confirmación de lo que entiendo
   /modo               alterna entre escribir libremente y ver siempre la lista de opciones
+  /dados              enseña u oculta la tirada de dado de cada acción arriesgada
   /salir              sale (la partida queda guardada en «auto»)"""
 
 NOMBRE_CLASE = {
@@ -450,6 +451,10 @@ class Sesion:
                                           else "desactivada (solo pregunto si dudo)."))
         elif nombre == "modo":
             ui.mensaje(ui.cambiar_modo(arg))
+        elif nombre == "dados":
+            ui.dados = not getattr(ui, "dados", True)
+            ui.mensaje("Verás la tirada de cada acción arriesgada." if ui.dados
+                       else "Las tiradas quedan ocultas (el dado se sigue tirando).")
         elif nombre in ("ideas", "opciones"):
             ui.pedir_lista()
         elif nombre in ("ayuda", "help"):

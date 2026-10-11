@@ -156,9 +156,9 @@ class Tirada:
 
     def describir(self, enfoque: str) -> str:
         veredicto = "éxito" if self.exito else "fracaso"
-        return (f"tirada: d6={self.dado} + {enfoque} {self.atributo} + "
-                f"bonos {self.bono:+d} = {self.total} contra {self.dificultad}"
-                f" -> {veredicto}")
+        bonos = f" {self.bono:+d} (equipo, ánimo, falla)" if self.bono else ""
+        return (f"dado {self.dado} + {enfoque} {self.atributo}{bonos} = {self.total} "
+                f"contra {self.dificultad} → {veredicto}")
 
 
 @dataclass

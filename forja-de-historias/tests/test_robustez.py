@@ -82,7 +82,7 @@ class TestConsolaConNotas(unittest.TestCase):
         with contextlib.redirect_stdout(io.StringIO()) as salida:
             c.resultado(["Algo ocurre."], tirada, None)
             c.interludio("huir a ciegas", ["Te echas atrás."], tirada, None)
-        self.assertIn("tirada", salida.getvalue())
+        self.assertIn("dado 3 + ingenio 1", salida.getvalue())
 
     def test_partidas_completas_con_notas_en_la_consola_real(self):
         for semilla in range(12):

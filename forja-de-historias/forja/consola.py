@@ -90,9 +90,10 @@ def analizar_linea(linea: str, n_opciones: int):
 
 
 class Consola:
-    def __init__(self, color=True, notas=False, pausas=True, modo="libre"):
+    def __init__(self, color=True, notas=False, pausas=True, modo="libre", dados=True):
         self.color = preparar_salida(color)
         self.notas = notas
+        self.dados = dados            # enseñar la tirada de cada acción arriesgada
         self.pausas = pausas
         # "libre": se escribe con palabras propias y la lista de opciones solo
         # sale si se pide («?») o en los momentos críticos; "opciones": la
@@ -356,7 +357,7 @@ class Consola:
         self.parrafo(f"▸ «{frase}»", "", "tuyo")
         for p in parrafos:
             self.parrafo(p)
-        if self.notas and tirada is not None:
+        if self.dados and tirada is not None:
             self.parrafo(f"({tirada.describir(ETIQUETAS.get(enfoque, 'ingenio').lower())})",
                          "  ", "dado")
         print()
@@ -365,7 +366,7 @@ class Consola:
         for p in parrafos:
             self.parrafo(p)
             print()
-        if self.notas and tirada is not None:
+        if self.dados and tirada is not None:
             self.parrafo(f"({tirada.describir(ETIQUETAS.get(enfoque, 'ingenio').lower())})",
                          "  ", "dado")
         self.esperar()

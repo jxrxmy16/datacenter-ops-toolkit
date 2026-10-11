@@ -119,6 +119,40 @@ class TestModoLibre(unittest.TestCase):
         self.assertEqual(c.modo, "libre")
 
 
+class TestDados(unittest.TestCase):
+    def _tirada(self):
+        from forja.modelo import Tirada
+        return Tirada(dado=4, atributo=3, bono=-1, total=6, dificultad=7, exito=False)
+
+    def test_la_tirada_se_ve_por_defecto_sin_activar_las_notas(self):
+        c = Consola(color=False, pausas=False)
+        salida = io.StringIO()
+        with contextlib.redirect_stdout(salida):
+            c.resultado(["Algo ocurre."], self._tirada(), "valor")
+            c.interludio("mirar", ["Miras."], self._tirada(), "ingenio")
+        texto = salida.getvalue()
+        self.assertIn("dado 4 + valor 3 -1", texto)
+        self.assertIn("contra 7 → fracaso", texto)
+        self.assertIn("dado 4 + ingenio 3", texto)
+
+    def test_se_pueden_ocultar(self):
+        c = Consola(color=False, pausas=False, dados=False)
+        salida = io.StringIO()
+        with contextlib.redirect_stdout(salida):
+            c.resultado(["Algo ocurre."], self._tirada(), "valor")
+        self.assertNotIn("dado", salida.getvalue())
+
+    def test_el_comando_dados_alterna(self):
+        ses = nueva_sesion(5, guion=["/dados", "/dados", "/salir"])
+        ses.ui.dados = True
+        try:
+            ses.ejecutar()
+        except Exception:
+            pass
+        self.assertTrue(ses.ui.dados)                  # dos veces: vuelve a estar visible
+        self.assertTrue(any("tirada" in m.lower() for m in ses.ui.mensajes))
+
+
 class TestModoEnLaSesion(unittest.TestCase):
     def test_lo_que_no_se_entiende_enseña_las_ideas(self):
         ses = nueva_sesion(5, guion=["xyzzyplugh qwerty", "/salir"])
