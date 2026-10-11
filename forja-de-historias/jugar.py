@@ -122,17 +122,19 @@ def main(argv=None):
         try:
             final = ses.ejecutar()
         except ErrorCarga as exc:
-            print(f"\nNo pude retomar esa partida ({exc}). Empezamos una nueva.")
+            print()
+            ui.parrafo(f"No pude retomar esa partida ({exc}). Empezamos una nueva.")
             ses = Sesion(ui, pedir_parametros(ui, args), CARPETA_PARTIDAS, CARPETA_LIBROS)
             final = ses.ejecutar()
         ui.bibliografia(ses.w)
         if not (args.no_guardar or args.demo):
             if ui.si_no("¿Guardar tu historia como libro (Markdown)?"):
-                print(f"Guardado en: {ses.guardar_libro(final)}")
+                ui.parrafo(f"Guardado en: {ses.guardar_libro(final)}")
     except (Salir, KeyboardInterrupt, EOFError):
-        print("\n\nLa historia queda en pausa"
-              + (" (guardada en «auto»: vuelve a ejecutar jugar.py para seguir)."
-                 if ses is not None and ses.guardar_auto else "."))
+        print("\n")
+        ui.parrafo("La historia queda en pausa"
+                   + (" (guardada en «auto»: vuelve a ejecutar jugar.py para seguir)."
+                      if ses is not None and ses.guardar_auto else "."))
     return 0
 
 

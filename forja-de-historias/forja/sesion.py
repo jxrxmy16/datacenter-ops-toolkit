@@ -39,21 +39,18 @@ ROLES_RENOMBRABLES = {
 }
 
 AYUDA = """\
-Puedes elegir un número O escribir libremente lo que quieres hacer
-(salvo en los momentos críticos, donde solo hay opciones).
-  Ejemplos: «atacar al guardián por sorpresa», «hablar con el mentor»,
-            «mirar a mi alrededor», «cruzar el puente con los ojos cerrados».
-  Si lo que escribes encaja con una opción, te digo cómo lo he entendido y
-  puedes corregirme. «Con cuidado» o «en silencio» facilitan; «a ciegas» o
-  «sin armas» dificultan pero, si sale bien, te dan aliento.
+Puedes elegir un número O escribir libremente lo que quieres hacer (salvo en los momentos críticos, donde solo hay opciones).
+  Ejemplos: «atacar al guardián por sorpresa», «hablar con el mentor», «mirar a mi alrededor», «cruzar el puente con los ojos cerrados».
+  Si lo que escribes encaja con una opción, te digo cómo lo he entendido y puedes corregirme. «Con cuidado» o «en silencio» facilitan; «a ciegas» o «sin armas» dificultan pero, si sale bien, te dan aliento.
 
 Comandos (empiezan por /):
   /atras [n]          deshace tus últimas n acciones (por defecto 1)
   /historial          lista tus acciones, numeradas
   /volver N           vuelve a justo antes de la acción N
   /reintentar         repite la última acción con otra suerte
-  /guardar [nombre]   guarda la partida     /cargar [nombre]   la recupera
-  /partidas           lista tus guardados   (hay uno automático, «auto»)
+  /guardar [nombre]   guarda la partida
+  /cargar [nombre]    la recupera
+  /partidas           lista tus guardados (hay uno automático, «auto»)
   /corregir           si te malinterpreté tu última frase, me dices qué querías decir
   /olvidar            borra lo que me hayas ido enseñando de tu forma de escribir
   /renombrar X nombre cambia el nombre de mentor, aliado, heraldo, villano o héroe

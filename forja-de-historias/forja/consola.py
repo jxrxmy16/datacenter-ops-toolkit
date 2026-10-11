@@ -9,6 +9,7 @@ Hay tres interfaces con la misma API, que la sesión usa sin saber cuál es:
 
 import os
 import random
+import re
 import shutil
 import sys
 import textwrap
@@ -98,6 +99,19 @@ class Consola:
                             subsequent_indent=sangria)
         print(self.c(out, estilo) if estilo else out)
 
+    def _con_sangria(self, texto, sangria="  ", extra=None):
+        """Imprime `texto` ajustado al ancho, con sangría francesa.
+
+        Si no se indica `extra`, las líneas siguientes se alinean bajo el texto
+        que sigue al número de una lista ("1) ...") o 2 espacios más adentro.
+        """
+        if extra is None:
+            m = re.match(r"\d+\) ", texto)
+            extra = m.end() if m else 2
+        print(textwrap.fill(texto, self.ancho, initial_indent=sangria,
+                            subsequent_indent=sangria + " " * extra,
+                            break_long_words=False, break_on_hyphens=False))
+
     def _leer_linea(self, prompt="> "):
         try:
             return input(prompt)
@@ -114,7 +128,7 @@ class Consola:
         """opciones: lista de (clave, nombre, descripcion). Devuelve la clave."""
         print(self.c(f"\n{titulo}", "elige"))
         for i, (_, nombre, desc) in enumerate(opciones, 1):
-            print(f"  {i}) {nombre}" + (f" - {desc}" if desc else ""))
+            self._con_sangria(f"{i}) {nombre}" + (f" - {desc}" if desc else ""), "  ")
         if azar:
             print("  0) Sorpréndeme (también vale pulsar Enter)")
         while True:
@@ -142,9 +156,18 @@ class Consola:
         self.parrafo(texto, "  ", "aviso")
 
     def imprimir(self, lineas):
+        """Líneas ya formadas (ayuda, listas...). Se ajustan al ancho de la
+        pantalla conservando su sangría; las órdenes («/atras  deshace...»)
+        continúan alineadas bajo su descripción."""
         print()
         for linea in lineas:
-            print("  " + linea)
+            if not linea.strip():
+                print()
+                continue
+            lead = len(linea) - len(linea.lstrip())
+            orden = re.match(r" */\S+(?: \S+)?? {2,}(?=\S)", linea)
+            extra = orden.end() - lead if orden and orden.end() + 24 < self.ancho else 2
+            self._con_sangria(linea.strip(), "  " + " " * lead, extra)
         print()
 
     def portada(self, titulo, subtitulo=""):
@@ -161,7 +184,8 @@ class Consola:
                      "explica los comandos (deshacer, guardar...).", "  ", "nota")
 
     def capitulo(self, etapa, titulo):
-        print(self.c(f"\n--- Capítulo {etapa} de 12: {titulo} ---", "capitulo"))
+        print()
+        self.parrafo(f"--- Capítulo {etapa} de 12: {titulo} ---", "", "capitulo")
         print()
 
     def mostrar_notas(self, fuentes):
@@ -244,7 +268,7 @@ class Consola:
         else:
             print(self.c(f"  No sé cómo interpretar «{frase}». ¿Qué intentas?", "tuyo"))
         for i, (_, texto) in enumerate(MENU_INTENCIONES, 1):
-            print(f"   {i}) {texto}")
+            self._con_sangria(f"{i}) {texto}", "   ")
         print("   0) Ninguna: lo escribo de otra forma")
         while True:
             r = self._leer_linea(self.c("  > ", "nota")).strip()
