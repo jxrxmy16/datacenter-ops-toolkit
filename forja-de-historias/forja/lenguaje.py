@@ -120,7 +120,7 @@ LEXICO_TEXTO = {
         atac enfrent combat embist luch pele golpe destroz derrib aplast arremet desenvain
         blandi dispar forz empuj repel contraatac abalanz resist aguant defend derrot
         aniquil machac patad punet apunal acuchill estoc decapit carga cargu embest
-        guantaz mampor paliz apunt empun desenfund demol aporre zurr abofete hostig
+        guantaz mampor paliz apunt:0.6 empun desenfund demol aporre zurr abofete hostig
         embrav acomet cabezaz embestid
         lanz:0.6 arroj:0.6 abat:0.5 sacud:0.5 valent:0.6 brav:0.6 audaz:0.6 empujon:0.8
         =cargo =herir =hiero =hieres =hiere =hirio =hiriendo =tortas =tumbo =tumbar:0.6
@@ -152,7 +152,7 @@ LEXICO_TEXTO = {
         exig codici ambici despiadad cruel mezquin rapi coaccion chivat chiv delat
         denunci estaf desvalij mang birl afan chor
         asust:0.8 explot:0.6 abandon:0.8 ignor:0.5 aprovech:0.3 timo:0.6
-        =cobrar =cobro =cobra =cobras =quemo =quemar =quemarle +rob:1.4 +vaci
+        =cobrar =cobro =cobra =cobras =quemo =quemar =quemarle +rob:1.4 +vaci:0.4
     """,
     "duda": """
         escap fug retir retroced rechaz evit dud titube paraliz tembl rendici
@@ -220,8 +220,9 @@ _FRASES_BASE = [
     (("ech*", "mano"), {"compasion": 1.6}),
     (("ech*", "cable"), {"compasion": 1.6}),
     (("sosten*", "mano"), {"compasion": 1.6}),
-    (("dar|doy|da|dale|dame|entreg*|ofrec*|pas*|compart*|comparto",
-      "com*|beb*|raci*|pan|agua|trozo|bocata|bocadillo|aliment*|medicin*|pocion|venda*"),
+    (("dar|doy|da|dale|dame|entreg*|ofrec*|pas*|compart*|comparto|sirvo|sirv*",
+      "com*|beb*|raci*|pan|agua|trozo|bocata|bocadillo|aliment*|medicin*|pocion|venda*|"
+      "manzana|fruta|sopa|caldo|leche|vino|bocado|mendrug*|migaja*|cena|desayuno|abrigo|manta"),
      {"compasion": 2.0}),
     (("plant*", "cara"), {"valor": 2.0}),
     (("abr*", "paso"), {"valor": 2.0}),
@@ -238,6 +239,7 @@ _FRASES_BASE = [
     (("fing*", "muert"), {"ingenio": 1.5}),
     (("@hacer", "pas*", "por"), {"ingenio": 2.0}),
     (("@hacer", "tonto"), {"ingenio": 1.2}),
+    (("@hacer", "farol"), {"ingenio": 2.0}),
     (("@hacer", "cre*"), {"ingenio": 1.5}),
     (("cuento", "chino"), {"ingenio": 1.5}),
     (("salir", "corr*"), {"duda": 2.0}),
@@ -287,7 +289,6 @@ _FRASES_BASE = [
     (("pid*|ped*", "perdon"), {"compasion": 1.0}),
     (("tir*", "lengua"), {"hablar": 1.5}),
     (("tir*", "tejos"), {"hablar": 1.0}),
-    (("tir*", "pa"), {"moverse": 1.0}),
     (("ve", "hasta"), {"moverse": 1.5}),
     (("plant*", "en"), {"moverse": 0.8}),
 ]
@@ -789,7 +790,8 @@ _NOMBRES_AMBIGUOS = {"camino", "paso", "carga", "cargo", "marcha", "vuelta", "su
 _FORMAS_IR = {"voy", "vas", "va", "vamos", "van", "iba", "ire"}
 _BOTIN = {"todo", "botin", "oro", "dinero", "monedas", "recompensa", "tesoro",
           "joya", "joyas", "cofre", "pasta", "premio", "parte", "ganancias"}
-_APROVECHADOS = {"senuelo", "cebo", "escudo", "carnada", "sacrificio", "moneda"}
+_APROVECHADOS = {"senuelo", "cebo", "escudo", "carnada", "sacrificio", "moneda",
+                 "cambio", "trueque"}
 # Fuera del mundo del juego: si aparecen y nada del mundo, no es una acción.
 _FUERA_DE_MUNDO = {"telefono", "movil", "celular", "taxi", "pizza", "instagram",
                    "whatsapp", "internet", "google", "wifi", "email", "facebook",
@@ -797,6 +799,20 @@ _FUERA_DE_MUNDO = {"telefono", "movil", "celular", "taxi", "pizza", "instagram",
                    "narrador", "juego", "ordenador", "app", "tokio", "equipo",
                    "fichar", "recortar", "videojuego", "youtube", "twitter"}
 COMPANEROS = ("aliado", "mentor", "heraldo")
+# Lo que viene después de estas marcas manda ("miro y LUEGO ataco"). Lo que sigue
+# a «para» NO se rebaja: casi siempre nombra la intención ("suelto los caballos
+# para distraer"); se comprobó con los corpus.
+_SECUENCIA = {"luego", "despues", "entonces", "finalmente", "seguidamente"}
+
+
+def _pesos_de_clausula(norm) -> list:
+    """Multiplicador por palabra: tras «luego/después» manda lo que sigue."""
+    m = [1.0] * len(norm)
+    seq = next((i for i, t in enumerate(norm) if t in _SECUENCIA), None)
+    if seq is not None:
+        for j in range(len(norm)):
+            m[j] *= 0.8 if j < seq else (1.5 if j > seq else 1.0)
+    return m
 
 
 def _es_infinitivo(tok: str) -> bool:
@@ -829,6 +845,7 @@ def analizar(texto: str, w, esc=None, etiquetas=None, visibles=None,
     r.dd = max(-2, min(3, r.dd))
 
     # 2) Palabras sueltas, con negaciones y desambiguaciones sencillas.
+    clausula = _pesos_de_clausula(norm)
     for i, tok in enumerate(norm):
         if i in enmascarados or tok in _IGNORADAS:
             continue
@@ -858,7 +875,7 @@ def analizar(texto: str, w, esc=None, etiquetas=None, visibles=None,
                 if inv:
                     puntos[inv[0]] += inv[1] * _mult_pos(i)
                 continue
-            puntos[clase] += peso * _mult_pos(i)
+            puntos[clase] += peso * _mult_pos(i) * clausula[i]
 
     # 3) Frases hechas (no cuentan si las precede una negación, salvo que la lleven).
     for patron, pesos in FRASES:
@@ -888,6 +905,7 @@ def analizar(texto: str, w, esc=None, etiquetas=None, visibles=None,
                                                  or _ventana(norm, ("sacrific*",))):
         puntos["sombra"] += 2.0                  # usar a un compañero de escudo o cebo
         puntos["ingenio"] = max(0.0, puntos["ingenio"] - 1.0)
+        puntos["compasion"] = max(0.0, puntos["compasion"] - 2.0)
     if _FUERA_DE_MUNDO & set(norm) and not any(e in vistas for e in
                                                 PERSONAJES + ("hogar", "guardian", "esbirros")):
         puntos = {c: 0.0 for c in CLASES}

@@ -72,6 +72,14 @@ def main():
               + ", ".join(f"{k}:{v}" for k, v in confusion[c].most_common(4) if k != c))
     if mod_tot:
         print(f"Modificadores de dificultad: {mod_ok}/{mod_tot} = {100*mod_ok/mod_tot:.1f}%")
+    # Experiencia real (modo asistido): lo seguro se aplica, lo dudoso se pregunta.
+    sel = [(d, r) for d, r in filas if not args.clase or d["clase"] == args.clase]
+    seguras = [(d, r) for d, r in sel if not r.insegura]
+    bien = sum(1 for d, r in seguras if r.clase == d["clase"])
+    n = len(sel)
+    print(f"Modo asistido: {bien} bien sin preguntar ({100*bien/n:.1f}%), "
+          f"{n - len(seguras)} preguntas ({100*(n-len(seguras))/n:.1f}%), "
+          f"{len(seguras)-bien} mal en silencio ({100*(len(seguras)-bien)/n:.1f}%)")
     if args.fallos:
         print("\nFallos (esperada -> obtenida):")
         for d, r in fallos:
