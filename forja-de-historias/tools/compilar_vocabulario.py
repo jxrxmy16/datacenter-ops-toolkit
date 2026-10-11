@@ -6,6 +6,15 @@
 Normaliza (minúsculas, sin tildes), descarta lo inservible (raíces de menos de
 4 letras, entradas con espacios, pesos fuera de rango), elimina duplicados y
 escribe un módulo Python ordenado, para que los cambios se vean bien en git.
+
+Además de las intenciones, cada fichero puede traer dos listas (claves de primer nivel):
+  "matices"         [[patrón, delta, descripción], ...]  expresiones que cambian la
+                    dificultad: delta > 0 la sube («a ciegas» +2), < 0 la baja
+                    («con cuidado» -1). El patrón usa la sintaxis de las frases:
+                    "abc*" prefijo, "a|b" alternativas, "^x" justo detrás de la
+                    palabra anterior.
+  "fuera_de_mundo"  palabras sueltas que delatan que la frase NO es una acción del
+                    personaje («tutorial», «wifi», «pizza»).
 """
 
 import json
@@ -60,11 +69,40 @@ def _unir(items, minimo=1, verbos=False):
     return sorted(f"{w}:{p:g}" if p != 1.0 else w for w, p in mejor.items())
 
 
+def _matiz(entrada):
+    """[patrón, delta, desc] (o dict) -> tupla normalizada, o None si no vale."""
+    try:
+        if isinstance(entrada, dict):
+            patron, delta, desc = entrada["patron"], entrada["delta"], entrada["desc"]
+        else:
+            patron, delta, desc = entrada
+        patron = [t if ("*" in t or "|" in t or t.startswith("^")) else quitar_tildes(t)
+                  for t in patron]
+        delta = int(delta)
+        desc = str(desc).strip()
+        if not (1 <= len(patron) <= 4) or not -2 <= delta <= 3 or delta == 0 or not desc:
+            return None
+        return (tuple(patron), delta, desc)
+    except (TypeError, ValueError, KeyError):
+        return None
+
+
 def compilar(rutas):
     salida = {}
+    matices, fuera = {}, set()
     for ruta in rutas:
         datos = json.loads(Path(ruta).read_text(encoding="utf-8"))
+        for entrada in datos.get("matices", ()):
+            m = _matiz(entrada)
+            if m:
+                matices[(m[0], m[2])] = m
+        for p in datos.get("fuera_de_mundo", ()):
+            p = quitar_tildes(str(p)).strip()
+            if len(p) >= 3 and " " not in p:
+                fuera.add(p)
         for clase, d in datos.items():
+            if clase in ("matices", "fuera_de_mundo"):
+                continue
             if clase not in CLASES:
                 print(f"  (ignorada la clave desconocida «{clase}» de {ruta})")
                 continue
@@ -96,6 +134,8 @@ def compilar(rutas):
             "exactas": _unir(s["exactas"]),
             "frases": sorted(frases),
         }
+    final["__matices__"] = [[list(p), d, desc] for p, d, desc in sorted(matices.values())]
+    final["__fuera__"] = sorted(fuera)
     return final
 
 
@@ -104,11 +144,20 @@ def main():
         print(__doc__)
         return 1
     final = compilar(sys.argv[1:])
+    matices = final.pop("__matices__")
+    fuera = final.pop("__fuera__")
     cuerpo = pprint.pformat(final, width=96, sort_dicts=False, compact=True)
-    SALIDA.write_text(CABECERA + "VOCABULARIO = " + cuerpo + "\n", encoding="utf-8")
+    SALIDA.write_text(
+        CABECERA + "VOCABULARIO = " + cuerpo + "\n\n"
+        "# Expresiones que cambian la dificultad: (patrón, delta, descripción).\n"
+        "MATICES = " + pprint.pformat(matices, width=96, compact=True) + "\n\n"
+        "# Palabras que delatan que la frase no es una acción del personaje.\n"
+        "FUERA_DE_MUNDO = " + pprint.pformat(fuera, width=96, compact=True) + "\n",
+        encoding="utf-8")
     for clase, d in final.items():
         print(f"{clase:10s} {len(d['verbos']):4d} verbos {len(d['raices']):4d} raíces "
               f"{len(d['exactas']):4d} exactas {len(d['frases']):3d} frases")
+    print(f"matices {len(matices)} · fuera del mundo {len(fuera)}")
     print(f"escrito {SALIDA}")
     return 0
 

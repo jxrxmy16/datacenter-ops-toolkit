@@ -307,7 +307,7 @@ def _expandir_frases(base):
 
 
 # Modificadores de dificultad: (raíces cercanas, delta, descripción).
-MODIFICADORES = [
+_MODIFICADORES_BASE = [
     (("ojos", "cerr"), +2, "a ciegas"),
     (("cerr", "ojos"), +2, "a ciegas"),
     (("ojos", "vend"), +2, "a ciegas"),
@@ -353,6 +353,15 @@ MODIFICADORES = [
     (("tras", "planear"), -1, "tras planearlo"),
     (("con", "astucia"), -1, "con astucia"),
 ]
+MODIFICADORES = list(_MODIFICADORES_BASE)       # base + los que añade el vocabulario ampliado
+
+# Fuera del mundo del juego: si aparecen y nada del mundo, no es una acción.
+_FUERA_DE_MUNDO_BASE = {"telefono", "movil", "celular", "taxi", "pizza", "instagram",
+                   "whatsapp", "internet", "google", "wifi", "email", "facebook",
+                   "tiktok", "netflix", "futbol", "politica", "publico", "gasto",
+                   "narrador", "juego", "ordenador", "app", "tokio", "equipo",
+                   "fichar", "recortar", "videojuego", "youtube", "twitter"}
+_FUERA_DE_MUNDO = set(_FUERA_DE_MUNDO_BASE)       # base + las que añade el vocabulario ampliado
 
 NEGADORES = {"no", "nunca", "jamas", "ni", "tampoco", "sin"}
 _IGNORADAS = {"apoyado", "apoyada", "apoyados", "apoyadas"}
@@ -599,9 +608,29 @@ def aprender(texto: str, clase: str, w) -> list:
 
 def reconstruir(extra=None) -> None:
     """(Re)construye los índices. `extra` es un vocabulario adicional opcional."""
-    global _BASE
-    from .vocabulario import VOCABULARIO as base
+    global _BASE, MODIFICADORES, _FUERA_DE_MUNDO
+    from . import vocabulario
+    base = vocabulario.VOCABULARIO
     fuentes = [base] + _extras_de_entorno() + ([extra] if extra else [])
+
+    # Matices de dificultad y palabras de fuera del mundo: listas aparte del léxico.
+    matices = list(_MODIFICADORES_BASE)
+    fuera = set(_FUERA_DE_MUNDO_BASE)
+    for origen in (getattr(vocabulario, "MATICES", ()),
+                   *(f.get("matices", ()) for f in fuentes[1:] if isinstance(f, dict))):
+        for entrada in origen or ():
+            try:
+                patron, delta, desc = entrada
+                matices.append((tuple(x if ("*" in x or "|" in x or x.startswith("^"))
+                                      else quitar_tildes(x) for x in patron),
+                                int(delta), str(desc)))
+            except (TypeError, ValueError):
+                pass
+    for origen in (getattr(vocabulario, "FUERA_DE_MUNDO", ()),
+                   *(f.get("fuera_de_mundo", ()) for f in fuentes[1:] if isinstance(f, dict))):
+        fuera.update(quitar_tildes(str(p)).strip() for p in origen or () if str(p).strip())
+    MODIFICADORES = matices
+    _FUERA_DE_MUNDO = fuera
 
     prefijos = {}                       # (raiz, clase) -> peso
     exactas = {}                        # (palabra, clase) -> peso
@@ -971,12 +1000,6 @@ _BOTIN = {"todo", "botin", "oro", "dinero", "monedas", "recompensa", "tesoro",
           "joya", "joyas", "cofre", "pasta", "premio", "parte", "ganancias"}
 _APROVECHADOS = {"senuelo", "cebo", "escudo", "carnada", "sacrificio"}
 _COMO_USO = {"de", "como", "para"}       # «de escudo», «como cebo»: se usa a alguien
-# Fuera del mundo del juego: si aparecen y nada del mundo, no es una acción.
-_FUERA_DE_MUNDO = {"telefono", "movil", "celular", "taxi", "pizza", "instagram",
-                   "whatsapp", "internet", "google", "wifi", "email", "facebook",
-                   "tiktok", "netflix", "futbol", "politica", "publico", "gasto",
-                   "narrador", "juego", "ordenador", "app", "tokio", "equipo",
-                   "fichar", "recortar", "videojuego", "youtube", "twitter"}
 COMPANEROS = ("aliado", "mentor", "heraldo")
 # Lo que viene después de estas marcas manda ("miro y LUEGO ataco"). Lo que sigue
 # a «para» NO se rebaja: casi siempre nombra la intención ("suelto los caballos

@@ -2799,3 +2799,9 @@ VOCABULARIO = {'valor': {'verbos': ['abalanzar:1.3', 'abofetear', 'acogotar:0.8'
                           'hacia|sobre|por|encima|alto|cielo|nubes|aire'],
                          0.8],
                         [['wall', 'run'], 1.0]]}}
+
+# Expresiones que cambian la dificultad: (patrón, delta, descripción).
+MATICES = []
+
+# Palabras que delatan que la frase no es una acción del personaje.
+FUERA_DE_MUNDO = []

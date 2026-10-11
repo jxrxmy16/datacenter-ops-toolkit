@@ -50,6 +50,24 @@ def aciertos(frases, preds):
     return [p.clase == f["clase"] for f, p in zip(frases, preds)]
 
 
+def matices_falsos(frases, preds):
+    """(falsos, total): frases SIN matiz a las que el intérprete les pone uno."""
+    sin = [(f, p) for f, p in zip(frases, preds)
+           if f.get("modificador", "ninguno") == "ninguno" and f["clase"] != "desconocida"]
+    return sum(1 for _, p in sin if p.dd != 0), len(sin)
+
+
+def matices_bien(frases, preds):
+    """(acertados, total) de los matices de dificultad escritos en el corpus."""
+    ok = tot = 0
+    for f, p in zip(frases, preds):
+        m = f.get("modificador")
+        if m in ("dificil", "facil"):
+            tot += 1
+            ok += (m == "dificil" and p.dd > 0) or (m == "facil" and p.dd < 0)
+    return ok, tot
+
+
 def culpables(frase, w, antes):
     """Palabras cuya lectura cambió con el vocabulario nuevo."""
     orig, norm = lenguaje.tokenizar(frase)
@@ -77,6 +95,8 @@ def main():
         lenguaje.reconstruir(extra)
         despues_p = predecir(frases, ws)
         a, d = aciertos(frases, antes_p), aciertos(frases, despues_p)
+        ma, mt = matices_bien(frases, antes_p)
+        md, _ = matices_bien(frases, despues_p)
         n_total += len(frases)
         total_antes += sum(a)
         total_despues += sum(d)
@@ -90,6 +110,10 @@ def main():
         for c in sorted(por_clase):
             n, x, y = por_clase[c]
             print(f"   {c:12s} {x:3d} -> {y:3d} / {n}")
+        if mt:
+            fa, ft = matices_falsos(frases, antes_p)
+            fd, _ = matices_falsos(frases, despues_p)
+            print(f"   matices      {ma:3d} -> {md:3d} / {mt}   (falsos: {fa} -> {fd} / {ft})")
         for i, (f, x, y) in enumerate(zip(frases, a, d)):
             if x and not y:
                 regresiones.append((f, despues_p[i].clase, culpables(f["frase"], ws[0], base_tokens)))
