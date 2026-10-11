@@ -69,9 +69,9 @@ _FORMAS = {
     "ar": ("ar o as a amos an e es emos en aba abas abamos aban are ara aremos aran "
            "aria arias ariamos arian ando ado ada ados adas aste aron").split(),
     "er": ("er o es e emos en a as amos an ia ias iamos ian ere era eremos eran "
-           "eria erias eriamos erian iendo ido ida idos idas iste io ieron").split(),
+           "eria erias eriamos erian iendo ido ida idos idas i imos iste io ieron").split(),
     "ir": ("ir o es e imos en a as amos an ia ias iamos ian ire ira iremos iran "
-           "iria irias iriamos irian iendo ido ida idos idas iste io ieron").split(),
+           "iria irias iriamos irian iendo ido ida idos idas i iste io ieron").split(),
 }
 
 
@@ -313,12 +313,20 @@ MODIFICADORES = [
     (("ojos", "vend"), +2, "a ciegas"),
     (("ciegas",), +2, "a ciegas"),
     (("sin", "mirar"), +1, "sin mirar"),
-    (("espaldas",), +1, "de espaldas"),
+    (("de", "^espaldas"), +1, "de espaldas"),
+    (("cierr", "^los", "^ojos"), +2, "a ciegas"),
     (("descalz",), +1, "descalzo"),
     (("desarmad",), +1, "sin armas"),
     (("sin", "arma"), +1, "sin armas"),
     (("sin", "luz"), +1, "sin luz"),
-    (("una", "mano"), +1, "con una mano"),
+    (("con", "^una", "^mano"), +1, "con una mano"),
+    (("con", "^una", "^sola", "^mano"), +1, "con una mano"),
+    (("atand*|atad*|atar", "una", "mano"), +1, "con una mano"),
+    (("sin", "herramient"), +1, "sin herramientas"),
+    (("sin", "usar", "manos"), +1, "sin usar las manos"),
+    (("oscuras",), +1, "a oscuras"),
+    (("despacit",), -1, "despacito"),
+    (("despues", "planear"), -1, "tras planearlo"),
     (("un", "pie"), +1, "a la pata coja"),
     (("pata", "coja"), +1, "a la pata coja"),
     (("sin", "pensar"), +1, "sin pensar"),
@@ -515,6 +523,23 @@ def _partir_peso(item: str):
         return palabra, 1.0
 
 
+# Palabras corrientes que no dicen nada de la intención: nunca se aprenden como raíz
+# (si no, «mejor» o «ahora» acabarían puntuando para siempre en una intención).
+_FUNCIONALES = set("""
+    mejor peor ahora antes luego despues tambien siempre nunca jamas mucho mucha muchos
+    muchas poco poca pocos pocas algo nada alguien nadie todo todos toda todas cada otro
+    otra otros otras mismo misma mismos mismas tanto tanta tantos tantas aqui alli ahi alla
+    aca donde cuando mientras aunque porque pues entonces solo sola solos solas solamente
+    quiza quizas tal vez veces cosa cosas manera forma momento tiempo parte lado esto eso
+    aquello aquel aquella aquellos aquellas estos estas esos esas quien quienes cual cuales
+    cuanto cuanta hacia hasta desde entre sobre bajo tras ante segun contra durante
+    mediante ademas incluso apenas casi bastante demasiado demasiada menos propio propia
+    nuestro nuestra nuestros nuestras vuestro vuestra ellos ellas nosotros nosotras usted
+    ustedes estoy estas estamos estan estaba estaban tengo tienes tiene tenemos tienen
+    tenia hecho hecha hacer hice hizo haber habia habra seria sera somos eran eres fuera
+    fuese tenga tengas poder queda quedan sino pero ademas bien mal asi casi igual mismo
+    lugar sitio vamos vais dime dile dice dicen digo dijo hace hacen hacia otro unos unas
+    segun luego ahora""".split())
 _PERSONAL = {}               # {clase: {"raices": [...]}} lo que ha enseñado el jugador
 _FRASES_PERSONALES = {}      # frase normalizada -> clase
 
@@ -522,11 +547,15 @@ _FRASES_PERSONALES = {}      # frase normalizada -> clase
 def fijar_personal(datos) -> None:
     """Carga (o vacía, con None) el vocabulario que el jugador ha ido enseñando."""
     global _PERSONAL, _FRASES_PERSONALES
-    datos = datos or {}
-    _PERSONAL = {c: {"raices": list(v)} for c, v in (datos.get("raices") or {}).items()
-                 if c in CLASES and isinstance(v, list)}
-    _FRASES_PERSONALES = {k: c for k, c in (datos.get("frases") or {}).items()
-                          if c in CLASES}
+    datos = datos if isinstance(datos, dict) else {}
+    raices = datos.get("raices")
+    frases = datos.get("frases")
+    raices = raices if isinstance(raices, dict) else {}
+    frases = frases if isinstance(frases, dict) else {}
+    _PERSONAL = {c: {"raices": [x for x in v if isinstance(x, str)]}
+                 for c, v in raices.items() if c in CLASES and isinstance(v, list)}
+    _FRASES_PERSONALES = {k: c for k, c in frases.items()
+                          if isinstance(k, str) and c in CLASES}
     _indexar()
 
 
@@ -554,6 +583,7 @@ def aprender(texto: str, clase: str, w) -> list:
     nuevas = []
     for i, t in enumerate(norm):
         if len(t) < 4 or t in _RELLENO or t in alias or t in _IGNORADAS \
+                or t in _FUNCIONALES or t in _AUXILIARES or t in NEGADORES \
                 or i in modificadores or coincidencias(t):
             continue
         raiz = t[:-2] if len(t) >= 8 else (t[:-1] if len(t) >= 6 else t)
@@ -847,6 +877,7 @@ def _precomputar(norm):
 
 def _posible(item: str, planas, prefijos) -> bool:
     """¿Podría esta raíz casar con alguna palabra de la frase? (filtro barato)"""
+    item = item.lstrip("^")
     if "|" in item:
         return any(_posible(a, planas, prefijos) for a in item.split("|"))
     if item.endswith("*"):
@@ -866,7 +897,12 @@ def _ventana(norm, patron, pre=None):
         ids, usados = [], set()
         for item in patron:
             hallado = None
+            pegado = item.startswith("^")           # «^x»: justo detrás de la anterior
+            if pegado:
+                item = item[1:]
             for j in range(ini, min(len(norm), ini + ancho)):
+                if pegado and ids and j != ids[-1] + 1:
+                    continue
                 if j not in usados and _item_ok(item, cands[j]):
                     hallado = j
                     break
@@ -899,11 +935,42 @@ _DETERMINANTES = {"el", "la", "los", "las", "un", "una", "unos", "unas", "del", 
 # Palabras que, tras un determinante, son sustantivo y no verbo ("el camino").
 _NOMBRES_AMBIGUOS = {"camino", "paso", "carga", "cargo", "marcha", "vuelta", "sueno",
                      "corte", "mira", "rastro", "lleg", "salto"}
-_FORMAS_IR = {"voy", "vas", "va", "vamos", "van", "iba", "ire"}
+# Verbos auxiliares: seguidos de un infinitivo («voy a esconderme», «pienso
+# rendirme», «vuelvo a intentarlo») no llevan la intención; la lleva el infinitivo.
+# forma -> True si el infinitivo va tras «a»/«de» (False: va directo).
+_AUXILIARES = {}
+for _formas, _enlace in (
+        ("voy vas va vamos van iba ibas ibamos iban ire iras ira iremos iran vaya vayas "
+         "vayamos vayan", "a"),
+        ("vuelvo vuelves vuelve volvemos vuelven volvi volvio volvieron volvia volvere "
+         "volvera", "a"),
+        ("empiezo empiezas empieza empezamos empiezan empece empezo comienzo comienza "
+         "comenzamos comienzan comence comenzo", "a"),
+        ("trato trata tratamos tratan trate", "de"),
+        ("acabo acaba acabamos acaban", "de"),
+        ("quiero quieres quiere queremos quieren queria queriamos", ""),
+        ("pienso piensa pensamos piensan pensaba pensabamos", ""),
+        ("puedo puedes puede podemos pueden podia podria podriamos", ""),
+        ("debo debes debe debemos deben debia", ""),
+        ("decido decide decidimos deciden decidi decidio", ""),
+        ("intento intenta intentamos intentan intente intento", ""),
+        ("procuro procura procuramos", ""),
+        ("necesito necesita necesitamos necesitan", ""),
+        ("prefiero prefiere preferimos prefieren", ""),
+        ("pretendo pretende pretendemos", ""),
+        ("suelo sueles suele solemos suelen", ""),
+        ("logro logra logramos", ""),
+        ("sigo sigues sigue seguimos", "")):
+    for _f in _formas.split():
+        _AUXILIARES.setdefault(_f, _enlace)
+# Negaciones enfáticas: «ni de broma me escondo» = nunca me escondería.
+_NEGACIONES_ENFATICAS = [("ni", "de", "broma"), ("ni", "de", "chiste"), ("ni", "por", "asomo"),
+                         ("ni", "loco"), ("ni", "muerto"), ("ni", "en", "suenos"),
+                         ("jamas", "de", "los", "jamases"), ("ni", "de", "coña")]
 _BOTIN = {"todo", "botin", "oro", "dinero", "monedas", "recompensa", "tesoro",
           "joya", "joyas", "cofre", "pasta", "premio", "parte", "ganancias"}
-_APROVECHADOS = {"senuelo", "cebo", "escudo", "carnada", "sacrificio", "moneda",
-                 "cambio", "trueque"}
+_APROVECHADOS = {"senuelo", "cebo", "escudo", "carnada", "sacrificio"}
+_COMO_USO = {"de", "como", "para"}       # «de escudo», «como cebo»: se usa a alguien
 # Fuera del mundo del juego: si aparecen y nada del mundo, no es una acción.
 _FUERA_DE_MUNDO = {"telefono", "movil", "celular", "taxi", "pizza", "instagram",
                    "whatsapp", "internet", "google", "wifi", "email", "facebook",
@@ -928,7 +995,22 @@ def _pesos_de_clausula(norm) -> list:
 
 
 def _es_infinitivo(tok: str) -> bool:
-    return len(tok) > 3 and tok.endswith(("ar", "er", "ir", "arse", "erse", "irse"))
+    """«esconderme», «ayudarlo», «atacar»: infinitivos, con o sin pronombre pegado."""
+    return any(len(c) > 3 and c.endswith(("ar", "er", "ir"))
+               for c in _candidatas(tok))
+
+
+def _es_auxiliar(norm, i: int) -> bool:
+    """¿Es norm[i] un auxiliar de un infinitivo que viene justo detrás?"""
+    enlace = _AUXILIARES.get(norm[i])
+    if enlace is None:
+        return False
+    j = i + 1
+    if enlace:
+        if norm[j:j + 1] != [enlace]:
+            return False
+        j += 1
+    return j < len(norm) and _es_infinitivo(norm[j])
 
 
 def analizar(texto: str, w, esc=None, etiquetas=None, visibles=None,
@@ -959,18 +1041,32 @@ def analizar(texto: str, w, esc=None, etiquetas=None, visibles=None,
 
     # 2) Palabras sueltas, con negaciones y desambiguaciones sencillas.
     clausula = _pesos_de_clausula(norm)
+    saltar = set()                                     # palabras de una negación enfática
+    neg_hasta = -1                                     # la negación vigente alcanza hasta aquí
     for i, tok in enumerate(norm):
-        if i in enmascarados or tok in _IGNORADAS:
+        if i in enmascarados or tok in _IGNORADAS or i in saltar:
+            continue
+        if tok in NEGADORES:
+            # «sin armas» ya es un modificador: no niega al verbo que viene después.
+            neg_hasta = i + 2
+            for enf in _NEGACIONES_ENFATICAS:
+                if tuple(norm[i:i + len(enf)]) == enf:
+                    saltar.update(range(i, i + len(enf)))
+                    neg_hasta = i + len(enf) + 3
+                    break
             continue
         if tok in _RELLENO and tok not in _EXACTAS:
             continue
         previo = norm[i - 1] if i else ""
         if tok in _NOMBRES_AMBIGUOS and previo in _DETERMINANTES:
             continue                                   # "el camino": sustantivo
-        if tok in _FORMAS_IR and i + 2 < len(norm) + 1 and \
-                norm[i + 1:i + 2] == ["a"] and i + 2 < len(norm) and \
-                _es_infinitivo(norm[i + 2]):
-            continue                                   # "voy a dormir": perífrasis
+        if _es_auxiliar(norm, i):
+            if neg_hasta >= i:                         # «no voy a huir»: la negación
+                neg_hasta += 2 if _AUXILIARES[tok] else 1   # llega hasta el infinitivo
+            continue                                   # "voy a dormir", "pienso rendirme"
+        if tok.startswith("sacrific") and (tok.endswith("me") or previo == "me"):
+            puntos["compasion"] += 1.5                 # sacrificarse por otros no es ambición
+            continue
         if tok.startswith("qued") and i + 1 < len(norm) and \
                 norm[i + 1].endswith(("ando", "iendo")):
             continue                                   # "me quedo mirando"
@@ -981,7 +1077,9 @@ def analizar(texto: str, w, esc=None, etiquetas=None, visibles=None,
                 m = coincidencias(corregido)
         if not m:
             continue
-        negada = any(norm[j] in NEGADORES for j in range(max(0, i - 2), i))
+        negada = i <= neg_hasta
+        if negada:
+            neg_hasta = -1                             # la negación afecta a un solo verbo
         for clase, peso in m.items():
             if negada:
                 inv = NEGACION_INVERSA.get(clase)
@@ -991,7 +1089,11 @@ def analizar(texto: str, w, esc=None, etiquetas=None, visibles=None,
             puntos[clase] += peso * _mult_pos(i) * clausula[i]
 
     # 3) Frases hechas (no cuentan si las precede una negación, salvo que la lleven).
+    se_sacrifica = any(t.startswith("sacrific") and (t.endswith("me") or (k and norm[k - 1] == "me"))
+                       for k, t in enumerate(norm))
     for patron, pesos in FRASES:
+        if se_sacrifica and patron[0] == "sacrific*":
+            continue                       # «me sacrifico por X»: no se sacrifica a X
         ids = _ventana(norm, patron, pre)
         if ids is None:
             continue
@@ -1020,8 +1122,12 @@ def analizar(texto: str, w, esc=None, etiquetas=None, visibles=None,
     if quedarse and (_BOTIN & set(norm) or "meta" in vistas or "don" in vistas):
         puntos["sombra"] += 2.0                  # quedarse con el botín: ambición
         puntos["duda"] = 0.0
-    if any(c in vistas for c in COMPANEROS) and (_APROVECHADOS & set(norm)
-                                                 or _ventana(norm, ("sacrific*",))):
+    de_escudo = any(t in _APROVECHADOS and k > 0 and norm[k - 1] in _COMO_USO
+                    for k, t in enumerate(norm))
+    sacrifica_a_otro = any(
+        t.startswith("sacrific") and not t.endswith("me")
+        and not (k > 0 and norm[k - 1] == "me") for k, t in enumerate(norm))
+    if any(c in vistas for c in COMPANEROS) and (de_escudo or sacrifica_a_otro):
         puntos["sombra"] += 2.0                  # usar a un compañero de escudo o cebo
         puntos["ingenio"] = max(0.0, puntos["ingenio"] - 1.0)
         puntos["compasion"] = max(0.0, puntos["compasion"] - 2.0)
