@@ -21,7 +21,7 @@ import re
 import time
 from pathlib import Path
 
-from . import libre, motor
+from . import lenguaje, libre, motor
 from .generador import crear_mundo
 from .lenguaje import analizar
 from .libro import guardar as guardar_libro
@@ -54,6 +54,8 @@ Comandos (empiezan por /):
   /reintentar         repite la última acción con otra suerte
   /guardar [nombre]   guarda la partida     /cargar [nombre]   la recupera
   /partidas           lista tus guardados   (hay uno automático, «auto»)
+  /corregir           si te malinterpreté tu última frase, me dices qué querías decir
+  /olvidar            borra lo que me hayas ido enseñando de tu forma de escribir
   /renombrar X nombre cambia el nombre de mentor, aliado, heraldo, villano o héroe
   /nota texto         añade una nota tuya al libro
   /estado             atributos, vigor y compañía
@@ -129,6 +131,8 @@ class Sesion:
         self._escena = None
         self._mostrado = True
         self.terminada = False
+        self.aprendizaje = True        # recuerda lo que le explicas al intérprete
+        self._reinterpretar = None     # frase a re-preguntar tras /corregir
 
     def reanudar(self, registros):
         """Prepara la sesión para retomar una partida a partir de sus acciones."""
@@ -140,6 +144,7 @@ class Sesion:
     # ------------------------------------------------------------------
     def ejecutar(self):
         """Juega la historia entera, atendiendo deshacer y cargar."""
+        self._cargar_personal()
         while True:
             try:
                 self.w = crear_mundo(self.params)
@@ -247,6 +252,12 @@ class Sesion:
 
     def _en_vivo(self, esc, visibles, etiquetas):
         while True:
+            if self._reinterpretar is not None:        # tras /corregir
+                texto, self._reinterpretar = self._reinterpretar, None
+                reg = self._interpretar(texto, esc, visibles, etiquetas, preguntar=True)
+                if reg is not None:
+                    return self._registrar(reg)
+                continue
             entrada = self.ui.leer(etiquetas, libre_ok=not esc.critica,
                                    critica=esc.critica)
             tipo = entrada[0]
@@ -260,8 +271,12 @@ class Sesion:
             if reg is not None:
                 return self._registrar(reg)
 
-    def _interpretar(self, texto, esc, visibles, etiquetas):
-        """Texto libre -> registro (o None si hay que volver a preguntar)."""
+    def _interpretar(self, texto, esc, visibles, etiquetas, preguntar=False):
+        """Texto libre -> registro (o None si hay que volver a preguntar).
+
+        Si el intérprete no está seguro (o el jugador pide corregir), pregunta
+        qué intentaba y aprende de la respuesta.
+        """
         w = self.w
         if esc.critica:
             self.ui.mensaje(MOMENTO_CRITICO)
@@ -270,6 +285,21 @@ class Sesion:
         if r.bloqueo:
             self.ui.mensaje(r.bloqueo)
             return None
+        if r.opcion is None and (r.insegura or preguntar):
+            clase = self.ui.preguntar_intencion(
+                r.frase, None if r.clase == "desconocida" else r.clase)
+            if clase is None:
+                self.ui.mensaje(NO_ENTENDIDO)
+                return None
+            if self.aprendizaje:
+                lenguaje.aprender(r.frase, clase, w)
+                self._guardar_personal()
+            r = analizar(texto, w, esc, etiquetas, visibles, forzar=clase)
+            if r.bloqueo:
+                self.ui.mensaje(r.bloqueo)
+                return None
+        elif preguntar and r.opcion is not None:
+            pass                                       # ya se confirma con la opción
         if r.clase == "desconocida":
             self.ui.mensaje(NO_ENTENDIDO)
             return None
@@ -357,6 +387,12 @@ class Sesion:
                 self._aplicar_meta(reg)
                 self._autoguardar()
                 ui.mensaje("Nota añadida al libro.")
+        elif nombre == "corregir":
+            self._corregir()
+        elif nombre == "olvidar":
+            lenguaje.fijar_personal(None)
+            self._guardar_personal()
+            ui.mensaje("He olvidado todo lo que me habías enseñado.")
         elif nombre == "estado":
             ui.imprimir(self._lineas_estado())
         elif nombre == "libro":
@@ -378,6 +414,15 @@ class Sesion:
             raise Salir()
         else:
             ui.mensaje(f"No conozco el comando «/{nombre}». Prueba /ayuda.")
+
+    def _corregir(self):
+        acc = self._acciones()
+        if not acc or self.registros[acc[-1]]["k"] not in ("libre", "int"):
+            self.ui.mensaje("Solo puedo corregir una frase libre que acabes de escribir. "
+                            "Si fue una opción, usa /atras.")
+            return
+        self._reinterpretar = self.registros[acc[-1]]["txt"]
+        raise Retroceso(1)
 
     def _reintentar(self):
         acc = self._acciones()
@@ -478,6 +523,28 @@ class Sesion:
         tmp = ruta.with_suffix(".tmp")
         tmp.write_text(json.dumps(self._datos(), ensure_ascii=False), encoding="utf-8")
         tmp.replace(ruta)
+
+    def _ruta_personal(self):
+        return self.carpeta / "vocabulario_personal.json"
+
+    def _cargar_personal(self):
+        try:
+            datos = json.loads(self._ruta_personal().read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            datos = None
+        lenguaje.fijar_personal(datos if isinstance(datos, dict) else None)
+
+    def _guardar_personal(self):
+        if not self.guardar_auto:
+            return
+        try:
+            self.carpeta.mkdir(parents=True, exist_ok=True)
+            tmp = self._ruta_personal().with_suffix(".tmp")
+            tmp.write_text(json.dumps(lenguaje.personal_a_dict(), ensure_ascii=False),
+                           encoding="utf-8")
+            tmp.replace(self._ruta_personal())
+        except OSError:
+            pass
 
     def _autoguardar(self):
         if self.guardar_auto and self.w is not None:

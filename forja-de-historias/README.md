@@ -85,8 +85,16 @@ Además de elegir un número, **puedes escribir lo que quieres hacer**:
 
 No hay inteligencia artificial detrás: un intérprete de español por reglas
 (`forja/lenguaje.py`) reconoce **raíces de palabras**, no significados. Por eso
-te enseña cómo lo ha entendido y te deja corregirlo, y si no entiende algo te
-pide que lo reformules sin gastar nada.
+trabaja **en modo asistido**:
+
+- Si **no está seguro** o no conoce tu frase, te pregunta qué intentabas con un
+  menú de nueve opciones (atacar, engañar, ayudar, aprovecharte, evitar,
+  observar, hablar, descansar, moverte). Con tu respuesta sigue adelante.
+- **Aprende de ti**: las palabras que no conocía las guarda en
+  `partidas/vocabulario_personal.json`, y la próxima vez que las escribas (aunque
+  cambie la conjugación) ya no pregunta. `/olvidar` lo borra.
+- Si te malinterpretó **sin avisar**, `/corregir` vuelve a preguntarte por tu
+  última frase; y `/atras` deshace cualquier acción.
 
 - **Decisión.** Si lo que escribes encaja con una opción de la escena (por la
   intención o por palabras compartidas), se resuelve esa opción con sus efectos,
@@ -116,6 +124,7 @@ lista de tus acciones reconstruyen exactamente la misma historia, hasta el
 | `/atras [n]` | deshace tus últimas *n* acciones (también tras el final) |
 | `/historial` · `/volver N` | lista tus acciones y vuelve a justo antes de la *N* |
 | `/reintentar` | repite la última acción con otra suerte |
+| `/corregir` · `/olvidar` | corrige cómo entendí tu última frase · borra lo que he aprendido de ti |
 | `/guardar [nombre]` · `/cargar [nombre]` · `/partidas` | guardados con nombre |
 | `/renombrar mentor Zarkon` | cambia un nombre, también en el libro |
 | `/nota texto` | añade una nota tuya al libro |
@@ -135,7 +144,8 @@ habituales, jerga), no confusiones. Cuando no entiende, te lo dice; cuando
 entiende mal, te lo enseña antes de aplicarlo en las decisiones y puedes deshacer
 cualquier acción. Se está ampliando el vocabulario (`forja/vocabulario.py`) con
 disciplina de desarrollo y prueba, para no medirlo con los mismos datos con los
-que se afina.
+que se afina. Esa cifra es la del intérprete a solas; con el modo asistido, lo
+que no reconoce se resuelve con una pregunta en lugar de un fallo.
 
 ## Por qué la historia tiene lógica
 

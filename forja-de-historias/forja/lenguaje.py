@@ -16,7 +16,6 @@ No entiende el lenguaje: reconoce raíces de palabras. Por eso siempre muestra
 al jugador cómo lo ha interpretado, y le deja corregirlo.
 """
 
-import difflib
 import re
 import unicodedata
 from dataclasses import dataclass, field
@@ -39,6 +38,7 @@ AFINIDAD = {
     "descansar": {"duda": 0.5},
 }
 
+UMBRAL_CONFIANZA = 0.8        # por debajo, el intérprete pregunta en lugar de suponer
 MAX_CARACTERES = 300          # una acción es una línea; más se recorta
 _TOKEN = re.compile(r"[\wáéíóúüñÁÉÍÓÚÜÑ]+", re.UNICODE)
 
@@ -411,14 +411,39 @@ def _sumar(mejor: dict, token: str) -> None:
             return                      # la forma original manda sobre la que pierde su clítico
 
 
+def _a_distancia_1(a: str, b: str) -> bool:
+    """¿Se diferencian en una sola letra (cambio, falta, sobra o intercambio)?"""
+    if a == b:
+        return True
+    la, lb = len(a), len(b)
+    if abs(la - lb) > 1:
+        return False
+    if la == lb:
+        d = [i for i in range(la) if a[i] != b[i]]
+        if len(d) == 1:
+            return True
+        return (len(d) == 2 and d[1] == d[0] + 1
+                and a[d[0]] == b[d[1]] and a[d[1]] == b[d[0]])
+    if la > lb:
+        a, b = b, a
+    i = 0
+    while i < len(a) and a[i] == b[i]:
+        i += 1
+    return a[i:] == b[i + 1:]
+
+
 def _corregir(token: str):
-    """Intenta reconocer una palabra con una errata leve (atakar -> atacar)."""
-    if len(token) < 6 or token in _RELLENO:
+    """Reconoce una errata leve de una palabra larga (enboscada -> emboscada).
+
+    Solo palabras de 7 o más letras y a una letra de distancia: con menos, casi
+    cualquier palabra corriente se parece a alguna del léxico (mantas ~ matas).
+    """
+    if len(token) < 7 or token in _RELLENO:
         return None
-    candidatos = [p for p in _VOCAB_POR_INICIO.get(token[:2], ())
-                  if abs(len(p) - len(token)) <= 2]
-    cerca = difflib.get_close_matches(token, candidatos, n=1, cutoff=0.9)
-    return cerca[0] if cerca else None
+    for p in _VOCAB_POR_INICIO.get(token[:2], ()):
+        if abs(len(p) - len(token)) <= 1 and _a_distancia_1(token, p):
+            return p
+    return None
 
 
 # --------------------------------------------------------------------------
@@ -481,11 +506,63 @@ def _partir_peso(item: str):
         return palabra, 1.0
 
 
+_PERSONAL = {}               # {clase: {"raices": [...]}} lo que ha enseñado el jugador
+_FRASES_PERSONALES = {}      # frase normalizada -> clase
+
+
+def fijar_personal(datos) -> None:
+    """Carga (o vacía, con None) el vocabulario que el jugador ha ido enseñando."""
+    global _PERSONAL, _FRASES_PERSONALES
+    datos = datos or {}
+    _PERSONAL = {c: {"raices": list(v)} for c, v in (datos.get("raices") or {}).items()
+                 if c in CLASES and isinstance(v, list)}
+    _FRASES_PERSONALES = {k: c for k, c in (datos.get("frases") or {}).items()
+                          if c in CLASES}
+    reconstruir()
+
+
+def personal_a_dict() -> dict:
+    return {"raices": {c: sorted(set(d["raices"])) for c, d in _PERSONAL.items()},
+            "frases": dict(_FRASES_PERSONALES)}
+
+
+def aprender(texto: str, clase: str, w) -> list:
+    """Anota que `texto` significa `clase`: aprende sus palabras desconocidas.
+
+    Devuelve las raíces nuevas. Las palabras desconocidas se guardan como raíz
+    (quitando la terminación, para que sirvan otras conjugaciones) y la frase
+    entera se recuerda tal cual.
+    """
+    if clase not in CLASES:
+        return []
+    _, norm = tokenizar(" ".join(texto.split())[:MAX_CARACTERES])
+    alias = _alias(w)
+    modificadores = set()
+    for patron, _, _ in MODIFICADORES:
+        ids = _ventana(norm, patron)
+        if ids is not None:
+            modificadores.update(ids)
+    nuevas = []
+    for i, t in enumerate(norm):
+        if len(t) < 4 or t in _RELLENO or t in alias or t in _IGNORADAS \
+                or i in modificadores or coincidencias(t):
+            continue
+        raiz = t[:-2] if len(t) >= 8 else (t[:-1] if len(t) >= 6 else t)
+        if raiz not in nuevas:
+            nuevas.append(raiz)
+    for raiz in nuevas:
+        _PERSONAL.setdefault(clase, {"raices": []})["raices"].append(raiz)
+    if norm:
+        _FRASES_PERSONALES[" ".join(norm)] = clase
+    reconstruir()
+    return nuevas
+
+
 def reconstruir(extra=None) -> None:
     """(Re)construye los índices. `extra` es un vocabulario adicional opcional."""
     global _PREFIJOS, _PREF_POR_INICIO, _EXACTAS, FRASES, _VOCABULARIO, _VOCAB_POR_INICIO
     from .vocabulario import VOCABULARIO as base
-    fuentes = [base] + _extras_de_entorno() + ([extra] if extra else [])
+    fuentes = [base] + _extras_de_entorno() + ([extra] if extra else []) + [_PERSONAL]
 
     prefijos = {}                       # (raiz, clase) -> peso
     exactas = {}                        # (palabra, clase) -> peso
@@ -639,6 +716,13 @@ class Interpretacion:
     opcion: object = None                        # índice entre las opciones visibles
     puntaje_opcion: float = 0.0
     bloqueo: object = None                       # texto si la acción es imposible
+    top: float = 0.0                             # puntuación de la intención ganadora
+    margen: float = 0.0                          # ventaja sobre la segunda
+
+    @property
+    def insegura(self) -> bool:
+        """¿Conviene preguntar al jugador qué quiso decir?"""
+        return self.clase == "desconocida" or self.top < UMBRAL_CONFIANZA
 
     def a_registro(self) -> dict:
         return {"txt": self.frase, "clase": self.clase, "ent": list(self.entidades),
@@ -719,8 +803,13 @@ def _es_infinitivo(tok: str) -> bool:
     return len(tok) > 3 and tok.endswith(("ar", "er", "ir", "arse", "erse", "irse"))
 
 
-def analizar(texto: str, w, esc=None, etiquetas=None, visibles=None) -> Interpretacion:
-    """Interpreta `texto` en el contexto del mundo `w` y de la escena `esc`."""
+def analizar(texto: str, w, esc=None, etiquetas=None, visibles=None,
+             forzar=None) -> Interpretacion:
+    """Interpreta `texto` en el contexto del mundo `w` y de la escena `esc`.
+
+    `forzar` es una intención elegida por el propio jugador (menú de ayuda):
+    manda sobre lo que deduzca el intérprete.
+    """
     texto = " ".join(texto.split())[:MAX_CARACTERES]
     orig, norm = tokenizar(texto)
     r = Interpretacion(frase=texto)
@@ -803,12 +892,22 @@ def analizar(texto: str, w, esc=None, etiquetas=None, visibles=None) -> Interpre
                                                 PERSONAJES + ("hogar", "guardian", "esbirros")):
         puntos = {c: 0.0 for c in CLASES}
 
+    # 5b) Lo que el jugador ya enseñó o acaba de elegir.
+    personal = _FRASES_PERSONALES.get(" ".join(norm))
+    if personal in CLASES:
+        puntos[personal] += 3.0
+    if forzar in CLASES:
+        puntos[forzar] += 3.0
+
     # 6) Intención dominante.
     r.puntos = {c: round(v, 3) for c, v in puntos.items() if v > 0}
     if r.puntos:
         r.clase = max(r.puntos, key=lambda c: (r.puntos[c], -_ORDEN[c]))
         if r.puntos[r.clase] < 0.5:
             r.clase = "desconocida"
+        valores = sorted(r.puntos.values(), reverse=True)
+        r.top = valores[0]
+        r.margen = valores[0] - (valores[1] if len(valores) > 1 else 0.0)
 
     # 7) Encaje con las opciones de la escena.
     if esc is not None and visibles is not None and etiquetas is not None:

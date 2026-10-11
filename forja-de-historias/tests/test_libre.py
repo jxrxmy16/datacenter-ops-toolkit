@@ -21,6 +21,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from test_forja import (CARPETA_TEMPORAL, nueva_sesion,            # noqa: E402
                         parametros_aleatorios)
 from forja.consola import Muda, analizar_linea                      # noqa: E402
+from forja import lenguaje                                          # noqa: E402
 from forja.lenguaje import analizar                                 # noqa: E402
 from forja.libro import a_markdown, reemplazar_nombre              # noqa: E402
 from forja.sesion import Salir, Sesion, leer_guardado   # noqa: E402
@@ -33,6 +34,10 @@ except (OSError, ValueError):             # sin el corpus, el fuzz usa unas poca
         "atacar al guardián", "mirar a mi alrededor", "hablar con el mentor",
         "descansar un rato", "salir del bosque con los ojos cerrados")]
 FRASES_LIBRES = [d["frase"] for d in CORPUS if d["clase"] != "desconocida"]
+
+
+def tearDownModule():
+    lenguaje.fijar_personal(None)             # lo aprendido en las pruebas no se filtra
 
 
 def jugar_con_guion(semilla, guion, **kw):
@@ -130,6 +135,79 @@ class TestTextoLibre(unittest.TestCase):
         ses, _ = jugar_con_guion(
             4, [0, 0, 0, 0, 0, "mirar {mentor.nombre} {} {0} con calma", 0])
         self.assertEqual(ses.w.avisos, [])
+
+
+class TestIntérpreteAsistido(unittest.TestCase):
+    def setUp(self):
+        lenguaje.fijar_personal(None)
+
+    def tearDown(self):
+        lenguaje.fijar_personal(None)
+
+    def test_pregunta_lo_que_no_entiende_y_lo_aprende(self):
+        frase = "pernoctar plácidamente"
+        ses, _ = jugar_con_guion(5, [0, 0, 0, 0, 0, frase, frase, 0],
+                                 intenciones=["descansar"])
+        ints = [r for r in ses.registros if r["k"] == "int"]
+        self.assertEqual([r["clase"] for r in ints], ["descansar", "descansar"])
+        # Solo preguntó una vez: la segunda ya la sabía.
+        self.assertEqual(len(ses.ui.preguntas), 1)
+        self.assertEqual(ses.ui.preguntas[0][1], None)
+
+    def test_un_gesto_a_otra_frase_con_la_misma_raiz_tambien_vale(self):
+        ses, _ = jugar_con_guion(5, [0, 0, 0, 0, 0, "pernoctar entre mantas",
+                                     "pernoctaremos aquí", 0],
+                                 intenciones=["descansar"])
+        self.assertEqual(len(ses.ui.preguntas), 1)
+        self.assertEqual(len([r for r in ses.registros if r["k"] == "int"]), 2)
+
+    def test_responder_ninguna_no_registra_nada(self):
+        ses, _ = jugar_con_guion(5, [0, 0, 0, 0, 0, "zzzquux plonk", 0],
+                                 intenciones=["ninguna"])
+        self.assertTrue(any("No he entendido" in m for m in ses.ui.mensajes))
+        self.assertFalse([r for r in ses.registros if r["k"] == "int"])
+
+    def test_lo_aprendido_sobrevive_entre_partidas(self):
+        carpeta = CARPETA_TEMPORAL / "aprende"
+        ses = Sesion(Muda(1, "prudente", [0, 0, 0, 0, 0, "pernoctar entre mantas", 0],
+                          intenciones=["descansar"]),
+                     parametros_aleatorios(5), carpeta)
+        ses.ejecutar()
+        self.assertTrue((carpeta / "vocabulario_personal.json").exists())
+        lenguaje.fijar_personal(None)
+        nueva = Sesion(Muda(1, "prudente", [0, 0, 0, 0, 0, "pernoctar entre mantas", 0]),
+                       parametros_aleatorios(5), carpeta)
+        nueva.guardar_auto = False
+        nueva.ejecutar()
+        self.assertEqual(nueva.ui.preguntas, [])
+        self.assertEqual([r["clase"] for r in nueva.registros if r["k"] == "int"],
+                         ["descansar"])
+
+    def test_olvidar_borra_lo_aprendido(self):
+        ses, _ = jugar_con_guion(5, [0, 0, 0, 0, 0, "pernoctar entre mantas",
+                                     "/olvidar", "pernoctar entre mantas", 0],
+                                 intenciones=["descansar", "descansar"])
+        self.assertEqual(len(ses.ui.preguntas), 2)          # volvió a preguntar
+
+    def test_corregir_reinterpreta_la_ultima_frase(self):
+        ses, _ = jugar_con_guion(5, [0, 0, 0, 0, 0, "mirar a mi alrededor",
+                                     "/corregir", 0],
+                                 intenciones=["hablar"])
+        ints = [r for r in ses.registros if r["k"] == "int"]
+        self.assertEqual([r["clase"] for r in ints], ["hablar"])
+        self.assertEqual(ses.ui.preguntas[0], ("mirar a mi alrededor", "observar"))
+
+    def test_corregir_sin_frase_libre_avisa(self):
+        ses, _ = jugar_con_guion(5, [0, "/corregir", 0])
+        self.assertTrue(any("frase libre" in m for m in ses.ui.mensajes))
+
+    def test_la_confianza_baja_se_pregunta_y_la_alta_no(self):
+        w = jugar_con_guion(5, [])[0].w
+        w.etapa = 6
+        segura = analizar("atacar al guardián", w)
+        dudosa = analizar("pernoctar", w)
+        self.assertFalse(segura.insegura)
+        self.assertTrue(dudosa.insegura)
 
 
 class TestDeshacer(unittest.TestCase):
@@ -316,6 +394,10 @@ class TestPartidasAlAzar(unittest.TestCase):
         def confirmar(self, interp, rotulo, etiqueta, permite_libre=False):
             return self.r.choice(["s", "s", "n", "l" if permite_libre else "s"])
 
+        def preguntar_intencion(self, frase, sugerida=None):
+            return self.r.choice([None, sugerida, "valor", "observar", "hablar",
+                                  "moverse", "descansar", "duda", "sombra"])
+
         def leer(self, opciones, libre_ok=True, critica=False):
             self.pasos += 1
             if self.pasos > 400:
@@ -332,6 +414,10 @@ class TestPartidasAlAzar(unittest.TestCase):
                 return ("cmd", self.r.choice(["estado", "historial", "ayuda"]), "")
             if x < 0.40:
                 return ("cmd", "nota", "una nota")
+            if x < 0.415:
+                return ("cmd", "corregir", "")
+            if x < 0.42:
+                return ("cmd", "olvidar", "")
             return ("op", self.r.randrange(len(opciones)))
 
     def test_cien_partidas_mezclando_todo(self):

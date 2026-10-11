@@ -22,6 +22,19 @@ _COLORES = {
     "tuyo": "1;34",
 }
 
+# Menú de ayuda cuando el intérprete no sabe qué has querido decir.
+MENU_INTENCIONES = [
+    ("valor", "Atacar o actuar con fuerza"),
+    ("ingenio", "Engañar o usar la astucia"),
+    ("compasion", "Ayudar o cuidar a alguien"),
+    ("sombra", "Aprovecharme o actuar sin escrúpulos"),
+    ("duda", "Huir, evitar o esperar"),
+    ("observar", "Observar o pensar"),
+    ("hablar", "Hablar con alguien"),
+    ("descansar", "Descansar, comer o dormir"),
+    ("moverse", "Moverme o ir a otro sitio"),
+]
+
 # Palabras sueltas que se aceptan como comando sin la barra.
 COMANDOS_SUELTOS = {"atras", "atrás", "deshacer", "ayuda", "historial", "estado",
                     "guardar", "cargar", "partidas", "reintentar", "otra"}
@@ -216,6 +229,31 @@ class Consola:
                 print()
                 return "l"
 
+    def preguntar_intencion(self, frase, sugerida=None):
+        """Ayuda cuando el intérprete duda. Devuelve la intención elegida o None.
+
+        Si trae una `sugerida`, primero se confirma; con «n» se ofrece el menú.
+        """
+        nombres = dict(MENU_INTENCIONES)
+        if sugerida in nombres:
+            r = self._leer_linea(self.c(
+                f"  Creo que «{frase}» es: {nombres[sugerida].lower()}. "
+                f"¿Vale? [Enter = sí · n = no, elegir] ", "tuyo")).strip().lower()
+            if r in ("", "s", "si", "sí"):
+                return sugerida
+        else:
+            print(self.c(f"  No sé cómo interpretar «{frase}». ¿Qué intentas?", "tuyo"))
+        for i, (_, texto) in enumerate(MENU_INTENCIONES, 1):
+            print(f"   {i}) {texto}")
+        print("   0) Ninguna: lo escribo de otra forma")
+        while True:
+            r = self._leer_linea(self.c("  > ", "nota")).strip()
+            if r == "0":
+                return None
+            if r.isdigit() and 1 <= int(r) <= len(MENU_INTENCIONES):
+                print()
+                return MENU_INTENCIONES[int(r) - 1][0]
+
     def pedir_final(self):
         r = self._leer_linea(self.c(
             "\n  Fin. «/atras» para rectificar, «/libro» para guardar el libro, "
@@ -298,12 +336,15 @@ class Muda:
 
     notas = False
 
-    def __init__(self, semilla=0, estrategia="azar", guion=None, confirmaciones=None):
+    def __init__(self, semilla=0, estrategia="azar", guion=None, confirmaciones=None,
+                 intenciones=None):
         import random as _r
         self._rng = _r.Random(semilla)
         self.estrategia = estrategia
         self.guion = list(guion or [])
         self.confirmaciones = list(confirmaciones or [])
+        self.intenciones = list(intenciones or [])   # respuestas del menú de ayuda
+        self.preguntas = []             # (frase, sugerida) que se han preguntado
         self.mensajes = []
         self.lineas = []
         self.interludios = []
@@ -330,6 +371,13 @@ class Muda:
 
     def confirmar(self, interp, rotulo, etiqueta, permite_libre=False):
         return self.confirmaciones.pop(0) if self.confirmaciones else "s"
+
+    def preguntar_intencion(self, frase, sugerida=None):
+        self.preguntas.append((frase, sugerida))
+        if self.intenciones:
+            x = self.intenciones.pop(0)
+            return None if x in (None, "ninguna") else x
+        return sugerida
 
     def pedir_final(self):
         if self.final_guion:
