@@ -240,7 +240,7 @@ ESCENAS = [
     ),
 
     Escena(
-        id="mentor_rescate", etapa=4, presentes=("mentor",), menciona=("mentor",),
+        id="mentor_rescate", etapa=4, urgente=True, presentes=("mentor",), menciona=("mentor",),
         fuentes=(
             ("propp", "el donante y el héroe: aquí el favor va al revés, es el "
                       "héroe quien debe ganarse al donante"),

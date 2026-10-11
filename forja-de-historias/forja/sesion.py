@@ -324,7 +324,9 @@ class Sesion:
             eleccion = "s"
             if self.confirmar_activo or r.es_exploracion:
                 rotulo, etiqueta = etiquetas[r.opcion]
-                eleccion = self.ui.confirmar(r, rotulo, etiqueta, r.es_exploracion)
+                libre_ok = r.es_exploracion and not (
+                    esc.urgente and r.clase in ("descansar", "hablar"))
+                eleccion = self.ui.confirmar(r, rotulo, etiqueta, libre_ok)
             if eleccion == "s":
                 return {"k": "libre", "txt": r.frase, "i": r.opcion, "dd": r.dd,
                         "mods": r.mods, "lbl": f"«{r.frase}»"}

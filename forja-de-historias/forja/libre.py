@@ -35,39 +35,55 @@ CONSEJOS_MENTOR = {
 CONSEJO_GENERICO = ("—Sigue tu criterio —dice—, pero no olvides por qué "
                     "empezaste.")
 
+# (con modificador, sin modificador)
 MOVER_OK = [
-    "Avanzas {m} y el camino se deja recorrer: ni un tropiezo.",
-    "Te desplazas {m} con más suerte que cabeza, pero llegas.",
-    "Cada paso {m} es una pequeña apuesta, y esta vez sales ganando.",
+    ("Avanzas {m} y el camino se deja recorrer: ni un tropiezo.",
+     "Avanzas y el camino se deja recorrer: ni un tropiezo."),
+    ("Te desplazas {m} con más suerte que cabeza, pero llegas.",
+     "Te desplazas con más suerte que cabeza, pero llegas."),
+    ("Cada paso {m} es una pequeña apuesta, y esta vez sales ganando.",
+     "Cada paso es una pequeña apuesta, y esta vez sales ganando."),
 ]
 MOVER_MAL = [
-    "Avanzas {m}, pero el terreno te traiciona y pierdes pie.",
-    "Lo intentas {m}; tropiezas, te golpeas y tienes que rehacer el paso.",
-    "Te mueves {m} y el mundo te lo cobra con un golpe.",
+    ("Avanzas {m}, pero el terreno te traiciona y pierdes pie.",
+     "Avanzas, pero el terreno te traiciona y pierdes pie."),
+    ("Lo intentas {m}; tropiezas, te golpeas y tienes que rehacer el paso.",
+     "Lo intentas; tropiezas, te golpeas y tienes que rehacer el paso."),
+    ("Te mueves {m} y el mundo te lo cobra con un golpe.",
+     "Te mueves y el mundo te lo cobra con un golpe."),
 ]
-MOVER_FIN = ("Pero lo que te trajo hasta aquí sigue esperando: la historia te "
-             "reclama.")
+MOVER_FIN = [
+    "Pero lo que te trajo hasta aquí sigue esperando.",
+    "Aun así, el asunto que te ocupa no se ha movido de su sitio.",
+    "Das unas vueltas, pero lo que tienes delante sigue ahí.",
+    "Nada de eso cambia lo que hay que decidir.",
+]
 
+# La frase del jugador ya se enseña antes del párrafo («▸ «frase»» en pantalla,
+# cursiva en el libro): las plantillas no la repiten.
 IMPROV_OK = {
-    "valor": ["{f}. Lo haces sin dudar, y el gesto no resuelve nada todavía, "
-              "pero te deja el pulso firme y la certeza de ir por delante."],
-    "ingenio": ["{f}. Piensas deprisa y actúas con cabeza: aún no decides nada, "
-                "pero ahora ves el terreno con otros ojos."],
-    "compasion": ["{f}. Un gesto amable cambia el ánimo de quienes te rodean, y "
-                  "tú respiras mejor."],
-    "sombra": ["{f}. Haces lo que te conviene, y funciona; algo en ti se "
-               "endurece un poco."],
-    "duda": ["{f}. Te echas atrás un instante y ganas un respiro para pensar."],
+    "valor": ["Lo haces sin dudar, y el gesto no resuelve nada todavía, pero te "
+              "deja el pulso firme y la certeza de ir por delante."],
+    "ingenio": ["Piensas deprisa y actúas con cabeza: aún no decides nada, pero "
+                "ahora ves el terreno con otros ojos."],
+    "compasion": ["Un gesto amable cambia el ánimo de quienes te rodean, y tú "
+                  "respiras mejor."],
+    "sombra": ["Haces lo que te conviene, y funciona; algo en ti se endurece un "
+               "poco."],
+    "duda": ["Te echas atrás un instante y ganas un respiro para pensar."],
 }
 IMPROV_MAL = {
-    "valor": ["{f}. Lo intentas con más ímpetu que acierto y sales magullad{o}."],
-    "ingenio": ["{f}. La idea era buena, pero la ejecución falla y pierdes "
-                "tiempo y fuerzas."],
-    "compasion": ["{f}. Tu gesto no llega a donde querías y te deja un regusto "
+    "valor": ["Lo intentas con más ímpetu que acierto y sales magullad{o}."],
+    "ingenio": ["La idea era buena, pero la ejecución falla y pierdes tiempo y "
+                "fuerzas."],
+    "compasion": ["Tu gesto no llega a donde querías y te deja un regusto "
                   "amargo."],
-    "sombra": ["{f}. Te sale mal, y la culpa se te queda pegada a la piel."],
-    "duda": ["{f}. Dudas demasiado y el momento se te escapa entre los dedos."],
+    "sombra": ["Te sale mal, y la culpa se te queda pegada a la piel."],
+    "duda": ["Dudas demasiado y el momento se te escapa entre los dedos."],
 }
+VENTAJA_OBSERVAR = " Sientes que lo que has visto te dará ventaja en tu próxima jugada."
+VENTAJA_ACTUAR = " Eso te deja un paso por delante en tu próxima jugada."
+PREMIO_AUDACIA = "Tu audacia tiene premio: recuperas un poco de aliento."
 
 
 def _llaves(texto: str) -> str:
@@ -76,12 +92,26 @@ def _llaves(texto: str) -> str:
 
 
 def _mods(reg) -> str:
-    return " y ".join(reg.get("mods") or [])
+    """Los modificadores que escribió el jugador, sin repetidos y bien unidos."""
+    frag = []
+    for m in reg.get("mods") or []:
+        m = " ".join(str(m).split())
+        if m:
+            frag.append(m[:1].lower() + m[1:])
+    # un fragmento que contiene a otro lo repetiría: se queda el más corto
+    unicos = [m for m in dict.fromkeys(frag)
+              if not any(o != m and o in m for o in frag)]
+    if len(unicos) <= 1:
+        return "".join(unicos)
+    return ", ".join(unicos[:-1]) + " y " + unicos[-1]
 
 
-def _eco(reg) -> str:
-    """La frase del jugador como arranque de párrafo (ya protegida)."""
-    return "«" + _llaves(reg["txt"].strip().rstrip(".!?")) + "»"
+def _premio(w, reg) -> list:
+    """El premio de la audacia, si de verdad hay aliento que recuperar."""
+    if reg.get("dd", 0) > 0 and w.vigor < MAX_VIGOR:
+        vigor(+1)(w)
+        return [PREMIO_AUDACIA]
+    return []
 
 
 # --------------------------------------------------------------------------
@@ -94,12 +124,12 @@ def _pistas(w, esc):
          lambda: (w.con("aliado") and w.reparto["aliado"].traidor
                   and not w.b("sospecha")),
          "Algo no encaja en {aliado.nombre}: evita tu mirada cada vez que sale "
-         "el nombre de {villano}. Lo guardas para ti.",
+         "el nombre {villano.de}. Lo guardas para ti.",
          [pon("sospecha")]),
         ("vinculo",
          lambda: (w.con("mentor") and w.vinculo != "ninguno"
                   and not w.b("sabe_vinculo") and not w.b("intuye_vinculo")),
-         "{mentor.Cap} calla cada vez que alguien nombra a {villano}. Ahí hay "
+         "{mentor.Cap} calla cada vez que alguien nombra {villano.a}. Ahí hay "
          "una historia que no te han contado.",
          [pon("intuye_vinculo")]),
         ("guardian",
@@ -128,11 +158,11 @@ def ejecutar(w, esc, reg):
     return _improvisar(w, esc, reg)
 
 
-def _dar_ventaja(w) -> str:
+def _dar_ventaja(w, texto=VENTAJA_OBSERVAR) -> str:
     if w.ventaja >= 1:
         return ""
     w.ventaja = 1
-    return " Sientes que lo que has visto te dará ventaja en tu próxima jugada."
+    return texto
 
 
 def _observar(w, esc, reg):
@@ -172,6 +202,10 @@ def _hablar(w, esc, reg):
                               "dice que no basta con hablarle: hay que "
                               "escucharle de verdad."], menc), None, None)
     if rol == "villano":
+        if esc is not None and "villano" in esc.presentes:
+            return (w.renderizar(["{villano.Cap} te escucha sin moverse, y no "
+                                  "responde: no es hora de palabras."], menc),
+                    None, None)
         return (w.renderizar(["Tus palabras se pierden en la distancia: "
                               "{villano} no está aquí para oírlas."], menc),
                 None, None)
@@ -221,16 +255,18 @@ def _moverse(w, esc, reg):
     dd = reg.get("dd", 0)
     t = w.tirar(enfoque, 5, ajuste=dd)
     reg["azar"] = True
-    m = _mods(reg) or "con paso firme"
+    m = _mods(reg)
     pool = MOVER_OK if t.exito else MOVER_MAL
-    ps = [w.rng.choice(pool).format(m=m)]
+    con, sin = w.rng.choice(pool)
+    if not m or ("paso" in m and con.startswith("Cada paso")):
+        ps = [sin]                 # sin matiz, o que no choque con «paso a paso»
+    else:
+        ps = [con.format(m=m)]
     if t.exito:
-        if dd > 0:
-            vigor(+1)(w)
-            ps.append("Tu audacia tiene premio: recuperas un poco de aliento.")
+        ps += _premio(w, reg)
     else:
         vigor(-1)(w)
-    ps.append(MOVER_FIN)
+    ps.append(MOVER_FIN[w.libres_escena % len(MOVER_FIN)])
     return ps, t, enfoque
 
 
@@ -239,18 +275,17 @@ def _improvisar(w, esc, reg):
     enfoque = ENFOQUE_DE.get(clase) or "ingenio"
     t = w.tirar(enfoque, 6, ajuste=reg.get("dd", 0))
     reg["azar"] = True
-    f = _eco(reg)
     if t.exito:
-        txt = w.rng.choice(IMPROV_OK[clase]).format(f=f)
-        extra = _dar_ventaja(w)
+        txt = w.rng.choice(IMPROV_OK[clase])
+        extra = _dar_ventaja(w, VENTAJA_ACTUAR)
         if clase == "sombra":
             sombra(+1)(w)
-        if reg.get("dd", 0) > 0:
-            vigor(+1)(w)
-            extra += " Tu audacia tiene premio: recuperas un poco de aliento."
+        premio = _premio(w, reg)
+        if premio:
+            extra += " " + premio[0]
         return w.renderizar([txt + extra]), t, enfoque
     vigor(-1)(w)
-    txt = w.rng.choice(IMPROV_MAL[clase]).format(f=f, o="{heroe.o}")
+    txt = w.rng.choice(IMPROV_MAL[clase]).replace("{o}", "{heroe.o}")
     return w.renderizar([txt]), t, enfoque
 
 
@@ -285,7 +320,4 @@ def tirada_de_decision(w, opcion, reg):
 
 
 def hazana(w, reg, exito) -> list:
-    if exito and reg.get("dd", 0) > 0 and w.vigor < MAX_VIGOR:
-        vigor(+1)(w)
-        return ["Tu audacia tiene premio: recuperas un poco de aliento."]
-    return []
+    return _premio(w, reg) if exito else []

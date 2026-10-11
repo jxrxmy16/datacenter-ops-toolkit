@@ -263,7 +263,7 @@ class Mundo:
         if rol in ("mentor", "aliado"):
             return rol in self.grupo
         if rol == "heraldo":                 # se queda en casa
-            return self.etapa <= 3 or self.etapa >= 12
+            return 2 <= self.etapa <= 3 or self.etapa >= 12
         return True                          # el villano, mientras viva
 
     def bono(self, enfoque: str) -> int:

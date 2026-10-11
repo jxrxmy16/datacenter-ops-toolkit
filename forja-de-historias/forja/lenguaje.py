@@ -699,35 +699,97 @@ def _variantes_numero(token: str):
     return [token, token + "s"]
 
 
+_DETERMINANTES = {"el", "la", "los", "las", "un", "una", "unos", "unas", "tu", "tus",
+                  "su", "sus", "mi", "mis", "del", "al"}
+_PREPOSICIONES = {"de", "del", "en", "con", "sin", "bajo", "junto", "sobre"}
+_ADJETIVOS_PREVIOS = {"viejo", "vieja", "anciano", "anciana", "joven", "gran", "buen",
+                      "buena", "antiguo", "antigua"}
+# Palabras de un nombre que pasarían por identificarlo y que son demasiado comunes.
+_GENERICAS_DE_NOMBRE = {"inteligencia", "senora", "corporacion", "mil", "nueva", "nuevo"}
+# Sustantivos que también son formas verbales («camino», «paso»...): solo cuentan
+# como entidad si van precedidos de un determinante o una preposición.
+_AMBIGUAS_VERBO = {"camino", "paso", "control", "base", "casa"}
+_ANTES_DE_SUSTANTIVO = {"el", "la", "los", "las", "un", "una", "al", "del", "mi", "tu",
+                        "su", "este", "esta", "ese", "esa", "aquel", "aquella", "por",
+                        "hacia", "en", "de", "a", "para", "desde", "hasta", "tras"}
+
+
+def _nucleo(texto: str, complemento: bool = False, titulo: bool = False):
+    """Lo que de verdad identifica a algo dentro de su descripción.
+
+    «un troll de ojos vacíos» -> troll; «el Puente de Alderrón» -> Puente, Alderrón.
+    El resto (ojos, vacíos, piedra...) describe, no nombra, y como alias daría
+    falsos positivos: «con los ojos cerrados» no se refiere al guardián.
+    Con `complemento` entra también el primer sustantivo tras «de» («la verja del
+    cementerio» -> verja, cementerio); con `titulo` se saltan los adjetivos
+    previos («el viejo caballero» -> caballero).
+    """
+    tokens = _TOKEN.findall(texto)
+    nucleo, cabeza, tras_de = [], False, False
+    for i, t in enumerate(tokens):
+        bajo = t.lower()
+        if bajo in _DETERMINANTES:
+            continue
+        if bajo in _PREPOSICIONES:
+            tras_de = complemento and cabeza
+            continue
+        if t[:1].isupper() and (i > 0 or not cabeza):
+            nucleo.append(t)
+            cabeza = True
+            tras_de = False
+            continue
+        if not cabeza:
+            if titulo and bajo in _ADJETIVOS_PREVIOS:
+                continue
+            nucleo.append(t)
+            cabeza = True
+        elif tras_de:
+            nucleo.append(t)
+            tras_de = False
+    return nucleo
+
+
 def _alias(w) -> dict:
     """token normalizado -> conjunto de entidades que lo usan."""
-    alias = {}
-    pendientes = []
-
-    def poner(token, ent, variantes=True):
-        if len(token) >= 3 and token not in _RELLENO:
-            alias.setdefault(token, set()).add(ent)
-            if variantes:
-                pendientes.append((token, ent))
-
+    estaticos = {}
     for ent, palabras in PALABRAS_ENTIDAD.items():
         for p in palabras.split():
-            poner(p, ent, variantes=False)
+            if len(p) >= 3 and p not in _RELLENO:
+                estaticos.setdefault(p, set()).add(ent)
+
+    # Lo propio de ESTE mundo: el sustantivo principal y los nombres propios.
+    propios = {}                                  # token -> entidades de este mundo
+
+    def poner(token, ent):
+        if len(token) >= 3 and token not in _RELLENO and token not in _GENERICAS_DE_NOMBRE:
+            propios.setdefault(token, set()).add(ent)
+
     for rol in PERSONAJES:
         p = w.reparto[rol]
-        for t in _TOKEN.findall(f"{p.titulo} {p.nombre}"):
+        for t in _nucleo(p.titulo, titulo=True) + _nucleo(p.nombre, titulo=True):
             poner(normalizar_token(t), rol)
     for ent in LUGARES:
-        for t in _TOKEN.findall(str(w.lugares[ent])):
+        for t in _nucleo(str(w.lugares[ent]), complemento=True):
             poner(normalizar_token(t), ent)
     for ent in ("meta", "don", "herramienta", "guardian", "esbirros"):
-        for t in _TOKEN.findall(str(w.objetos[ent])):
+        for t in _nucleo(str(w.objetos[ent])):
             poner(normalizar_token(t), ent)
+
+    alias = {t: set(e) for t, e in estaticos.items()}
+    for token, ents in propios.items():
+        if len(ents) == 1:
+            alias[token] = set(ents)              # lo de este mundo manda sobre lo genérico
+        elif token not in estaticos:
+            alias.pop(token, None)                # ambiguo dentro del mundo: no identifica
+        else:
+            alias[token] = estaticos[token] & ents or estaticos[token]
     # singular/plural de lo derivado de nombres, sin pisar palabras ya asignadas
-    for token, ent in pendientes:
+    for token, ents in propios.items():
+        if len(ents) != 1:
+            continue
         for v in _variantes_numero(token):
             if v not in alias:
-                alias[v] = {ent}
+                alias[v] = set(ents)
     return alias
 
 
@@ -941,7 +1003,13 @@ def analizar(texto: str, w, esc=None, etiquetas=None, visibles=None,
 
     # 4) Entidades nombradas.
     vistas = []
-    for tok in norm:
+    for i, tok in enumerate(norm):
+        if i in enmascarados:
+            continue                       # «con los ojos cerrados», «paso a paso»...
+        if tok in _AMBIGUAS_VERBO and (i == 0 or norm[i - 1] not in _ANTES_DE_SUSTANTIVO):
+            continue                       # «camino por el bosque» es un verbo
+        if tok == "camino" and i > 0 and norm[i - 1] in ("mi", "tu", "su", "nuestro"):
+            continue                       # «seguir mi camino» es figurado
         for ent in sorted(alias.get(tok, ())):
             if ent not in vistas:
                 vistas.append(ent)
@@ -980,7 +1048,7 @@ def analizar(texto: str, w, esc=None, etiquetas=None, visibles=None,
 
     # 7) Encaje con las opciones de la escena.
     if esc is not None and visibles is not None and etiquetas is not None:
-        _elegir_opcion(r, norm, visibles, etiquetas)
+        _elegir_opcion(r, norm, visibles, etiquetas, w)
 
     # 8) Coherencia con el estado del mundo.
     r.bloqueo = bloqueo(r, w, esc)
@@ -991,7 +1059,17 @@ def _contenido(tokens):
     return {t[:5] for t in tokens if len(t) >= 4 and t not in _RELLENO}
 
 
-def _elegir_opcion(r: Interpretacion, norm, visibles, etiquetas) -> None:
+def _nombres_propios(w) -> set:
+    """Prefijos de 5 letras de los nombres de pila de los personajes de este mundo."""
+    nombres = set()
+    for rol in PERSONAJES:
+        for t in _TOKEN.findall(w.reparto[rol].nombre):
+            if t[:1].isupper():
+                nombres.add(normalizar_token(t)[:5])
+    return nombres
+
+
+def _elegir_opcion(r: Interpretacion, norm, visibles, etiquetas, w) -> None:
     """Busca la opción de la escena que mejor encaja con la frase."""
     if r.clase == "desconocida":
         return
@@ -1001,17 +1079,26 @@ def _elegir_opcion(r: Interpretacion, norm, visibles, etiquetas) -> None:
             vec[c] += a * r.puntos.get(expl, 0.0)
     cima = max(vec.values()) if vec else 0.0
     texto_tokens = _contenido(norm)
+    nombres = _nombres_propios(w)
     mejor, mejor_p = None, 0.0
     for i, op in enumerate(visibles):
         clase_op = next((c for c, e in ENFOQUE_DE.items() if e == op.enfoque), None)
+        if op.enfoque is None and op.tag:
+            clase_op = None      # confianza o gratitud: no es una evasiva
         s_int = (vec.get(clase_op, 0.0) / cima) if cima > 0 and clase_op else 0.0
-        if op.enfoque is None and not op.tag:
-            s_int = (vec.get("duda", 0.0) / cima) if cima > 0 else 0.0
         _, etiqueta = etiquetas[i]
-        solape = len(texto_tokens & _contenido(tokenizar(etiqueta)[1]))
+        comunes = texto_tokens & _contenido(tokenizar(etiqueta)[1])
+        solape = len(comunes)
         if r.es_exploracion and solape == 0:
             continue             # mirar, hablar, ir... solo decide si nombra la opción
-        puntaje = s_int + 0.8 * min(solape, 3)
+        if r.es_exploracion:
+            puntaje = s_int + 0.8 * min(solape, 3)
+        else:
+            # Coincidir solo en el nombre de un personaje no basta: «ayudar a Ignacio»
+            # no debe elegir «quedarte con lo que Ignacio deje caer».
+            solo_nombres = len(comunes & nombres)
+            puntaje = (s_int + 0.8 * min(solape - solo_nombres, 3)
+                       + 0.3 * min(solo_nombres, 1))
         if puntaje > mejor_p:
             mejor, mejor_p = i, puntaje
     if mejor is not None and mejor_p >= 0.8:
@@ -1027,6 +1114,9 @@ def presente(w, esc, rol: str) -> bool:
         return esc is not None and ("guardian" in esc.presentes
                                     or (esc.id == "camino_de_vuelta"
                                         and w.b("guardian_amigo")))
+    if rol == "villano":                   # solo está donde la escena lo pone
+        return esc is not None and ("villano" in esc.presentes
+                                    or "villano" in esc.participan)
     if rol in PERSONAJES:
         return w.disponible(rol) or (esc is not None and rol in esc.presentes)
     return True
@@ -1047,6 +1137,10 @@ def _lugar_alcanzable(w, ent: str) -> bool:
 
 def bloqueo(r: Interpretacion, w, esc):
     """Devuelve un texto si la acción es imposible ahora, o None."""
+    # Al hablar, quien no está solo es el tema de la charla si hay con quién hablar.
+    hay_interlocutor = r.clase == "hablar" and any(
+        rol in PERSONAJES and presente(w, esc, rol) for rol in r.entidades)
+    contra_enemigos = any(e in r.entidades for e in ("esbirros", "guardian", "villano"))
     for rol in r.entidades:
         if rol not in PERSONAJES:
             continue
@@ -1054,10 +1148,12 @@ def bloqueo(r: Interpretacion, w, esc):
         if r.clase in ("observar", "desconocida"):
             continue                       # pensar o recordar a alguien siempre se puede
         if r.clase in ("valor", "sombra") and rol in ("mentor", "aliado", "heraldo"):
-            if presente(w, esc, rol):
-                return (f"Alzas la mano contra {p.nombre}, pero algo te detiene: "
-                        f"esa clase de decisión pesa demasiado para tomarla a la ligera. "
-                        f"Cuando llegue el momento, tendrás que elegir de verdad.")
+            if presente(w, esc, rol) and not contra_enemigos:
+                return (f"Eso afectaría a {p.nombre}, y una decisión así pesa "
+                        f"demasiado para tomarla a la ligera. Cuando llegue el "
+                        f"momento, tendrás que elegir de verdad.")
+        if hay_interlocutor:
+            continue
         if not presente(w, esc, rol):
             if not p.vivo:
                 return f"{p.nombre} ya no está para eso: murió, y lo sabes."
@@ -1071,6 +1167,6 @@ def bloqueo(r: Interpretacion, w, esc):
     if r.clase == "moverse":
         for ent in r.entidades:
             if ent in LUGARES and not _lugar_alcanzable(w, ent):
-                return (f"Todavía no puedes ir a {w.lugares[ent].a}: "
+                return (f"Todavía no puedes ir {w.lugares[ent].a}: "
                         f"el camino hasta allí aún no ha llegado.")
     return None

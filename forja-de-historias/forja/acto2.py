@@ -568,7 +568,7 @@ ESCENAS = [
     ),
 
     Escena(
-        id="rescate_derrota", etapa=9, menciona=("mentor", "aliado"),
+        id="rescate_derrota", etapa=9, presentes=("villano",), menciona=("mentor", "aliado"),
         requiere=si("derrotado_en_prueba"),
         fuentes=(
             ("vogler", "la muerte aparente del héroe, que renace para seguir"),
