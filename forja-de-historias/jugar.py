@@ -8,8 +8,9 @@ Uso:
     python jugar.py --demo          una partida entera que se juega sola
     python jugar.py --semilla 42    repite exactamente un mundo
     python jugar.py --notas         muestra de qué obra sale cada escena
+    python jugar.py --opciones      enseña siempre la lista de opciones
 
-Durante la partida puedes elegir un número o escribir lo que quieres hacer.
+Durante la partida escribes con tus palabras lo que quieres hacer («?» te da ideas).
 Escribe /ayuda para ver los comandos (deshacer, guardar, reintentar...).
 """
 
@@ -95,6 +96,8 @@ def main(argv=None):
                     help="juega sola una partida completa")
     ap.add_argument("--notas", action="store_true",
                     help="muestra las fuentes de cada escena")
+    ap.add_argument("--opciones", action="store_true",
+                    help="enseña siempre la lista de opciones (por defecto escribes tú)")
     ap.add_argument("--sin-color", action="store_true")
     ap.add_argument("--sin-pausas", action="store_true")
     ap.add_argument("--no-guardar", action="store_true",
@@ -107,7 +110,8 @@ def main(argv=None):
         ui = Demo(semilla_demo, color=not args.sin_color, notas=args.notas)
     else:
         ui = Consola(color=not args.sin_color, notas=args.notas,
-                     pausas=not args.sin_pausas)
+                     pausas=not args.sin_pausas,
+                     modo="opciones" if args.opciones else "libre")
 
     ses = None
     try:

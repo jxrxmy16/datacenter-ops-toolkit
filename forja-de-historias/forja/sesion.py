@@ -39,7 +39,7 @@ ROLES_RENOMBRABLES = {
 }
 
 AYUDA = """\
-Puedes elegir un número O escribir libremente lo que quieres hacer (salvo en los momentos críticos, donde solo hay opciones).
+Escribe con tus palabras lo que quieres hacer; con «?» te enseño ideas (también vale el número de una opción). En los momentos críticos solo hay opciones, como en un RPG.
   Ejemplos: «atacar al guardián por sorpresa», «hablar con el mentor», «mirar a mi alrededor», «cruzar el puente con los ojos cerrados».
   Si lo que escribes encaja con una opción, te digo cómo lo he entendido y puedes corregirme. «Con cuidado» o «en silencio» facilitan; «a ciegas» o «sin armas» dificultan pero, si sale bien, te dan aliento.
 
@@ -59,6 +59,7 @@ Comandos (empiezan por /):
   /libro              guarda ahora el libro de tu historia
   /notas              muestra u oculta las fuentes de cada escena
   /confirmar          activa o desactiva la confirmación de lo que entiendo
+  /modo               alterna entre escribir libremente y ver siempre la lista de opciones
   /salir              sale (la partida queda guardada en «auto»)"""
 
 NOMBRE_CLASE = {
@@ -268,6 +269,12 @@ class Sesion:
             if reg is not None:
                 return self._registrar(reg)
 
+    def _sin_resolver(self, aviso):
+        """Avisa de que no se pudo aplicar lo escrito y, en modo libre, enseña
+        las opciones para que el jugador no se quede sin salida."""
+        self.ui.mensaje(aviso)
+        self.ui.pedir_lista()
+
     def _interpretar(self, texto, esc, visibles, etiquetas, preguntar=False):
         """Texto libre -> registro (o None si hay que volver a preguntar).
 
@@ -280,28 +287,28 @@ class Sesion:
             return None
         r = analizar(texto, w, esc, etiquetas, visibles)
         if r.bloqueo:
-            self.ui.mensaje(r.bloqueo)
+            self._sin_resolver(r.bloqueo)
             return None
         if r.opcion is None and (r.insegura or preguntar):
             clase = self.ui.preguntar_intencion(
                 r.frase, None if r.clase == "desconocida" else r.clase)
             if clase is None:
-                self.ui.mensaje(NO_ENTENDIDO)
+                self._sin_resolver(NO_ENTENDIDO)
                 return None
             if self.aprendizaje:
                 lenguaje.aprender(r.frase, clase, w)
                 self._guardar_personal()
             r = analizar(texto, w, esc, etiquetas, visibles, forzar=clase)
             if r.bloqueo:
-                self.ui.mensaje(r.bloqueo)
+                self._sin_resolver(r.bloqueo)
                 return None
         elif preguntar and r.opcion is not None:
             pass                                       # ya se confirma con la opción
         if r.clase == "desconocida":
-            self.ui.mensaje(NO_ENTENDIDO)
+            self._sin_resolver(NO_ENTENDIDO)
             return None
         if esc.urgente and r.clase in ("descansar", "hablar") and r.opcion is None:
-            self.ui.mensaje(SIN_TIEMPO)
+            self._sin_resolver(SIN_TIEMPO)
             return None
         if r.opcion is not None:
             eleccion = "s"
@@ -315,7 +322,7 @@ class Sesion:
                 return None
             # eleccion == "l": hacerlo como acción libre, sin decidir la escena
         if w.libres_escena >= libre.MAX_LIBRES:
-            self.ui.mensaje(DEMASIADO)
+            self._sin_resolver(DEMASIADO)
             return None
         reg = r.a_registro()
         reg.update({"k": "int", "lbl": f"«{r.frase}»"})
@@ -405,7 +412,11 @@ class Sesion:
             self.confirmar_activo = not self.confirmar_activo
             ui.mensaje("Confirmación " + ("activada." if self.confirmar_activo
                                           else "desactivada (solo pregunto si dudo)."))
-        elif nombre in ("ayuda", "help", "?"):
+        elif nombre == "modo":
+            ui.mensaje(ui.cambiar_modo(arg))
+        elif nombre in ("ideas", "opciones"):
+            ui.pedir_lista()
+        elif nombre in ("ayuda", "help"):
             ui.imprimir(AYUDA.splitlines())
         elif nombre in ("salir", "q", "quit"):
             raise Salir()

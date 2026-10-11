@@ -65,6 +65,8 @@ def analizar_linea(linea: str, n_opciones: int):
         nombre, _, arg = s[1:].partition(" ")
         return ("cmd", nombre.strip().lower(), arg.strip())
     low = s.lower()
+    if low in ("?", "ideas", "opciones", "ver opciones"):
+        return ("ideas",)
     if low == "n":
         return ("cmd", "notas", "")
     if low == "q":
@@ -78,10 +80,16 @@ def analizar_linea(linea: str, n_opciones: int):
 
 
 class Consola:
-    def __init__(self, color=True, notas=False, pausas=True):
+    def __init__(self, color=True, notas=False, pausas=True, modo="libre"):
         self.color = preparar_salida(color)
         self.notas = notas
         self.pausas = pausas
+        # "libre": se escribe con palabras propias y la lista de opciones solo
+        # sale si se pide («?») o en los momentos críticos; "opciones": la
+        # lista se enseña siempre.
+        self.modo = modo if modo in ("libre", "opciones") else "libre"
+        self._lista_pedida = False
+        self._ejemplos_dados = False
         self._pista_dada = False
 
     # --- utilidades --------------------------------------------------------
@@ -99,7 +107,7 @@ class Consola:
                             subsequent_indent=sangria)
         print(self.c(out, estilo) if estilo else out)
 
-    def _con_sangria(self, texto, sangria="  ", extra=None):
+    def _con_sangria(self, texto, sangria="  ", extra=None, estilo=None):
         """Imprime `texto` ajustado al ancho, con sangría francesa.
 
         Si no se indica `extra`, las líneas siguientes se alinean bajo el texto
@@ -108,9 +116,10 @@ class Consola:
         if extra is None:
             m = re.match(r"\d+\) ", texto)
             extra = m.end() if m else 2
-        print(textwrap.fill(texto, self.ancho, initial_indent=sangria,
+        out = textwrap.fill(texto, self.ancho, initial_indent=sangria,
                             subsequent_indent=sangria + " " * extra,
-                            break_long_words=False, break_on_hyphens=False))
+                            break_long_words=False, break_on_hyphens=False)
+        print(self.c(out, estilo) if estilo else out)
 
     def _leer_linea(self, prompt="> "):
         try:
@@ -180,8 +189,13 @@ class Consola:
         self.portada(w.titulo().upper(),
                      f"Crónica de {w.heroe.nombre} · semilla {w.params.semilla}")
         print()
-        self.parrafo("Elige un número o escribe lo que quieras hacer. «/ayuda» "
-                     "explica los comandos (deshacer, guardar...).", "  ", "nota")
+        if self.modo == "libre":
+            self.parrafo("Escribe lo que quieras hacer, con tus palabras. «?» te "
+                         "da ideas y «/ayuda» explica los comandos (deshacer, "
+                         "guardar...).", "  ", "nota")
+        else:
+            self.parrafo("Elige un número o escribe lo que quieras hacer. «/ayuda» "
+                         "explica los comandos (deshacer, guardar...).", "  ", "nota")
 
     def capitulo(self, etapa, titulo):
         print()
@@ -213,18 +227,54 @@ class Consola:
                                    subsequent_indent=" " * len(cab))
             print(cuerpo.replace(f"[{rotulo}]", self.c(f"[{rotulo}]", "etiqueta"), 1))
 
+    def pedir_lista(self):
+        """La próxima lectura enseña las opciones aunque el modo sea libre."""
+        self._lista_pedida = True
+
+    def cambiar_modo(self, arg=""):
+        """Alterna (o fija) el modo de lectura y devuelve el aviso para el jugador."""
+        arg = arg.strip().lower()
+        if arg in ("libre", "opciones"):
+            self.modo = arg
+        elif not arg:
+            self.modo = "opciones" if self.modo == "libre" else "libre"
+        else:
+            return "Uso: /modo libre (escribes) o /modo opciones (siempre ves la lista)."
+        self._ejemplos_dados = False
+        if self.modo == "libre":
+            return ("Modo libre: escribes lo que quieres hacer; con «?» ves ideas. "
+                    "En los momentos críticos sigue habiendo opciones.")
+        return "Modo opciones: verás la lista en cada escena (y aún puedes escribir)."
+
     def leer(self, opciones, libre_ok=True, critica=False):
         """Devuelve ('op', i) | ('txt', frase) | ('cmd', nombre, argumento)."""
-        self._listar(opciones)
+        listar = critica or self.modo == "opciones" or self._lista_pedida
+        self._lista_pedida = False
+        if listar:
+            self._listar(opciones)
         if critica:
             self.parrafo("Momento crítico: elige una opción.", "  ", "aviso")
+        elif not listar:
+            if not self._ejemplos_dados:
+                self.parrafo("Escribe con tus palabras lo que haces: «mirar a mi "
+                             "alrededor», «hablar con el mentor», «avanzar con "
+                             "cuidado»… Con «?» te enseño ideas; también vale un "
+                             "número. «/ayuda» explica los comandos.", "  ", "nota")
+                print()
+                self._ejemplos_dados = True
         elif not self._pista_dada:
             self.parrafo("…o escribe lo que quieras hacer (y «/ayuda» para "
                          "deshacer, guardar, etc.).", "  ", "nota")
             self._pista_dada = True
+        indicacion = "\n> " if listar else "¿Qué haces? (? = ideas) > "
         while True:
-            e = analizar_linea(self._leer_linea("\n> "), len(opciones))
+            e = analizar_linea(self._leer_linea(indicacion), len(opciones))
             if e[0] == "vacio":
+                continue
+            if e[0] == "ideas":
+                print(self.c("\n  Ideas (o escribe otra cosa):", "nota"))
+                self._listar(opciones)
+                indicacion = "\n> "
                 continue
             if e[0] == "mal":
                 print(self.c("  Ese número no está en la lista.", "aviso"))
@@ -234,15 +284,15 @@ class Consola:
 
     def confirmar(self, interp, rotulo, etiqueta, permite_libre=False):
         """Muestra cómo se ha entendido la frase. Devuelve 's', 'n' o 'l'."""
-        print(self.c(f"  Lo entiendo así: [{rotulo}] {etiqueta}", "tuyo"))
+        self._con_sangria(f"Lo entiendo así: [{rotulo}] {etiqueta}", "  ", 2, "tuyo")
         if interp.mods_desc:
             signo = "+" if interp.dd > 0 else ""
             self.parrafo(f"({', '.join(interp.mods_desc)}: dificultad "
                          f"{signo}{interp.dd})", "  ", "nota")
         extra = " · l = solo como acción libre" if permite_libre else ""
+        self._con_sangria(f"¿Es eso? Enter = sí · n = no, otra cosa{extra}", "  ", 2, "nota")
         while True:
-            r = self._leer_linea(self.c(
-                f"  ¿Es eso? [Enter = sí · n = no, otra cosa{extra}] ", "nota")).strip().lower()
+            r = self._leer_linea("  > ").strip().lower()
             if r in ("", "s", "si", "sí"):
                 print()
                 return "s"
@@ -260,13 +310,14 @@ class Consola:
         """
         nombres = dict(MENU_INTENCIONES)
         if sugerida in nombres:
-            r = self._leer_linea(self.c(
-                f"  Creo que «{frase}» es: {nombres[sugerida].lower()}. "
-                f"¿Vale? [Enter = sí · n = no, elegir] ", "tuyo")).strip().lower()
+            self._con_sangria(f"Creo que «{frase}» es: {nombres[sugerida].lower()}. "
+                              "¿Vale? Enter = sí · n = no, elegir", "  ", 2, "tuyo")
+            r = self._leer_linea("  > ").strip().lower()
             if r in ("", "s", "si", "sí"):
                 return sugerida
         else:
-            print(self.c(f"  No sé cómo interpretar «{frase}». ¿Qué intentas?", "tuyo"))
+            self._con_sangria(f"No sé cómo interpretar «{frase}». ¿Qué intentas?",
+                              "  ", 2, "tuyo")
         for i, (_, texto) in enumerate(MENU_INTENCIONES, 1):
             self._con_sangria(f"{i}) {texto}", "   ")
         print("   0) Ninguna: lo escribo de otra forma")
@@ -279,9 +330,10 @@ class Consola:
                 return MENU_INTENCIONES[int(r) - 1][0]
 
     def pedir_final(self):
-        r = self._leer_linea(self.c(
-            "\n  Fin. «/atras» para rectificar, «/libro» para guardar el libro, "
-            "Enter para terminar: ", "nota")).strip()
+        print()
+        self._con_sangria("Fin. «/atras» para rectificar, «/libro» para guardar el "
+                          "libro, Enter para terminar.", "  ", 2, "nota")
+        r = self._leer_linea("  > ").strip()
         if not r:
             return ("fin",)
         e = analizar_linea(r, 0)
@@ -329,7 +381,7 @@ class Demo(Consola):
     """Igual que Consola, pero elige sola entre las opciones y no hace pausas."""
 
     def __init__(self, semilla, color=True, notas=False):
-        super().__init__(color=color, notas=notas, pausas=False)
+        super().__init__(color=color, notas=notas, pausas=False, modo="opciones")
         self._rng = random.Random(semilla * 7919 + 1)
 
     def leer(self, opciones, libre_ok=True, critica=False):
@@ -379,6 +431,8 @@ class Muda:
     def inicio(self, w): pass
     def capitulo(self, etapa, titulo): pass
     def mostrar_notas(self, fuentes): pass
+    def pedir_lista(self): self.listas_pedidas = getattr(self, "listas_pedidas", 0) + 1
+    def cambiar_modo(self, arg=""): return "modo"
 
     def escena(self, parrafos, fuentes=(), critica=False):
         self.escenas.append((parrafos, critica))

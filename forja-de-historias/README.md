@@ -42,7 +42,8 @@ Para recibir las novedades más tarde: `git pull` dentro de la carpeta del repos
 
 - **Pantalla**: el texto se ajusta al ancho (mínimo 40 columnas). En vertical
   cabe; en horizontal queda más cómodo.
-- **Teclado**: basta con teclear el número de la opción y Enter.
+- **Teclado**: escribes frases con tus palabras. Para los comandos necesitas la
+  tecla `/` (en la fila extra de Termux). Un número también vale como atajo.
 - **Tu libro**: se guarda en `historias/`. Para sacarlo a la carpeta de
   Descargas: `termux-setup-storage` (una vez) y
   `cp historias/*.md ~/storage/downloads/`.
@@ -74,14 +75,22 @@ color se desactiva solo.
 
 ## Escribir libremente, deshacer y guardar
 
-Además de elegir un número, **puedes escribir lo que quieres hacer**:
+**La partida se juega escribiendo.** En cada escena el libro te pregunta
+«¿Qué haces?» y tú respondes con tus palabras, sin lista de opciones delante:
 
 ```
-> salir del bosque caminando con los ojos cerrados
-> hablar con el mentor
-> engañar al guardián diciendo que soy inspector
-> tender la mano al aliado
+¿Qué haces? (? = ideas) > salir del bosque caminando con los ojos cerrados
+¿Qué haces? (? = ideas) > hablar con el mentor
+¿Qué haces? (? = ideas) > engañar al guardián diciendo que soy inspector
+¿Qué haces? (? = ideas) > tender la mano al aliado
 ```
+
+- Con **`?`** (o `ideas`) te enseño las opciones de la escena, por si no sabes
+  qué probar; también salen solas cuando lo que escribes no se puede aplicar.
+  Escribir su número sigue valiendo.
+- **`/modo`** alterna entre escribir libremente y ver siempre la lista (como en
+  un librojuego clásico). `python jugar.py --opciones` arranca así.
+- En los **momentos críticos** la lista siempre está y solo valen las opciones.
 
 No hay inteligencia artificial detrás: un intérprete de español por reglas
 (`forja/lenguaje.py`) reconoce **raíces de palabras**, no significados. Por eso
