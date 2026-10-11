@@ -53,13 +53,23 @@ def preparar_salida(color=True):
     return bool(color and sys.stdout.isatty() and "NO_COLOR" not in os.environ)
 
 
+def entero(texto):
+    """Un entero pequeño escrito con cifras ASCII, o None.
+
+    `str.isdigit()` da True para '²' o '①' y `int()` se niega con más de 4300
+    cifras; ninguna de las dos cosas debe tumbar la partida.
+    """
+    t = str(texto).strip()
+    return int(t) if t.isascii() and t.isdigit() and len(t) <= 6 else None
+
+
 def analizar_linea(linea: str, n_opciones: int):
     """Clasifica lo que escribió el jugador: opción, comando o texto libre."""
     s = linea.strip()
     if not s:
         return ("vacio",)
-    if s.isdigit():
-        i = int(s)
+    i = entero(s)
+    if i is not None:
         return ("op", i - 1) if 1 <= i <= n_opciones else ("mal", s)
     if s.startswith("/"):
         nombre, _, arg = s[1:].partition(" ")
@@ -74,7 +84,7 @@ def analizar_linea(linea: str, n_opciones: int):
     primero, _, resto = low.partition(" ")
     if primero in COMANDOS_SUELTOS and not resto.strip():
         return ("cmd", primero, "")
-    if primero in ("atras", "atrás", "volver") and resto.strip().isdigit():
+    if primero in ("atras", "atrás", "volver") and entero(resto) is not None:
         return ("cmd", primero, resto.strip())
     return ("txt", s)
 
@@ -144,8 +154,9 @@ class Consola:
             r = self._leer_linea().strip()
             if r in ("", "0") and azar:
                 return None
-            if r.isdigit() and 1 <= int(r) <= len(opciones):
-                return opciones[int(r) - 1][0]
+            n = entero(r)
+            if n is not None and 1 <= n <= len(opciones):
+                return opciones[n - 1][0]
             print(self.c("  Elige un número de la lista.", "aviso"))
 
     def texto(self, pregunta, defecto=None):
@@ -325,9 +336,10 @@ class Consola:
             r = self._leer_linea(self.c("  > ", "nota")).strip()
             if r == "0":
                 return None
-            if r.isdigit() and 1 <= int(r) <= len(MENU_INTENCIONES):
+            n = entero(r)
+            if n is not None and 1 <= n <= len(MENU_INTENCIONES):
                 print()
-                return MENU_INTENCIONES[int(r) - 1][0]
+                return MENU_INTENCIONES[n - 1][0]
 
     def pedir_final(self):
         print()
@@ -345,7 +357,7 @@ class Consola:
         for p in parrafos:
             self.parrafo(p)
         if self.notas and tirada is not None:
-            self.parrafo(f"({tirada.describir(ETIQUETAS[enfoque].lower())})",
+            self.parrafo(f"({tirada.describir(ETIQUETAS.get(enfoque, 'ingenio').lower())})",
                          "  ", "dado")
         print()
 
@@ -354,7 +366,7 @@ class Consola:
             self.parrafo(p)
             print()
         if self.notas and tirada is not None:
-            self.parrafo(f"({tirada.describir(ETIQUETAS[enfoque].lower())})",
+            self.parrafo(f"({tirada.describir(ETIQUETAS.get(enfoque, 'ingenio').lower())})",
                          "  ", "dado")
         self.esperar()
 

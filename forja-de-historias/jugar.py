@@ -16,6 +16,7 @@ Escribe /ayuda para ver los comandos (deshacer, guardar, reintentar...).
 
 import argparse
 import random
+import shutil
 import sys
 from pathlib import Path
 
@@ -85,6 +86,16 @@ def _partida_en_curso(ui, args):
     return auto if ui.si_no(pregunta) else None
 
 
+def _archivar_auto(nombre="anterior"):
+    """Guarda aparte la partida automática antes de que otra la sustituya."""
+    origen = CARPETA_PARTIDAS / "auto.json"
+    try:
+        if origen.exists():
+            shutil.copy2(origen, CARPETA_PARTIDAS / f"{nombre}.json")
+    except OSError:
+        pass                                  # sin copia, pero sin romper el juego
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--semilla", type=int, help="repite un mundo concreto")
@@ -119,6 +130,8 @@ def main(argv=None):
         if auto:
             params, registros = Params(**auto["params"]), auto["registros"]
         else:
+            if not args.demo:
+                _archivar_auto("anterior")    # la nueva partida no borra la anterior
             params, registros = pedir_parametros(ui, args), []
         ses = Sesion(ui, params, CARPETA_PARTIDAS, CARPETA_LIBROS)
         ses.guardar_auto = not args.demo
@@ -126,14 +139,19 @@ def main(argv=None):
         try:
             final = ses.ejecutar()
         except ErrorCarga as exc:
+            _archivar_auto("danada")
             print()
-            ui.parrafo(f"No pude retomar esa partida ({exc}). Empezamos una nueva.")
+            ui.parrafo(f"No pude retomar esa partida ({exc}). Empezamos una nueva "
+                       "(la dañada queda en partidas/danada.json).")
             ses = Sesion(ui, pedir_parametros(ui, args), CARPETA_PARTIDAS, CARPETA_LIBROS)
             final = ses.ejecutar()
         ui.bibliografia(ses.w)
         if not (args.no_guardar or args.demo):
             if ui.si_no("¿Guardar tu historia como libro (Markdown)?"):
-                ui.parrafo(f"Guardado en: {ses.guardar_libro(final)}")
+                try:
+                    ui.parrafo(f"Guardado en: {ses.guardar_libro(final)}")
+                except OSError as exc:
+                    ui.parrafo(f"No pude guardar el libro ({exc.strerror or exc}).")
     except (Salir, KeyboardInterrupt, EOFError):
         print("\n")
         ui.parrafo("La historia queda en pausa"

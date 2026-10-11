@@ -6,6 +6,7 @@ el final y las notas bibliográficas de lo que realmente apareció.
 """
 
 import re
+import unicodedata
 from pathlib import Path
 
 from .fuentes import FUENTES, agrupar, nota
@@ -20,14 +21,23 @@ def reemplazar_nombre(texto: str, viejo: str, nuevo: str) -> str:
     """
     if viejo == nuevo or not viejo:
         return texto
+    # El reemplazo va en una función: el nombre del jugador puede llevar «\»,
+    # que `re.sub` interpretaría como un escape.
+    def poner(valor):
+        return lambda _m: valor
+
     primera, _, resto = viejo.partition(" ")
-    if primera.lower() == "el" and resto:
+    if primera.lower() in ("el", "la", "los", "las") and resto:
         r = re.escape(resto)
-        texto = re.sub(rf"\bdel {r}", f"de {nuevo}", texto)
-        texto = re.sub(rf"\bal {r}", f"a {nuevo}", texto)
-        texto = re.sub(rf"\b[Ee]l {r}", nuevo, texto)
+        art = primera.lower()
+        if art == "el":
+            texto = re.sub(rf"\bdel {r}", poner(f"de {nuevo}"), texto)
+            texto = re.sub(rf"\bal {r}", poner(f"a {nuevo}"), texto)
+        texto = re.sub(rf"\b{art} {r}", poner(nuevo), texto)
+        texto = re.sub(rf"\b{art.capitalize()} {r}",
+                       lambda _m: nuevo[:1].upper() + nuevo[1:], texto)
         return texto
-    return re.sub(rf"\b{re.escape(viejo)}\b", nuevo, texto)
+    return re.sub(rf"\b{re.escape(viejo)}\b", poner(nuevo), texto)
 
 
 def a_markdown(w, final=None) -> str:
@@ -82,7 +92,9 @@ def a_markdown(w, final=None) -> str:
 
 
 def nombre_archivo(w) -> str:
-    base = re.sub(r"[^a-z0-9]+", "-", w.titulo().lower()).strip("-")
+    titulo = unicodedata.normalize("NFD", w.titulo().lower())
+    titulo = "".join(c for c in titulo if not unicodedata.combining(c))
+    base = re.sub(r"[^a-z0-9]+", "-", titulo).strip("-") or "historia"
     return f"{base}-{w.params.semilla}.md"
 
 

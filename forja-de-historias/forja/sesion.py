@@ -22,9 +22,11 @@ import time
 from pathlib import Path
 
 from . import lenguaje, libre, motor
+from .consola import entero
 from .generador import crear_mundo
 from .lenguaje import analizar
 from .libro import guardar as guardar_libro
+from .lexico import ARQUETIPOS, FALLAS, GENEROS, TONOS, TRAMAS
 from .modelo import Params
 
 VERSION_GUARDADO = 1
@@ -131,6 +133,7 @@ class Sesion:
         self.terminada = False
         self.aprendizaje = True        # recuerda lo que le explicas al intérprete
         self._reinterpretar = None     # frase a re-preguntar tras /corregir
+        self._sucio = False            # hay que volver a autoguardar (tras deshacer o cargar)
 
     def reanudar(self, registros):
         """Prepara la sesión para retomar una partida a partir de sus acciones."""
@@ -152,6 +155,8 @@ class Sesion:
                 self.terminada = False
                 final = motor.jugar(self.w, self)
                 self.terminada = True
+                self._cargando = False
+                self._aplicar_meta_pendiente()
                 self._autoguardar()
                 self._post_final(final)
                 return final
@@ -159,12 +164,14 @@ class Sesion:
                 self._retroceder(r.n)
                 self._resaltar = r.resaltar
                 self._cargando = False
+                self._sucio = True
                 self.ui.mensaje("↩ Vuelves atrás." if r.n else "↻ El destino da otra vuelta.")
             except Cargar as c:
                 self.params = Params(**c.datos["params"])
                 self.registros = list(c.datos["registros"])
                 self._resaltar = None
                 self._cargando = True
+                self._sucio = True
             except (Salir, KeyboardInterrupt):
                 raise
             except Exception as exc:
@@ -238,6 +245,9 @@ class Sesion:
             self.indice_actual = self.pos - 1
             return reg
         self._mostrar_pendiente()
+        if self._sucio:
+            self._sucio = False
+            self._autoguardar()
         return self._en_vivo(esc, visibles, etiquetas)
 
     def _registrar(self, reg):
@@ -339,7 +349,19 @@ class Sesion:
         if reg["k"] == "renombrar":
             self.w.renombrar(reg["rol"], reg["nombre"])
         elif reg["k"] == "nota":
-            self.w.notas_pendientes.append(reg["txt"])
+            if self.terminada and self.w.cronica and self.w.cronica[-1].bloques:
+                # el epílogo ya se escribió: la nota entra en su bloque
+                self.w.cronica[-1].bloques[-1].notas.append(reg["txt"])
+            else:
+                self.w.notas_pendientes.append(reg["txt"])
+
+    def _aplicar_meta_pendiente(self):
+        """Tras el final, aplica las notas y renombrados que quedaron al final."""
+        while self.pos < len(self.registros):
+            reg = self.registros[self.pos]
+            self.pos += 1
+            if reg["k"] in META:
+                self._aplicar_meta(reg)
 
     # ------------------------------------------------------------------
     # Comandos
@@ -351,13 +373,16 @@ class Sesion:
         acc = self._acciones()
         n = max(0, min(n, len(acc)))
         if n:
-            del self.registros[acc[-n]:]
+            inicio = acc[-n]
+            meta = [r for r in self.registros[inicio:] if r["k"] in META]
+            del self.registros[inicio:]
+            self.registros.extend(meta)     # tus notas y renombrados no se pierden
 
     def _comando(self, nombre, arg, esc=None, final=None):
         ui = self.ui
         nombre = nombre.lower().replace("á", "a").replace("é", "e")
         if nombre in ("atras", "deshacer"):
-            n = int(arg) if arg.strip().isdigit() else 1
+            n = entero(arg) or 1
             if not self._acciones():
                 ui.mensaje("No hay nada que deshacer todavía.")
             else:
@@ -366,15 +391,19 @@ class Sesion:
             ui.imprimir(self._lineas_historial())
         elif nombre == "volver":
             acc = self._acciones()
-            if not arg.strip().isdigit() or not (1 <= int(arg) <= len(acc)):
+            n = entero(arg)
+            if n is None or not (1 <= n <= len(acc)):
                 ui.mensaje(f"Uso: /volver N, con N entre 1 y {len(acc)} (mira /historial).")
             else:
-                raise Retroceso(len(acc) - int(arg) + 1)
+                raise Retroceso(len(acc) - n + 1)
         elif nombre in ("reintentar", "otra"):
             self._reintentar()
         elif nombre == "guardar":
-            ruta = self.guardar(arg)
-            ui.mensaje(f"Guardado en «{ruta.stem}».")
+            try:
+                ruta = self.guardar(arg)
+                ui.mensaje(f"Guardado en «{ruta.stem}».")
+            except OSError as exc:
+                ui.mensaje(f"No pude guardar la partida ({exc.strerror or exc}).")
         elif nombre == "cargar":
             self._cargar(arg)
         elif nombre == "partidas":
@@ -400,9 +429,14 @@ class Sesion:
         elif nombre == "estado":
             ui.imprimir(self._lineas_estado())
         elif nombre == "libro":
-            ruta = self.guardar_libro(final)
-            ui.mensaje(f"Libro guardado en: {ruta}" if ruta else
-                       "No hay carpeta de libros configurada.")
+            try:
+                ruta = self.guardar_libro(final)
+            except OSError as exc:
+                ui.mensaje(f"No pude guardar el libro ({exc.strerror or exc}).")
+                ruta = None
+            else:
+                ui.mensaje(f"Libro guardado en: {ruta}" if ruta else
+                           "No hay carpeta de libros configurada.")
         elif nombre == "notas":
             ui.notas = not ui.notas
             ui.mensaje("Notas de fuentes " + ("activadas." if ui.notas else "desactivadas."))
@@ -463,7 +497,8 @@ class Sesion:
         viejo = self.w.reparto[rol].nombre
         self._aplicar_meta(reg)
         self._autoguardar()
-        self.ui.mensaje(f"{viejo} se llamará {nuevo} a partir de ahora (y en el libro).")
+        self.ui.mensaje(f"{viejo[:1].upper() + viejo[1:]} se llamará {nuevo} a partir de "
+                        "ahora (y en el libro).")
 
     # ------------------------------------------------------------------
     # Listados
@@ -551,14 +586,14 @@ class Sesion:
             tmp.write_text(json.dumps(lenguaje.personal_a_dict(), ensure_ascii=False),
                            encoding="utf-8")
             tmp.replace(self._ruta_personal())
-        except OSError:
+        except (OSError, UnicodeError):
             pass
 
     def _autoguardar(self):
         if self.guardar_auto and self.w is not None:
             try:
                 self._escribir(self._ruta("auto"))
-            except OSError:
+            except (OSError, UnicodeError):
                 self.guardar_auto = False      # disco de solo lectura: seguimos sin guardar
 
     def guardar(self, nombre):
@@ -607,9 +642,23 @@ def leer_guardado(ruta):
     """Lee y valida un guardado; None si no existe o está dañado."""
     try:
         datos = json.loads(Path(ruta).read_text(encoding="utf-8"))
-        Params(**datos["params"])
+        params = Params(**datos["params"])
         assert datos.get("version") == VERSION_GUARDADO
+        assert params.genero in GENEROS and params.tono in TONOS
+        assert params.trama in TRAMAS and params.arquetipo in ARQUETIPOS
+        assert params.falla in FALLAS and isinstance(params.semilla, int)
         assert isinstance(datos["registros"], list)
+        for reg in datos["registros"]:
+            assert isinstance(reg, dict) and reg.get("k") in ACCIONES + META
+            if reg["k"] in ("op", "libre"):
+                assert isinstance(reg.get("i"), int) and reg["i"] >= 0
+            if reg["k"] in ("libre", "int", "nota"):
+                assert isinstance(reg.get("txt"), str)
+            if reg["k"] == "renombrar":
+                assert isinstance(reg.get("rol"), str) and isinstance(reg.get("nombre"), str)
+        for clave in ("heroe", "titulo", "hora"):
+            assert isinstance(datos.get(clave), str)
+        assert isinstance(datos.get("acciones"), int)
         return datos
     except (OSError, ValueError, KeyError, TypeError, AssertionError):
         return None

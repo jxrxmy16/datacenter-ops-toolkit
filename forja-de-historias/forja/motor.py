@@ -95,9 +95,16 @@ def jugar_escena(w, esc, ses, capitulo):
         reg = ses.obtener(esc, visibles, etiquetas)
         if reg["k"] != "int":
             break
+        if reg.get("sal"):                 # «otra suerte» también vale para un interludio
+            w.rng.seed(f"{w.params.semilla}:{ses.indice_actual}:{reg['sal']}")
         parrafos, tirada, enfoque = libre.ejecutar(w, esc, reg)
         bloque.libres.append((reg["txt"], parrafos))
         ses.interludio(reg["txt"], parrafos, tirada, enfoque)
+        if w.vigor <= 0:                   # el esfuerzo te deja sin fuerzas: se acabó
+            bloque.eleccion = reg.get("lbl")
+            bloque.notas = list(w.notas_pendientes)
+            w.notas_pendientes.clear()
+            return
 
     es_libre = reg["k"] == "libre"
     opcion = visibles[reg["i"]]
@@ -131,7 +138,7 @@ def jugar_escena(w, esc, ses, capitulo):
     if exito and opcion.enfoque in CRECEN:
         w.crecer(opcion.enfoque)
 
-    ses.resultado(desenlace, tirada, opcion.enfoque)
+    ses.resultado(desenlace, tirada, opcion.enfoque or "ingenio")
     bloque.eleccion = reg.get("lbl") or etiquetas[reg["i"]][1]
     bloque.resultado = desenlace
     bloque.notas = list(w.notas_pendientes)
