@@ -38,6 +38,8 @@ python jugar.py
 
 O, con el script que instala Python si falta: `sh termux.sh`.
 
+Para recibir las novedades más tarde: `git pull` dentro de la carpeta del repositorio. Tu partida guardada (`partidas/`) y tus libros (`historias/`) no se tocan.
+
 - **Pantalla**: el texto se ajusta al ancho (mínimo 40 columnas). En vertical
   cabe; en horizontal queda más cómodo.
 - **Teclado**: basta con teclear el número de la opción y Enter.
@@ -69,6 +71,71 @@ color se desactiva solo.
    y a quién se volvió el héroe.
 4. **El libro**: capítulos, tus decisiones en cursiva y la bibliografía de lo que
    apareció.
+
+## Escribir libremente, deshacer y guardar
+
+Además de elegir un número, **puedes escribir lo que quieres hacer**:
+
+```
+> salir del bosque caminando con los ojos cerrados
+> hablar con el mentor
+> engañar al guardián diciendo que soy inspector
+> tender la mano al aliado
+```
+
+No hay inteligencia artificial detrás: un intérprete de español por reglas
+(`forja/lenguaje.py`) reconoce **raíces de palabras**, no significados. Por eso
+te enseña cómo lo ha entendido y te deja corregirlo, y si no entiende algo te
+pide que lo reformules sin gastar nada.
+
+- **Decisión.** Si lo que escribes encaja con una opción de la escena (por la
+  intención o por palabras compartidas), se resuelve esa opción con sus efectos,
+  pero tu frase cuenta en el relato y en la dificultad. Te pregunta antes
+  («¿Es eso?»); con `/confirmar` puedes desactivar la pregunta.
+- **Interludio.** Si es otra cosa (mirar, hablar con alguien, descansar,
+  moverte, improvisar) se resuelve al momento y la escena sigue abierta. Puede
+  darte una pista, una **ventaja** para tu próxima jugada o un coste. Hasta tres
+  por escena.
+- **Modificadores.** «Con cuidado», «en silencio» o «despacio» bajan la
+  dificultad; «a ciegas», «sin armas» o «con una mano» la suben, pero si sale
+  bien recuperas aliento.
+- **Coherencia.** No puedes hablar con quien murió, ni ir a un lugar al que aún
+  no se puede llegar, ni descansar en mitad de una emboscada. Las acciones
+  contra tus compañeros se reservan para los momentos críticos.
+- **Momentos críticos** (la traición, el sacrificio del mentor, la prueba
+  suprema, el último asalto...): solo hay opciones, como en un RPG.
+
+### Deshacer, rehacer y guardar
+
+Todo es reversible porque la partida es **determinista**: la semilla más la
+lista de tus acciones reconstruyen exactamente la misma historia, hasta el
+último dado. No se guardan «copias» del mundo que puedan desincronizarse.
+
+| Comando | Qué hace |
+|---|---|
+| `/atras [n]` | deshace tus últimas *n* acciones (también tras el final) |
+| `/historial` · `/volver N` | lista tus acciones y vuelve a justo antes de la *N* |
+| `/reintentar` | repite la última acción con otra suerte |
+| `/guardar [nombre]` · `/cargar [nombre]` · `/partidas` | guardados con nombre |
+| `/renombrar mentor Zarkon` | cambia un nombre, también en el libro |
+| `/nota texto` | añade una nota tuya al libro |
+| `/estado` · `/libro` · `/notas` · `/confirmar` · `/ayuda` · `/salir` | consulta y ajustes |
+
+La partida se guarda sola en `partidas/auto.json` tras cada acción. Al volver a
+ejecutar `python jugar.py` te ofrece continuarla (`--nueva` empieza de cero).
+
+### Cuánto entiende de verdad (cifras reales)
+
+El intérprete se mide con frases de jugador escritas por otros agentes que no
+vieron el código (`tests/datos/`, `tools/evaluar_corpus.py`). Con un corpus
+distinto del que se usó para afinar, la intención se acierta aproximadamente
+**entre el 55 % y el 76 %** de las veces según lo variado que escriba cada
+jugador. Casi todos los fallos son vocabulario que no conoce (verbos poco
+habituales, jerga), no confusiones. Cuando no entiende, te lo dice; cuando
+entiende mal, te lo enseña antes de aplicarlo en las decisiones y puedes deshacer
+cualquier acción. Se está ampliando el vocabulario (`forja/vocabulario.py`) con
+disciplina de desarrollo y prueba, para no medirlo con los mismos datos con los
+que se afina.
 
 ## Por qué la historia tiene lógica
 
@@ -131,7 +198,7 @@ completo está en [`FUENTES.md`](FUENTES.md).
 ## Estructura del código
 
 ```
-jugar.py            punto de entrada y menús
+jugar.py            punto de entrada, menús y reanudar la partida automática
 forja/
   lexico.py         vocabulario por género, arquetipos, fallas, tonos (solo datos)
   gramatica.py      concordancia en español: {meta.de}, {hogar.a}, cansad{heroe.o}
@@ -140,11 +207,16 @@ forja/
   efectos.py        vigor(-1), pon("flag"), muere("mentor")... el vocabulario de las escenas
   acto1/2/3.py      las 21 escenas, agrupadas por acto
   final.py          elige el final y compone el epílogo
-  motor.py          recorre las 12 etapas y resuelve cada escena
+  motor.py          recorre las 12 etapas y resuelve cada escena (y sus interludios)
+  sesion.py         graba las acciones; deshacer, reintentar, guardar/cargar, comandos
+  lenguaje.py       intérprete del texto libre (raíces, frases, modificadores, bloqueos)
+  vocabulario.py    vocabulario ampliado del intérprete (generado)
+  libre.py          interludios (mirar, hablar, descansar, moverse) y decisiones escritas
   consola.py        interfaz: interactiva, demo y muda (para pruebas)
-  libro.py          exporta la partida a Markdown
+  libro.py          exporta la partida a Markdown (con acciones libres, notas y renombrados)
   fuentes.py        catálogo de referencias
-tests/test_forja.py
+tests/test_forja.py, tests/test_libre.py, tests/datos/ (corpus de frases)
+tools/              evaluar_corpus, comparar_vocabulario, compilar_vocabulario
 ```
 
 ### Añadir una escena
@@ -180,6 +252,11 @@ quedan huecos en las plantillas, no hay preposiciones duplicadas ni frases en
 minúscula, y todas terminan en un final. Otras pruebas comprueban que la misma
 semilla repite la historia y que semillas distintas dan historias distintas.
 
+`tests/test_libre.py` comprueba lo que hace seguro el deshacer: `[a, b, /atras, c]`
+deja el mundo **idéntico** (hasta el último dado y la crónica) a `[a, c]`; cargar
+un guardado reproduce la partida sin diferencias; y 100 partidas aleatorias que
+mezclan opciones, frases libres y comandos no rompen la coherencia.
+
 ## Límites (es un prototipo)
 
 - 21 escenas y 4 géneros: la variedad es real pero finita; a la tercera o cuarta
@@ -188,7 +265,10 @@ semilla repite la historia y que semillas distintas dan historias distintas.
 - El texto es de plantilla: coherente, pero no tan fluido como el de un humano
   o un modelo de lenguaje.
 - Solo dos tramas de Booker; faltan comedia, viaje y regreso, etc.
-- No hay guardado a medias (solo el libro al final).
+- El texto libre reconoce raíces de palabras, no significados (véanse las cifras
+  de arriba). Solo español.
+- Las acciones libres afectan al estado (ventaja, vigor, pistas, confianza) pero no
+  inventan escenas nuevas: lo que cambia la trama sigue pasando por las opciones.
 
 Ideas para seguir: más escenas por etapa, más géneros (western, histórico),
 más tramas, un «mundo persistente» entre partidas, o un editor para que
