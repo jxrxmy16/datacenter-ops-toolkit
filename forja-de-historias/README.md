@@ -133,19 +133,27 @@ lista de tus acciones reconstruyen exactamente la misma historia, hasta el
 La partida se guarda sola en `partidas/auto.json` tras cada acción. Al volver a
 ejecutar `python jugar.py` te ofrece continuarla (`--nueva` empieza de cero).
 
-### Cuánto entiende de verdad (cifras reales)
+### Cuánto entiende de verdad (cifras reales, provisionales)
 
 El intérprete se mide con frases de jugador escritas por otros agentes que no
-vieron el código (`tests/datos/`, `tools/evaluar_corpus.py`). Con un corpus
-distinto del que se usó para afinar, la intención se acierta aproximadamente
-**entre el 55 % y el 76 %** de las veces según lo variado que escriba cada
-jugador. Casi todos los fallos son vocabulario que no conoce (verbos poco
-habituales, jerga), no confusiones. Cuando no entiende, te lo dice; cuando
-entiende mal, te lo enseña antes de aplicarlo en las decisiones y puedes deshacer
-cualquier acción. Se está ampliando el vocabulario (`forja/vocabulario.py`) con
-disciplina de desarrollo y prueba, para no medirlo con los mismos datos con los
-que se afina. Esa cifra es la del intérprete a solas; con el modo asistido, lo
-que no reconoce se resuelve con una pregunta en lugar de un fallo.
+vieron el código (`tests/datos/`, `tools/evaluar_corpus.py`), con tres corpus
+separados: dos de **desarrollo** (con los que se afina) y uno de **prueba**
+que nunca se usó para afinar. Con el vocabulario ampliado
+(`forja/vocabulario.py`, ~3 000 raíces y ~4 400 formas), sobre el corpus de
+prueba:
+
+| | corpus de prueba |
+|---|---|
+| intención acertada | **84,4 %** (antes de ampliar: 76,3 %) |
+| se entiende bien y se aplica sin preguntar | 78,6 % |
+| duda y te pregunta | 10,8 % |
+| se entiende mal **sin avisar** | 10,6 % |
+
+En el corpus de desarrollo más difícil (jugadores muy variados) la intención
+sube del 55 % al 89 %, pero esa cifra es optimista porque se usó para afinar.
+Los errores en silencio son lo que queda por bajar; `/corregir` y `/atras`
+los arreglan en una pulsación. El vocabulario de la intención «duda» y la
+revisión adversarial siguen en curso.
 
 ## Por qué la historia tiene lógica
 

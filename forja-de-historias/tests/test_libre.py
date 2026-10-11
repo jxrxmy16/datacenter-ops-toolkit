@@ -145,7 +145,7 @@ class TestIntérpreteAsistido(unittest.TestCase):
         lenguaje.fijar_personal(None)
 
     def test_pregunta_lo_que_no_entiende_y_lo_aprende(self):
-        frase = "pernoctar plácidamente"
+        frase = "glorfindar plácidamente"
         ses, _ = jugar_con_guion(5, [0, 0, 0, 0, 0, frase, frase, 0],
                                  intenciones=["descansar"])
         ints = [r for r in ses.registros if r["k"] == "int"]
@@ -155,8 +155,8 @@ class TestIntérpreteAsistido(unittest.TestCase):
         self.assertEqual(ses.ui.preguntas[0][1], None)
 
     def test_un_gesto_a_otra_frase_con_la_misma_raiz_tambien_vale(self):
-        ses, _ = jugar_con_guion(5, [0, 0, 0, 0, 0, "pernoctar entre mantas",
-                                     "pernoctaremos aquí", 0],
+        ses, _ = jugar_con_guion(5, [0, 0, 0, 0, 0, "glorfindar entre mantas",
+                                     "glorfindaremos aquí", 0],
                                  intenciones=["descansar"])
         self.assertEqual(len(ses.ui.preguntas), 1)
         self.assertEqual(len([r for r in ses.registros if r["k"] == "int"]), 2)
@@ -169,13 +169,13 @@ class TestIntérpreteAsistido(unittest.TestCase):
 
     def test_lo_aprendido_sobrevive_entre_partidas(self):
         carpeta = CARPETA_TEMPORAL / "aprende"
-        ses = Sesion(Muda(1, "prudente", [0, 0, 0, 0, 0, "pernoctar entre mantas", 0],
+        ses = Sesion(Muda(1, "prudente", [0, 0, 0, 0, 0, "glorfindar entre mantas", 0],
                           intenciones=["descansar"]),
                      parametros_aleatorios(5), carpeta)
         ses.ejecutar()
         self.assertTrue((carpeta / "vocabulario_personal.json").exists())
         lenguaje.fijar_personal(None)
-        nueva = Sesion(Muda(1, "prudente", [0, 0, 0, 0, 0, "pernoctar entre mantas", 0]),
+        nueva = Sesion(Muda(1, "prudente", [0, 0, 0, 0, 0, "glorfindar entre mantas", 0]),
                        parametros_aleatorios(5), carpeta)
         nueva.guardar_auto = False
         nueva.ejecutar()
@@ -184,8 +184,8 @@ class TestIntérpreteAsistido(unittest.TestCase):
                          ["descansar"])
 
     def test_olvidar_borra_lo_aprendido(self):
-        ses, _ = jugar_con_guion(5, [0, 0, 0, 0, 0, "pernoctar entre mantas",
-                                     "/olvidar", "pernoctar entre mantas", 0],
+        ses, _ = jugar_con_guion(5, [0, 0, 0, 0, 0, "glorfindar entre mantas",
+                                     "/olvidar", "glorfindar entre mantas", 0],
                                  intenciones=["descansar", "descansar"])
         self.assertEqual(len(ses.ui.preguntas), 2)          # volvió a preguntar
 
@@ -205,7 +205,7 @@ class TestIntérpreteAsistido(unittest.TestCase):
         w = jugar_con_guion(5, [])[0].w
         w.etapa = 6
         segura = analizar("atacar al guardián", w)
-        dudosa = analizar("pernoctar", w)
+        dudosa = analizar("glorfindar", w)
         self.assertFalse(segura.insegura)
         self.assertTrue(dudosa.insegura)
 

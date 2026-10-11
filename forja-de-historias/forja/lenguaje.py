@@ -38,6 +38,7 @@ AFINIDAD = {
     "descansar": {"duda": 0.5},
 }
 
+MIN_LETRAS_CORRECCION = 8      # el corrector de erratas solo actúa en palabras largas
 UMBRAL_CONFIANZA = 0.8        # por debajo, el intérprete pregunta en lugar de suponer
 MAX_CARACTERES = 300          # una acción es una línea; más se recorta
 _TOKEN = re.compile(r"[\wáéíóúüñÁÉÍÓÚÜÑ]+", re.UNICODE)
@@ -294,15 +295,14 @@ _FRASES_BASE = [
 ]
 
 
+_HACER = ("hacer|hace|haces|hacemos|hacen|haciendo|hago|haga|hagas|hagamos|hagan|"
+          "hice|hizo|hicieron|hecho|haz")
+
+
 def _expandir_frases(base):
-    salida = []
-    for patron, pesos in base:
-        if "@hacer" in patron:
-            for h in ("hac*", "hag*", "hic*", "hiz*"):
-                salida.append((tuple(h if x == "@hacer" else x for x in patron), pesos))
-        else:
-            salida.append((patron, pesos))
-    return salida
+    """«@hacer» -> las formas de hacer (sin «hacia», que empezaría igual)."""
+    return [(tuple(_HACER if x == "@hacer" else x for x in patron), pesos)
+            for patron, pesos in base]
 
 
 
@@ -376,37 +376,43 @@ def _candidatas(token: str):
 
 
 def _variantes_ortograficas(token: str):
-    """Formas alternativas de escribir lo mismo (ataka, ablar, uyo, aser...)."""
-    vs = [token]
+    """Formas alternativas de escribir lo mismo: [(variante, raíz mínima)].
+
+    k->c/qu y la h inicial perdida (ataka, ablar) valen con cualquier raíz. Los
+    cambios de letras que suenan igual (v/b, ll/y, s/c, g/j...) son más
+    arriesgados ("hay" -> "hall..."), así que solo casan con raíces de 5 o más.
+    """
+    vs = [(token, 3)]
     if "k" in token:
-        vs.append(re.sub(r"k([eiy])", r"qu\1", token).replace("k", "c"))
+        vs.append((re.sub(r"k([eiy])", r"qu\1", token).replace("k", "c"), 3))
     if token[:1] in "aeiou":
-        vs.append("h" + token)
-    for a, b in (("v", "b"), ("b", "v"), ("ll", "y"), ("y", "ll"), ("s", "c"),
-                 ("c", "s"), ("z", "c"), ("s", "z"), ("g", "j"), ("j", "g")):
-        if a in token:
-            vs.append(token.replace(a, b, 1))
+        vs.append(("h" + token, 3))
+    if len(token) >= 5:
+        for a, b in (("v", "b"), ("b", "v"), ("ll", "y"), ("y", "ll"), ("s", "c"),
+                     ("c", "s"), ("z", "c"), ("s", "z"), ("g", "j"), ("j", "g")):
+            if a in token:
+                vs.append((token.replace(a, b, 1), 5))
     return vs
 
 
 def coincidencias(token: str) -> dict:
     """{clase: peso} de un token (el mayor peso por clase)."""
     mejor = {}
-    for variante in _variantes_ortograficas(token):
-        _sumar(mejor, variante)
+    for variante, minimo in _variantes_ortograficas(token):
+        _sumar(mejor, variante, minimo)
         if mejor:
             break
     return mejor
 
 
-def _sumar(mejor: dict, token: str) -> None:
+def _sumar(mejor: dict, token: str, minimo: int = 3) -> None:
     for cand in _candidatas(token):
         antes = len(mejor)
         for clase, peso in _EXACTAS.get(cand, ()):
             mejor[clase] = max(mejor.get(clase, 0.0), peso)
         if len(cand) >= 3:
             for raiz, clase, peso in _PREF_POR_INICIO.get(cand[:3], ()):
-                if cand.startswith(raiz):
+                if len(raiz) >= minimo and cand.startswith(raiz):
                     mejor[clase] = max(mejor.get(clase, 0.0), peso)
         if len(mejor) > antes:
             return                      # la forma original manda sobre la que pierde su clítico
@@ -436,13 +442,15 @@ def _a_distancia_1(a: str, b: str) -> bool:
 def _corregir(token: str):
     """Reconoce una errata leve de una palabra larga (enboscada -> emboscada).
 
-    Solo palabras de 7 o más letras y a una letra de distancia: con menos, casi
-    cualquier palabra corriente se parece a alguna del léxico (mantas ~ matas).
+    Solo palabras de 8 o más letras, a una letra de distancia, con el mismo
+    comienzo (2 letras) y el mismo final (2 letras): con menos exigencia, palabras
+    corrientes pasan a ser del léxico (mantas ~ matas, partido ~ partio).
     """
-    if len(token) < 7 or token in _RELLENO:
+    if len(token) < MIN_LETRAS_CORRECCION or token in _RELLENO:
         return None
     for p in _VOCAB_POR_INICIO.get(token[:2], ()):
-        if abs(len(p) - len(token)) <= 1 and _a_distancia_1(token, p):
+        if (abs(len(p) - len(token)) <= 1 and p[-2:] == token[-2:]
+                and _a_distancia_1(token, p)):
             return p
     return None
 
@@ -519,7 +527,7 @@ def fijar_personal(datos) -> None:
                  if c in CLASES and isinstance(v, list)}
     _FRASES_PERSONALES = {k: c for k, c in (datos.get("frases") or {}).items()
                           if c in CLASES}
-    reconstruir()
+    _indexar()
 
 
 def personal_a_dict() -> dict:
@@ -555,15 +563,15 @@ def aprender(texto: str, clase: str, w) -> list:
         _PERSONAL.setdefault(clase, {"raices": []})["raices"].append(raiz)
     if norm:
         _FRASES_PERSONALES[" ".join(norm)] = clase
-    reconstruir()
+    _indexar()
     return nuevas
 
 
 def reconstruir(extra=None) -> None:
     """(Re)construye los índices. `extra` es un vocabulario adicional opcional."""
-    global _PREFIJOS, _PREF_POR_INICIO, _EXACTAS, FRASES, _VOCABULARIO, _VOCAB_POR_INICIO
+    global _BASE
     from .vocabulario import VOCABULARIO as base
-    fuentes = [base] + _extras_de_entorno() + ([extra] if extra else []) + [_PERSONAL]
+    fuentes = [base] + _extras_de_entorno() + ([extra] if extra else [])
 
     prefijos = {}                       # (raiz, clase) -> peso
     exactas = {}                        # (palabra, clase) -> peso
@@ -580,10 +588,12 @@ def reconstruir(extra=None) -> None:
             k = (palabra, clase)
             exactas[k] = max(exactas.get(k, 0.0), peso)
 
+    prefijos_base = set()
     for clase, txt in LEXICO_TEXTO.items():
         pref, exac = _leer(txt)
         for r, pw in pref.items():
             poner_prefijo(r, clase, pw)
+            prefijos_base.add(r)
         for w_, pw in exac.items():
             poner_exacta(w_, clase, pw)
 
@@ -615,26 +625,45 @@ def reconstruir(extra=None) -> None:
                 except (TypeError, ValueError):
                     pass
 
+    for r in prefijos_base:                      # solo el léxico base: son raíces verbales
+        if len(r) >= 4:
+            vocab.update({r + "ar", r + "o", r + "a", r + "ando"})
+    _BASE = {"prefijos": prefijos, "exactas": exactas, "frases": frases, "vocab": vocab}
+    _indexar()
+
+
+_BASE = {"prefijos": {}, "exactas": {}, "frases": [], "vocab": set()}
+
+
+def _indexar() -> None:
+    """Índices de búsqueda = base ya construida + lo que ha enseñado el jugador.
+
+    Es barato (milisegundos), a diferencia de reconstruir(); por eso aprender una
+    palabra no obliga a rehacer el vocabulario entero.
+    """
+    global _PREFIJOS, _PREF_POR_INICIO, _EXACTAS, FRASES, _VOCABULARIO, _VOCAB_POR_INICIO
+    prefijos = dict(_BASE["prefijos"])
+    vocab = set(_BASE["vocab"])
+    for clase, datos in _PERSONAL.items():
+        for raiz in datos.get("raices", ()):
+            raiz = quitar_tildes(str(raiz)).strip()
+            if len(raiz) >= 4 and " " not in raiz:
+                k = (raiz, clase)
+                prefijos[k] = max(prefijos.get(k, 0.0), 1.0)
     _PREFIJOS = sorted(((r, c, pw) for (r, c), pw in prefijos.items()),
                        key=lambda t: -len(t[0]))
     _PREF_POR_INICIO = {}
     for r, c, pw in _PREFIJOS:
         _PREF_POR_INICIO.setdefault(r[:3], []).append((r, c, pw))
     _EXACTAS = {}
-    for (w_, c), pw in exactas.items():
+    for (w_, c), pw in _BASE["exactas"].items():
         _EXACTAS.setdefault(w_, []).append((c, pw))
-    FRASES = _expandir_frases(frases)
-
+    FRASES = _expandir_frases(_BASE["frases"])
     vocab.update(w_ for w_ in _EXACTAS if len(w_) >= 5)
-    for r, _, _ in _PREFIJOS:
-        if len(r) >= 4:
-            vocab.update({r + "ar", r + "o", r + "a", r + "ando"})
     _VOCABULARIO = sorted(w_ for w_ in vocab if len(w_) >= 5)
     _VOCAB_POR_INICIO = {}
     for w_ in _VOCABULARIO:
         _VOCAB_POR_INICIO.setdefault(w_[:2], []).append(w_)
-
-
 reconstruir()
 
 
@@ -746,10 +775,31 @@ def _item_ok(item: str, cands) -> bool:
     return item in cands
 
 
-def _ventana(norm, patron):
-    """Índices donde aparecen todas las raíces del patrón en una ventana corta."""
-    ancho = len(patron) + 3
+def _precomputar(norm):
+    """Variantes de cada palabra y conjuntos para descartar patrones imposibles."""
     cands = [_candidatas(t) for t in norm]
+    planas = {c for cs in cands for c in cs}
+    prefijos = {c[:k] for c in planas for k in range(1, len(c) + 1)}
+    return cands, planas, prefijos
+
+
+def _posible(item: str, planas, prefijos) -> bool:
+    """¿Podría esta raíz casar con alguna palabra de la frase? (filtro barato)"""
+    if "|" in item:
+        return any(_posible(a, planas, prefijos) for a in item.split("|"))
+    if item.endswith("*"):
+        return item[:-1] in prefijos
+    if len(item) >= 4:
+        return item in prefijos
+    return item in planas
+
+
+def _ventana(norm, patron, pre=None):
+    """Índices donde aparecen todas las raíces del patrón en una ventana corta."""
+    cands, planas, prefijos = pre if pre is not None else _precomputar(norm)
+    if not all(_posible(item, planas, prefijos) for item in patron):
+        return None
+    ancho = len(patron) + 3
     for ini in range(len(norm)):
         ids, usados = [], set()
         for item in patron:
@@ -831,12 +881,13 @@ def analizar(texto: str, w, esc=None, etiquetas=None, visibles=None,
     r = Interpretacion(frase=texto)
     puntos = {c: 0.0 for c in CLASES}
     alias = _alias(w)
+    pre = _precomputar(norm)
 
     # 1) Modificadores de dificultad. Sus palabras ("con calma", "sin mirar") no
     #    cuentan después como intención.
     enmascarados = set()
     for patron, delta, desc in MODIFICADORES:
-        ids = _ventana(norm, patron)
+        ids = _ventana(norm, patron, pre)
         if ids is not None and desc not in r.mods_desc:
             r.dd += delta
             r.mods_desc.append(desc)
@@ -879,7 +930,7 @@ def analizar(texto: str, w, esc=None, etiquetas=None, visibles=None,
 
     # 3) Frases hechas (no cuentan si las precede una negación, salvo que la lleven).
     for patron, pesos in FRASES:
-        ids = _ventana(norm, patron)
+        ids = _ventana(norm, patron, pre)
         if ids is None:
             continue
         lleva_negador = any(x in NEGADORES for x in patron)
@@ -897,7 +948,7 @@ def analizar(texto: str, w, esc=None, etiquetas=None, visibles=None,
     r.entidades = vistas
 
     # 5) Reglas que combinan intención y entidad.
-    quedarse = _ventana(norm, ("qued*",)) is not None
+    quedarse = _ventana(norm, ("qued*",), pre) is not None
     if quedarse and (_BOTIN & set(norm) or "meta" in vistas or "don" in vistas):
         puntos["sombra"] += 2.0                  # quedarse con el botín: ambición
         puntos["duda"] = 0.0
