@@ -144,25 +144,26 @@ ejecutar `python jugar.py` te ofrece continuarla (`--nueva` empieza de cero).
 
 ### Cuánto entiende de verdad (cifras reales, provisionales)
 
-El intérprete se mide con frases de jugador escritas por otros agentes que no
-vieron el código (`tests/datos/`, `tools/evaluar_corpus.py`), con tres corpus
-separados: dos de **desarrollo** (con los que se afina) y uno de **prueba**
-que nunca se usó para afinar. Con el vocabulario ampliado
-(`forja/vocabulario.py`, ~3 000 raíces y ~4 400 formas), sobre el corpus de
-prueba:
+El intérprete se mide con frases de jugador escritas por agentes que no vieron
+el código (`tests/datos/`, `tools/evaluar_corpus.py`), separadas en corpus de
+**desarrollo** (con los que se afina, en el repositorio) y de **prueba** (que
+nunca se usan para afinar y viven fuera). Sobre los corpus de prueba:
 
-| | corpus de prueba |
-|---|---|
-| intención acertada | **84,4 %** (antes de ampliar: 76,3 %) |
-| se entiende bien y se aplica sin preguntar | 78,6 % |
-| duda y te pregunta | 10,8 % |
-| se entiende mal **sin avisar** | 10,6 % |
+| | prueba 1 (583 frases) | prueba 2 (1 594 frases, 8 registros) |
+|---|---|---|
+| intención acertada | **87,7 %** | **84,1 %** |
+| matices de dificultad acertados («a ciegas», «con cuidado») | 97,9 % | 86,6 % |
+| se entiende bien y se aplica sin preguntar | 80,6 % | 72,9 % |
+| duda y te pregunta | 10,5 % | 15,4 % |
+| se entiende mal **sin avisar** | 8,9 % | 11,7 % |
 
-En el corpus de desarrollo más difícil (jugadores muy variados) la intención
-sube del 55 % al 89 %, pero esa cifra es optimista porque se usó para afinar.
-Los errores en silencio son lo que queda por bajar; `/corregir` y `/atras`
-los arreglan en una pulsación. El vocabulario de la intención «duda» y la
-revisión adversarial siguen en curso.
+La prueba 2 mezcla órdenes cortas, primera persona, literario, jerga regional,
+escritura de móvil, mezcla de géneros, matices y frases indirectas; es más
+difícil que la primera (las frases indirectas y la jerga regional son lo más
+flojo). En desarrollo salen cifras más altas (~96 %), pero son optimistas
+porque ahí se afinó. Los errores en silencio son lo que queda por bajar;
+`/corregir` y `/atras` los arreglan en una pulsación. El vocabulario sigue
+creciendo por rondas, midiendo siempre con frases nuevas.
 
 ## Por qué la historia tiene lógica
 
