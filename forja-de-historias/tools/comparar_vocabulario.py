@@ -3,7 +3,7 @@
 
     python tools/comparar_vocabulario.py extra.json [corpus.json ...]
 
-Sin corpus, usa los dos de desarrollo (tests/datos). Compara el intérprete tal
+Sin corpus, usa los de desarrollo (tests/datos/corpus_*.json). Compara el intérprete tal
 cual contra el intérprete con el vocabulario adicional y enseña:
   * aciertos y fallos antes/después, por intención;
   * las frases que ANTES acertaba y AHORA fallan (regresiones), con la palabra
@@ -29,8 +29,8 @@ sys.path.insert(0, str(RAIZ / "tests"))
 from test_forja import jugar_partida                       # noqa: E402
 from forja import lenguaje                                 # noqa: E402
 
-DESARROLLO = [RAIZ / "tests" / "datos" / "corpus_frases.json",
-              RAIZ / "tests" / "datos" / "corpus_validacion.json"]
+# Todos los corpus de desarrollo del repositorio (los de prueba viven fuera).
+DESARROLLO = sorted((RAIZ / "tests" / "datos").glob("corpus_*.json"))
 
 
 def mundos():
