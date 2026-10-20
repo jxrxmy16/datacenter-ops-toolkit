@@ -1066,6 +1066,8 @@ def analizar(texto: str, w, esc=None, etiquetas=None, visibles=None,
     clausula = _pesos_de_clausula(norm)
     saltar = set()                                     # palabras de una negación enfática
     neg_hasta = -1                                     # la negación vigente alcanza hasta aquí
+    neg_enfatica = False                               # la negación vigente es «ni de broma...»
+    enfatica_invierte = False                          # y ya ha invertido un verbo
     for i, tok in enumerate(norm):
         if i in enmascarados or tok in _IGNORADAS or i in saltar:
             continue
@@ -1076,7 +1078,10 @@ def analizar(texto: str, w, esc=None, etiquetas=None, visibles=None,
                 if tuple(norm[i:i + len(enf)]) == enf:
                     saltar.update(range(i, i + len(enf)))
                     neg_hasta = i + len(enf) + 3
+                    neg_enfatica = True
                     break
+            else:
+                neg_enfatica = False
             continue
         if tok in _RELLENO and tok not in _EXACTAS:
             continue
@@ -1108,6 +1113,7 @@ def analizar(texto: str, w, esc=None, etiquetas=None, visibles=None,
                 inv = NEGACION_INVERSA.get(clase)
                 if inv:
                     puntos[inv[0]] += inv[1] * _mult_pos(i)
+                    enfatica_invierte = enfatica_invierte or neg_enfatica
                 continue
             puntos[clase] += peso * _mult_pos(i) * clausula[i]
 
@@ -1117,6 +1123,8 @@ def analizar(texto: str, w, esc=None, etiquetas=None, visibles=None,
     for patron, pesos in FRASES:
         if se_sacrifica and patron[0] == "sacrific*":
             continue                       # «me sacrifico por X»: no se sacrifica a X
+        if enfatica_invierte and patron[0] == "ni":
+            continue                       # «ni de broma me escondo»: ya se negó el verbo
         ids = _ventana(norm, patron, pre)
         if ids is None:
             continue
