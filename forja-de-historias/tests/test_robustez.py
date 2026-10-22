@@ -251,3 +251,54 @@ class TestVigorEnInterludios(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestFrasesDudosas(unittest.TestCase):
+    def setUp(self):
+        self.carpeta = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, self.carpeta, True)
+
+    def _sesion(self, guion, **kw):
+        from forja.consola import Muda
+        ses = Sesion(Muda(5, "prudente", guion, **kw), parametros_aleatorios(5), self.carpeta)
+        ses.guardar_auto = True
+        return ses
+
+    def _lineas(self):
+        ruta = self.carpeta / "frases_dudosas.jsonl"
+        return [json.loads(x) for x in ruta.read_text(encoding="utf-8").splitlines()] \
+            if ruta.exists() else []
+
+    def test_se_anota_lo_que_no_se_entendio_y_lo_que_querias(self):
+        ses = self._sesion([0, 0, 0, 0, 0, "glorfindar plácidamente", 0],
+                           intenciones=["descansar"])
+        ses.ejecutar()
+        lineas = self._lineas()
+        self.assertEqual(len(lineas), 1)
+        self.assertEqual((lineas[0]["frase"], lineas[0]["elegido"], lineas[0]["motivo"]),
+                         ("glorfindar plácidamente", "descansar", "dudaba"))
+        lenguaje.fijar_personal(None)
+
+    def test_responder_ninguna_tambien_se_anota(self):
+        ses = self._sesion([0, 0, 0, 0, 0, "zzzquux plonk", 0], intenciones=["ninguna"])
+        ses.ejecutar()
+        self.assertEqual([x["elegido"] for x in self._lineas()], [None])
+        lenguaje.fijar_personal(None)
+
+    def test_no_se_escribe_nada_sin_guardado(self):
+        ses = self._sesion([0, 0, 0, 0, 0, "zzzquux plonk", 0], intenciones=["ninguna"])
+        ses.guardar_auto = False
+        ses.ejecutar()
+        self.assertEqual(self._lineas(), [])
+
+    def test_el_comando_frases_las_enseña(self):
+        ses = self._sesion([0, 0, 0, 0, 0, "zzzquux plonk", "/frases", 0],
+                           intenciones=["valor"])
+        ses.ejecutar()
+        self.assertTrue(any("zzzquux plonk" in x and "valor" in x for x in ses.ui.lineas))
+        lenguaje.fijar_personal(None)
+
+    def test_sin_frases_el_comando_lo_dice(self):
+        ses = self._sesion([0, "/frases", 0])
+        ses.ejecutar()
+        self.assertTrue(any("Todavía no hay frases" in m for m in ses.ui.mensajes))

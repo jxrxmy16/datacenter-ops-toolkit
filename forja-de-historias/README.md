@@ -153,6 +153,8 @@ lista de tus acciones reconstruyen exactamente la misma historia, hasta el
 | `/historial` · `/volver N` | lista tus acciones y vuelve a justo antes de la *N* |
 | `/reintentar` | repite la última acción con otra suerte |
 | `/corregir` · `/olvidar` | corrige cómo entendí tu última frase · borra lo que he aprendido de ti |
+| `/frases` | enseña las frases que no supe leer y lo que querías decir (se guardan solo en tu equipo, en `partidas/frases_dudosas.jsonl`; si me las pegas, el vocabulario mejora con lo que escribes de verdad) |
+| `/modo` · `/dados` | escribir libremente o ver siempre la lista · mostrar u ocultar las tiradas |
 | `/guardar [nombre]` · `/cargar [nombre]` · `/partidas` | guardados con nombre |
 | `/renombrar mentor Zarkon` | cambia un nombre, también en el libro |
 | `/nota texto` | añade una nota tuya al libro |

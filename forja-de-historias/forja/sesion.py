@@ -63,6 +63,7 @@ Comandos (empiezan por /):
   /confirmar          activa o desactiva la confirmación de lo que entiendo
   /modo               alterna entre escribir libremente y ver siempre la lista de opciones
   /dados              enseña u oculta la tirada de dado de cada acción arriesgada
+  /frases             lista las frases que no supe leer (para ayudarme a aprender)
   /salir              sale (la partida queda guardada en «auto»)"""
 
 NOMBRE_CLASE = {
@@ -303,6 +304,8 @@ class Sesion:
         if r.opcion is None and (r.insegura or preguntar):
             clase = self.ui.preguntar_intencion(
                 r.frase, None if r.clase == "desconocida" else r.clase)
+            self._anotar_duda(r.frase, None if r.clase == "desconocida" else r.clase,
+                              clase, "correccion" if preguntar else "dudaba")
             if clase is None:
                 self._sin_resolver(NO_ENTENDIDO)
                 return None
@@ -328,6 +331,8 @@ class Sesion:
                 libre_ok = r.es_exploracion and not (
                     esc.urgente and r.clase in ("descansar", "hablar"))
                 eleccion = self.ui.confirmar(r, rotulo, etiqueta, libre_ok)
+            if eleccion == "n":
+                self._anotar_duda(r.frase, r.clase, None, "rechazada")
             if eleccion == "s":
                 return {"k": "libre", "txt": r.frase, "i": r.opcion, "dd": r.dd,
                         "mods": r.mods, "lbl": f"«{r.frase}»"}
@@ -449,6 +454,15 @@ class Sesion:
             self.confirmar_activo = not self.confirmar_activo
             ui.mensaje("Confirmación " + ("activada." if self.confirmar_activo
                                           else "desactivada (solo pregunto si dudo)."))
+        elif nombre in ("frases", "exportar"):
+            lineas = self._lineas_dudosas()
+            if lineas:
+                ui.imprimir(["Frases que no supe leer y lo que querías decir (más recientes al "
+                             "final). Si quieres ayudarme a mejorar el vocabulario, "
+                             "copia estas líneas y pégamelas:", ""] + lineas)
+            else:
+                ui.mensaje("Todavía no hay frases dudosas guardadas: aparecen aquí cuando el "
+                           "narrador no te entiende y tú le explicas qué querías.")
         elif nombre == "modo":
             ui.mensaje(ui.cambiar_modo(arg))
         elif nombre == "dados":
@@ -576,6 +590,43 @@ class Sesion:
 
     def _ruta_personal(self):
         return self.carpeta / "vocabulario_personal.json"
+
+    def _ruta_dudosas(self):
+        return self.carpeta / "frases_dudosas.jsonl"
+
+    def _anotar_duda(self, frase, entendido, elegido, motivo):
+        """Guarda (solo en tu equipo) una frase que el intérprete no supo leer.
+
+        Es la mejor materia prima para ampliar el vocabulario: lo que escribes de
+        verdad y lo que querías decir. Nunca sale de tu carpeta `partidas/`;
+        puedes enseñármelo con /frases.
+        """
+        if not self.guardar_auto:
+            return
+        try:
+            self.carpeta.mkdir(parents=True, exist_ok=True)
+            linea = json.dumps({"frase": frase, "entendido": entendido, "elegido": elegido,
+                                "motivo": motivo, "hora": time.strftime("%Y-%m-%d %H:%M")},
+                               ensure_ascii=False)
+            with self._ruta_dudosas().open("a", encoding="utf-8") as f:
+                f.write(linea + "\n")
+        except (OSError, UnicodeError):
+            pass
+
+    def _lineas_dudosas(self, maximo=40):
+        try:
+            lineas = self._ruta_dudosas().read_text(encoding="utf-8").splitlines()
+        except (OSError, UnicodeError):
+            return []
+        out = []
+        for ln in lineas[-maximo:]:
+            try:
+                d = json.loads(ln)
+                out.append(f"{d['frase']}  →  {d.get('elegido') or 'ninguna'}"
+                           + (f" (entendí: {d['entendido']})" if d.get("entendido") else ""))
+            except (ValueError, KeyError, TypeError):
+                continue
+        return out
 
     def _cargar_personal(self):
         try:
