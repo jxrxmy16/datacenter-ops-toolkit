@@ -172,19 +172,21 @@ nunca se usan para afinar y viven fuera). Sobre los corpus de prueba:
 
 | | prueba 1 (583 frases) | prueba 2 (1 594 frases, 8 registros) |
 |---|---|---|
-| intención acertada | **87,7 %** | **84,1 %** |
+| intención acertada | **88,9 %** | **86,2 %** |
 | matices de dificultad acertados («a ciegas», «con cuidado») | 97,9 % | 86,6 % |
-| se entiende bien y se aplica sin preguntar | 80,6 % | 72,9 % |
-| duda y te pregunta | 10,5 % | 15,4 % |
-| se entiende mal **sin avisar** | 8,9 % | 11,7 % |
+| se entiende bien y se aplica sin preguntar | 79,4 % | 72,7 % |
+| duda y te pregunta (basta con pulsar Enter) | 14,1 % | 18,7 % |
+| se entiende mal **sin avisar** | 6,5 % | 8,6 % |
 
 La prueba 2 mezcla órdenes cortas, primera persona, literario, jerga regional,
 escritura de móvil, mezcla de géneros, matices y frases indirectas; es más
 difícil que la primera (las frases indirectas y la jerga regional son lo más
-flojo). En desarrollo salen cifras más altas (~96 %), pero son optimistas
-porque ahí se afinó. Los errores en silencio son lo que queda por bajar;
-`/corregir` y `/atras` los arreglan en una pulsación. El vocabulario sigue
-creciendo por rondas, midiendo siempre con frases nuevas.
+flojo, y «la frase no es una acción del juego» sigue en ~78 %). En desarrollo
+salen cifras más altas (~89–97 %), pero son optimistas porque ahí se afinó.
+El narrador pregunta cuando la mejor y la segunda lectura están muy cerca: eso
+cuesta una pulsación y evita errores en silencio. Si te malinterpreta,
+`/corregir` y `/atras` lo arreglan. El vocabulario crece por rondas, midiendo
+siempre con frases nuevas (de 79,0 a 86,2 % en la prueba 2 en un día).
 
 ## Por qué la historia tiene lógica
 
