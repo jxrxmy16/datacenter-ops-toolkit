@@ -739,7 +739,9 @@ PALABRAS_ENTIDAD = {
     "camino": "camino bosque paramos marismas cinturon rutas nebulosa callejones calles carretera pantanos senda sendero",
     "guarida": "guarida fortaleza torre nave base reactor mansion atico abadia sotano cripta ciudadela castillo",
     "guardian": "guardian portero centinela vigilante cancerbero dron androide recepcionista enterrador",
-    "esbirros": "esbirros secuaces enemigos soldados matones lobos drones poseidos sombras muertos jinetes huargos mercenarios cazarrecompensas policias",
+    "esbirros": ("esbirros esbirro secuaces secuaz enemigos soldados soldado matones maton "
+                 "lobos lobo drones poseidos poseido sombras muertos jinetes jinete huargos "
+                 "huargo mercenarios mercenario cazarrecompensas policias"),
     "meta": "tesoro reliquia objetivo artefacto",
     "don": "don regalo amuleto daga farol crucifijo escudo implante modulo capa placa llave tarjeta frasco",
     "herramienta": "arma espada arco baston pistola revolver hacha escopeta libreta multiherramienta",
@@ -1066,6 +1068,7 @@ def analizar(texto: str, w, esc=None, etiquetas=None, visibles=None,
     clausula = _pesos_de_clausula(norm)
     saltar = set()                                     # palabras de una negación enfática
     neg_hasta = -1                                     # la negación vigente alcanza hasta aquí
+    negados = set()                                    # palabras con intención que una negación anula
     neg_enfatica = False                               # la negación vigente es «ni de broma...»
     enfatica_invierte = False                          # y ya ha invertido un verbo
     for i, tok in enumerate(norm):
@@ -1108,6 +1111,7 @@ def analizar(texto: str, w, esc=None, etiquetas=None, visibles=None,
         negada = i <= neg_hasta
         if negada:
             neg_hasta = -1                             # la negación afecta a un solo verbo
+            negados.add(i)
         for clase, peso in m.items():
             if negada:
                 inv = NEGACION_INVERSA.get(clase)
@@ -1126,8 +1130,8 @@ def analizar(texto: str, w, esc=None, etiquetas=None, visibles=None,
         if enfatica_invierte and patron[0] == "ni":
             continue                       # «ni de broma me escondo»: ya se negó el verbo
         ids = _ventana(norm, patron, pre)
-        if ids is None:
-            continue
+        if ids is None or negados.intersection(ids):
+            continue                       # sin frase, o negada («no pienso huir»)
         lleva_negador = any(x in NEGADORES for x in patron)
         if not lleva_negador and min(ids) > 0 and norm[min(ids) - 1] in NEGADORES:
             continue

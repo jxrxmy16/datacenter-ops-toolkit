@@ -5,6 +5,7 @@
 
 Normaliza (minúsculas, sin tildes), descarta lo inservible (raíces de menos de
 4 letras, entradas con espacios, pesos fuera de rango), elimina duplicados y
+conserva las frases de peso NEGATIVO (frenan falsos positivos de una intención);
 escribe un módulo Python ordenado, para que los cambios se vean bien en git.
 
 Además de las intenciones, cada fichero puede traer dos listas (claves de primer nivel):
@@ -122,7 +123,7 @@ def compilar(rutas):
                 patron, peso = (entrada["patron"], entrada["peso"]) if isinstance(entrada, dict) else entrada
                 patron = [t if ("*" in t or "|" in t or t == "@hacer") else quitar_tildes(t) for t in patron]
                 clave = (tuple(patron), clase)
-                if clave in vistas or not (0 < float(peso) <= 3) or not 1 <= len(patron) <= 4:
+                if clave in vistas or float(peso) == 0 or not -3 <= float(peso) <= 3 or not 1 <= len(patron) <= 4:
                     continue
                 vistas.add(clave)
                 frases.append([patron, round(float(peso), 2)])
