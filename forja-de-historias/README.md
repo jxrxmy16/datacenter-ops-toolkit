@@ -73,6 +73,30 @@ color se desactiva solo.
 4. **El libro**: capítulos, tus decisiones en cursiva y la bibliografía de lo que
    apareció.
 
+## El pueblo vivo y el reloj del mundo
+
+El mundo no se detiene cuando miras hacia otro lado. La historia lleva la cuenta
+de los **días** (viajar, descansar y resolver escenas gastan tiempo) y el
+pueblo de donde partes sigue viviendo:
+
+- Al empezar, está en mitad de **un acontecimiento** (una fiesta que acaba en
+  limpieza, un mercado que se desmonta, la cosecha, las reparaciones tras una
+  tormenta, un velatorio), y tiene **ocho vecinos inventados** con oficio,
+  carácter y un deseo (abrir un negocio, irse, casarse...).
+- Cuando vuelves a casa, **ya han pasado semanas o meses**: la plaza está limpia
+  porque terminaron de limpiar, y los vecinos te ponen al día de lo que les
+  pasó mientras no estabas (se casaron, se marcharon, alguien mayor murió...).
+- El pueblo **te recuerda**: si ayudaste a tus vecinos, alguien te lo recuerda
+  con su nombre; si escuchaste a todos, también.
+
+Cómo funciona sin simular cada día: el estado del pueblo es una *función pura*
+del día y de la semilla (el acontecimiento tiene fases de duración fija y las
+noticias se deciden por semanas con un azar propio), así que recuperar meses
+perdidos es preguntar «¿cómo está hoy?». Por eso deshacer, guardar y cargar
+siguen siendo exactos, y por eso crear el pueblo no cambia ningún otro dado de
+la historia. Es una porción pequeña: un solo pueblo, el principio y el final del
+viaje; el siguiente paso sería un mapa con más lugares y vecinos que se mudan.
+
 ## Dados y estadísticas (el componente de rol)
 
 Toda acción con riesgo se resuelve con un dado de seis caras: **dado + tu

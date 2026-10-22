@@ -132,6 +132,10 @@ def _pistas(w, esc):
          "{mentor.Cap} calla cada vez que alguien nombra {villano.a}. Ahí hay "
          "una historia que no te han contado.",
          [pon("intuye_vinculo")]),
+        ("pueblo",
+         lambda: esc is not None and esc.id == "mundo_ordinario",
+         "Observas a la gente {hogar.de} con calma. {pueblo_detalle}",
+         []),
         ("guardian",
          lambda: esc is not None and esc.id == "guardian_umbral",
          "{guardian.ya.Cap} no vigila el camino: vigila a quien llega. Quizá "
@@ -240,6 +244,7 @@ def _descansar(w, esc, reg):
         return (["Ya has descansado todo lo que el tiempo permite en esta parte "
                  "del camino."], None, None)
     w.descansos.add(w.etapa)
+    w.avanzar(1)                                         # un día de reposo
     antes = w.vigor
     vigor(+1)(w)
     w.amenaza += 1
@@ -255,6 +260,7 @@ def _moverse(w, esc, reg):
     dd = reg.get("dd", 0)
     t = w.tirar(enfoque, 5, ajuste=dd)
     reg["azar"] = True
+    w.avanzar(1)                                         # caminar también cuesta un día
     m = _mods(reg)
     pool = MOVER_OK if t.exito else MOVER_MAL
     con, sin = w.rng.choice(pool)

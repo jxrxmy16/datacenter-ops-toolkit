@@ -25,6 +25,14 @@ def amenaza(n):
     return f
 
 
+def recuerdo(clave, cuantos=1):
+    """Algunos vecinos del pueblo recordarán esto del héroe (y lo contarán al volver)."""
+    def f(w):
+        if w.pueblo is not None:
+            w.pueblo.recordar(clave, w.dia, cuantos)
+    return f
+
+
 def pon(*banderas):
     def f(w):
         w.banderas.update(banderas)

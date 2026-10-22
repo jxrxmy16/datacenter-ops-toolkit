@@ -59,6 +59,22 @@ GENEROS = {
                       "Nyra", "Edda"],
         "nombres_m": ["Orsolo", "Bren", "Dorin", "Maeron", "Tomas", "Kael",
                       "Hobb", "Alderic"],
+        "pueblo": {
+            "oficios": [("la panadera", "f"), ("el herrero", "m"), ("la curandera", "f"),
+                        ("el posadero", "m"), ("la tejedora", "f"), ("el molinero", "m"),
+                        ("la pastora", "f"), ("el carpintero", "m"), ("la cervecera", "f"),
+                        ("el cantero", "m")],
+            "nombres": {"plaza": "la plaza del pueblo",
+                        "adornos": "guirnaldas de hojas y cintas",
+                        "musica": "un laúd y dos flautas",
+                        "comida": "pan caliente y sidra",
+                        "faena": "martillos y sierras",
+                        "pueblo": "el pueblo", "danio": "la última tormenta",
+                        "destrozos": "tejados abiertos, vallas caídas, barro por todas partes",
+                        "arreglado": "tejados nuevos, vallas en pie y madera recién cortada por todas partes",
+                        "por": "casa por casa"},
+            "eventos": ["fiesta", "mercado", "cosecha", "reparaciones", "luto"],
+        },
         "problema": {
             "monstruo": "{esbirros.Cap} rondan {hogar} cada noche. Dicen que "
                         "{villano} ha despertado en {guarida} y que, si nadie "
@@ -115,6 +131,23 @@ GENEROS = {
                       "Suri"],
         "nombres_m": ["Teo", "Kenji", "Ilya", "Dax", "Rafe", "Oriol", "Jonas",
                       "Amadi"],
+        "pueblo": {
+            "oficios": [("la hidrocultora", "f"), ("el mecánico de muelle", "m"),
+                        ("la médica del módulo", "f"), ("el cocinero del comedor", "m"),
+                        ("la operaria de reciclaje", "f"), ("el electricista", "m"),
+                        ("la tendera de suministros", "f"), ("el vigilante de turno", "m"),
+                        ("la maestra de sección", "f"), ("el barman del módulo", "m")],
+            "nombres": {"plaza": "el atrio central",
+                        "adornos": "tiras de luz y banderines de plástico",
+                        "musica": "un sintetizador de segunda mano",
+                        "comida": "barritas dulces y té sintético",
+                        "faena": "soldadores y llaves de carraca",
+                        "pueblo": "la colonia", "danio": "el último fallo de presión",
+                        "destrozos": "mamparos abollados, luces apagadas y charcos de refrigerante por todas partes",
+                        "arreglado": "mamparos nuevos, luces encendidas y olor a soldadura reciente por todas partes",
+                        "por": "módulo por módulo"},
+            "eventos": ["fiesta", "mercado", "reparaciones", "luto"],
+        },
         "problema": {
             "monstruo": "{esbirros.Cap} han cortado los suministros "
                         "{hogar.de}. Se rumorea que {villano} controla ahora "
@@ -172,6 +205,22 @@ GENEROS = {
                       "Celia"],
         "nombres_m": ["Dante", "Bruno", "Leo", "Hugo", "Nico", "Víctor",
                       "Marcos", "Elías"],
+        "pueblo": {
+            "oficios": [("la camarera", "f"), ("el barbero", "m"), ("la florista", "f"),
+                        ("el sereno", "m"), ("la modista", "f"), ("el quiosquero", "m"),
+                        ("la telefonista", "f"), ("el zapatero", "m"), ("la pensionista", "f"),
+                        ("el taxista", "m")],
+            "nombres": {"plaza": "la plaza del barrio",
+                        "adornos": "farolillos de papel y serpentinas",
+                        "musica": "una banda de jazz de tres músicos",
+                        "comida": "bocadillos y whisky barato",
+                        "faena": "martillos y brochas",
+                        "pueblo": "el barrio", "danio": "el último temporal",
+                        "destrozos": "escaparates rotos, toldos arrancados y charcos por todas partes",
+                        "arreglado": "escaparates nuevos, toldos puestos y olor a pintura fresca por todas partes",
+                        "por": "local por local"},
+            "eventos": ["fiesta", "mercado", "reparaciones", "luto"],
+        },
         "problema": {
             "monstruo": "{esbirros.Cap} cobran «protección» en {hogar}, "
                         "y quien se niega aparece flotando en el puerto. "
@@ -229,6 +278,22 @@ GENEROS = {
                       "Ottilie", "Wilhelmina"],
         "nombres_m": ["Anselmo", "Tobías", "Gaspar", "Ignacio", "Matías", "Eloy",
                       "Lázaro", "Silas"],
+        "pueblo": {
+            "oficios": [("la lechera", "f"), ("el enterrador", "m"), ("la tabernera", "f"),
+                        ("el campanero", "m"), ("la costurera", "f"), ("el leñador", "m"),
+                        ("la partera", "f"), ("el sacristán", "m"), ("la hilandera", "f"),
+                        ("el cazador", "m")],
+            "nombres": {"plaza": "la plaza mayor",
+                        "adornos": "coronas de flores secas y velas",
+                        "musica": "un acordeón desafinado",
+                        "comida": "pan negro y vino caliente",
+                        "faena": "mazos y clavos",
+                        "pueblo": "el pueblo", "danio": "la última tormenta",
+                        "destrozos": "tejados abiertos, vallas caídas, barro hasta las rodillas",
+                        "arreglado": "tejados nuevos, vallas en pie y madera recién cortada por todas partes",
+                        "por": "casa por casa"},
+            "eventos": ["fiesta", "mercado", "cosecha", "reparaciones", "luto"],
+        },
         "problema": {
             "monstruo": "Cada luna llena desaparece alguien en {hogar}. "
                         "{esbirros.Cap} han sido vistos cerca {guarida.de}, y "

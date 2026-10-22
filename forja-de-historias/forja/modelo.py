@@ -15,6 +15,7 @@ from dataclasses import dataclass, field
 from typing import Callable, Optional, Union
 
 from .gramatica import Nom
+from .pueblo import detalle_de_un_vecino
 from .lexico import ARQUETIPOS, FALLAS, OBJETIVOS, TONOS
 
 ENFOQUES = ("valor", "ingenio", "compasion", "sombra")
@@ -214,6 +215,20 @@ class Params:
     nombres: dict = field(default_factory=dict)   # nombres propios elegidos: rol -> nombre
 
 
+class _Perezoso(dict):
+    """Un diccionario con claves que solo se calculan cuando alguien las pide."""
+
+    def __init__(self, base, perezosas):
+        super().__init__(base)
+        self._perezosas = perezosas
+
+    def __missing__(self, clave):
+        if clave in self._perezosas:
+            self[clave] = self._perezosas[clave]()
+            return self[clave]
+        raise KeyError(clave)
+
+
 class _Registro(string.Formatter):
     """Formateador que anota qué claves de la plantilla se usaron."""
 
@@ -257,6 +272,8 @@ class Mundo:
     observados: set = field(default_factory=set)   # pistas ya reveladas
     notas_pendientes: list = field(default_factory=list)
     renombres: dict = field(default_factory=dict)  # nombre antiguo -> nuevo
+    dia: int = 0                       # el reloj del mundo: días desde que empieza la historia
+    pueblo: object = None              # el pueblo vivo (forja.pueblo.Pueblo)
 
     # --- consultas ---------------------------------------------------------
     @property
@@ -325,6 +342,10 @@ class Mundo:
             return None
         return self.probabilidad(opcion.enfoque, opcion.dif, opcion.amenaza)
 
+    def avanzar(self, dias: int) -> None:
+        """Hace pasar el tiempo: el pueblo (y todo lo que dependa del día) sigue su curso."""
+        self.dia += max(0, int(dias))
+
     def crecer(self, enfoque: str) -> None:
         if enfoque in CRECEN:
             self.atributos[enfoque] = min(TOPE_ATRIBUTO,
@@ -355,6 +376,11 @@ class Mundo:
         ctx["voz_inicio"] = falla["voz_inicio"]
         ctx["voz_final"] = falla["voz_final"]
         ctx["tentacion_meta"] = falla["tentacion_meta"]
+        if self.pueblo is not None:             # se calculan solo si el texto los usa
+            ctx = _Perezoso(ctx, {
+                "pueblo_hoy": lambda: self.pueblo.estado_hoy(self.dia),
+                "pueblo_detalle": lambda: detalle_de_un_vecino(self.pueblo, self.dia),
+            })
         return ctx
 
     def renderizar(self, parrafos, menciona=()) -> list:
@@ -390,6 +416,8 @@ class Mundo:
             "inventario": sorted(self.inventario),
             "grupo": sorted(self.grupo),
             "ventaja": self.ventaja,
+            "dia": self.dia,
+            "pueblo": self.pueblo.resumen() if self.pueblo is not None else None,
             "reparto": {r: (p.nombre, p.vivo, p.confianza)
                         for r, p in sorted(self.reparto.items())},
             "azar": hashlib.md5(repr(self.rng.getstate()).encode()).hexdigest(),

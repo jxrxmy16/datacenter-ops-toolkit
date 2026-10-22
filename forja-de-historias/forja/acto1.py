@@ -1,6 +1,6 @@
 """Primer acto (planteamiento): etapas 1 a 5 del viaje del héroe."""
 
-from .efectos import confianza, da, muere, no, pon, si, sombra, une, vigor
+from .efectos import confianza, da, muere, no, pon, recuerdo, si, sombra, une, vigor
 from .modelo import Escena, Opcion, P, res
 
 ESCENAS = [
@@ -18,6 +18,7 @@ ESCENAS = [
             "{ambiente}",
             "Es un día como cualquier otro en {hogar}. Eres {heroe}, y todo el "
             "mundo sabe dos cosas de ti: que {rasgo}, y que {falla_txt}.",
+            "{pueblo_hoy}",
             "Nada ha cambiado en años, y a veces tú también desearías que nada "
             "cambiase. Sin embargo, algo en el aire se siente a punto de romperse.",
             "{voz_inicio}",
@@ -32,11 +33,13 @@ ESCENAS = [
                    "ingenio",
                    res("Entre conversaciones a medias y miradas esquivas reúnes "
                        "más de lo que nadie sospecha. Una frase suelta sobre "
-                       "{villano} se te queda grabada.", pon("oyo_rumores"))),
+                       "{villano} se te queda grabada.", pon("oyo_rumores"),
+                       recuerdo("curioso", 1))),
             Opcion("Ayudar a tus vecinos con lo que necesiten", "compasion",
                    res("Llevas cargas, escuchas penas, arreglas lo que se puede "
                        "arreglar. Al caer el día, media gente {hogar.de} sabe tu "
-                       "nombre y te lo agradece.", pon("querido"))),
+                       "nombre y te lo agradece.", pon("querido"),
+                       recuerdo("ayudo", 2))),
         ],
     ),
 

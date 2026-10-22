@@ -11,6 +11,7 @@ from dataclasses import dataclass
 from .efectos import si
 from .lexico import FALLAS
 from .modelo import P
+from .pueblo import DIAS_VIAJE, regreso
 
 TODOS = ("heroe", "mentor", "aliado", "heraldo", "villano")
 
@@ -226,6 +227,8 @@ def epilogo(w) -> Final:
         leccion = (falla["leccion_mal"] if w.b("arco_caido")
                    else falla["leccion_ok"])
         parrafos = ["{ambiente}", w.rng.choice(_APERTURAS[clave])]
+        w.avanzar(DIAS_VIAJE[12])                      # el camino de vuelta a casa
+        parrafos += regreso(w)                         # el pueblo, tal como está ahora
         parrafos += _destinos(w)
         parrafos += [leccion, _CIERRES[clave]]
 

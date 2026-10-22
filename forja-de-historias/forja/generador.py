@@ -11,6 +11,7 @@ import random
 from .gramatica import Nom
 from .lexico import ARQUETIPOS, FALLAS, TONOS, mezclar_generos
 from .modelo import Mundo, Params, Personaje
+from .pueblo import crear_pueblo
 
 
 def nombre_al_azar(genero, pronombre, rng, mezcla=()):
@@ -98,5 +99,9 @@ def crear_mundo(p: Params) -> Mundo:
         atributos[k] += v
     atributos["sombra"] += FALLAS[p.falla]["sombra"]
 
+    # El pueblo tiene su propio azar: crearlo no cambia nada más del mundo.
+    usados = {p.nombre} | {x.nombre for x in reparto.values()}
+    pueblo = crear_pueblo(p.semilla, lex["pueblo"], lex["nombres_f"], lex["nombres_m"], usados)
+
     return Mundo(params=p, rng=rng, lex=lex, reparto=reparto, lugares=lugares,
-                 objetos=objetos, vinculo=vinculo, atributos=atributos)
+                 objetos=objetos, vinculo=vinculo, atributos=atributos, pueblo=pueblo)

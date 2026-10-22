@@ -560,10 +560,12 @@ def fijar_personal(datos) -> None:
     frases = datos.get("frases")
     raices = raices if isinstance(raices, dict) else {}
     frases = frases if isinstance(frases, dict) else {}
-    _PERSONAL = {c: {"raices": [x for x in v if isinstance(x, str)]}
-                 for c, v in raices.items() if c in CLASES and isinstance(v, list)}
-    _FRASES_PERSONALES = {k: c for k, c in frases.items()
-                          if isinstance(k, str) and c in CLASES}
+    nuevo_personal = {c: {"raices": [x for x in v if isinstance(x, str)]}
+                      for c, v in raices.items() if c in CLASES and isinstance(v, list)}
+    nuevas_frases = {k: c for k, c in frases.items() if isinstance(k, str) and c in CLASES}
+    if nuevo_personal == _PERSONAL and nuevas_frases == _FRASES_PERSONALES:
+        return                                  # nada cambia: no hace falta reindexar
+    _PERSONAL, _FRASES_PERSONALES = nuevo_personal, nuevas_frases
     _indexar()
 
 

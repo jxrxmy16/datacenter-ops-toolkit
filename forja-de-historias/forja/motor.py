@@ -10,6 +10,7 @@ from . import acto1, acto2, acto3, libre
 from .efectos import vigor
 from .final import epilogo
 from .modelo import Bloque, Capitulo, CRECEN
+from .pueblo import DIAS_ESCENA, DIAS_VIAJE
 
 # Vogler, *El viaje del escritor*: las doce etapas.
 ETAPAS = {
@@ -137,6 +138,7 @@ def jugar_escena(w, esc, ses, capitulo):
         desenlace += libre.hazana(w, reg, exito)
     if exito and opcion.enfoque in CRECEN:
         w.crecer(opcion.enfoque)
+    w.avanzar(DIAS_ESCENA)                              # una escena es, al menos, un día
 
     ses.resultado(desenlace, tirada, opcion.enfoque or "ingenio")
     bloque.eleccion = reg.get("lbl") or etiquetas[reg["i"]][1]
@@ -154,6 +156,7 @@ def jugar(w, ses):
     ses.inicio(w)
     for etapa in range(1, 12):
         w.etapa = etapa
+        w.avanzar(DIAS_VIAJE.get(etapa, 0))            # el camino hasta aquí
         capitulo = Capitulo(etapa, ETAPAS[etapa])
         ses.capitulo(etapa, ETAPAS[etapa])
         for modo, ids in PLAN[etapa]:
