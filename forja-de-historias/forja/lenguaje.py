@@ -356,11 +356,7 @@ _MODIFICADORES_BASE = [
 MODIFICADORES = list(_MODIFICADORES_BASE)       # base + los que añade el vocabulario ampliado
 
 # Fuera del mundo del juego: si aparecen y nada del mundo, no es una acción.
-_FUERA_DE_MUNDO_BASE = {"telefono", "movil", "celular", "taxi", "pizza", "instagram",
-                   "whatsapp", "internet", "google", "wifi", "email", "facebook",
-                   "tiktok", "netflix", "futbol", "politica", "publico", "gasto",
-                   "narrador", "juego", "ordenador", "app", "tokio", "equipo",
-                   "fichar", "recortar", "videojuego", "youtube", "twitter"}
+_FUERA_DE_MUNDO_BASE = {"telefono", "movil", "celular", "taxi", "pizza", "instagram", "whatsapp", "internet", "google", "wifi", "email", "facebook", "tiktok", "netflix", "futbol", "politica", "publico", "narrador", "juego", "ordenador", "app", "tokio", "fichar", "recortar", "videojuego", "youtube", "twitter"}
 _FUERA_DE_MUNDO = set(_FUERA_DE_MUNDO_BASE)       # base + las que añade el vocabulario ampliado
 
 NEGADORES = {"no", "nunca", "jamas", "ni", "tampoco", "sin"}

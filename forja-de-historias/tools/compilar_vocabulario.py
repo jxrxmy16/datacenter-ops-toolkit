@@ -2,6 +2,11 @@
 """Compila los vocabularios por intención (JSON) en forja/vocabulario.py.
 
     python tools/compilar_vocabulario.py vocab/valor.json vocab/ingenio.json ...
+    python tools/compilar_vocabulario.py --desde-actual ronda3.json ...
+
+Con `--desde-actual` parte del vocabulario que ya hay en forja/vocabulario.py y le
+suma los ficheros dados (lo posterior manda en los pesos de las frases): así una
+ronda nueva solo necesita sus ADICIONES.
 
 Normaliza (minúsculas, sin tildes), descarta lo inservible (raíces de menos de
 4 letras, entradas con espacios, pesos fuera de rango), elimina duplicados y
@@ -88,11 +93,21 @@ def _matiz(entrada):
         return None
 
 
-def compilar(rutas):
+def _vocabulario_actual():
+    """El vocabulario compilado vigente, con el mismo formato que un fichero de entrada."""
+    from forja import vocabulario
+    datos = {c: dict(d) for c, d in vocabulario.VOCABULARIO.items()}
+    datos["matices"] = [list(m) for m in getattr(vocabulario, "MATICES", ())]
+    datos["fuera_de_mundo"] = list(getattr(vocabulario, "FUERA_DE_MUNDO", ()))
+    return datos
+
+
+def compilar(rutas, desde_actual=False):
     salida = {}
     matices, fuera = {}, set()
-    for ruta in rutas:
-        datos = json.loads(Path(ruta).read_text(encoding="utf-8"))
+    fuentes = ([_vocabulario_actual()] if desde_actual else []) + \
+        [json.loads(Path(ruta).read_text(encoding="utf-8")) for ruta in rutas]
+    for datos in fuentes:
         for entrada in datos.get("matices", ()):
             m = _matiz(entrada)
             if m:
@@ -105,7 +120,7 @@ def compilar(rutas):
             if clase in ("matices", "fuera_de_mundo"):
                 continue
             if clase not in CLASES:
-                print(f"  (ignorada la clave desconocida «{clase}» de {ruta})")
+                print(f"  (ignorada la clave desconocida «{clase}»)")
                 continue
             s = salida.setdefault(clase, {"verbos": [], "raices": [], "exactas": [], "frases": []})
             s["verbos"] += d.get("verbos", [])
@@ -117,18 +132,18 @@ def compilar(rutas):
         if clase not in salida:
             continue
         s = salida[clase]
-        frases, vistas = [], set()
+        frases = {}
         for entrada in s["frases"]:
             try:
                 patron, peso = (entrada["patron"], entrada["peso"]) if isinstance(entrada, dict) else entrada
-                patron = [t if ("*" in t or "|" in t or t == "@hacer") else quitar_tildes(t) for t in patron]
-                clave = (tuple(patron), clase)
-                if clave in vistas or float(peso) == 0 or not -3 <= float(peso) <= 3 or not 1 <= len(patron) <= 4:
+                patron = [t if ("*" in t or "|" in t or "^" in t or t == "@hacer") else quitar_tildes(t)
+                          for t in patron]
+                if float(peso) == 0 or not -3 <= float(peso) <= 3 or not 1 <= len(patron) <= 4:
                     continue
-                vistas.add(clave)
-                frases.append([patron, round(float(peso), 2)])
+                frases[(tuple(patron), clase)] = [patron, round(float(peso), 2)]   # lo posterior manda
             except (TypeError, ValueError, KeyError):
                 continue
+        frases = list(frases.values())
         final[clase] = {
             "verbos": _unir(s["verbos"], verbos=True),
             "raices": [r for r in _unir(s["raices"]) if len(r.partition(":")[0]) >= 4],
@@ -144,7 +159,8 @@ def main():
     if len(sys.argv) < 2:
         print(__doc__)
         return 1
-    final = compilar(sys.argv[1:])
+    args = [a for a in sys.argv[1:] if a != "--desde-actual"]
+    final = compilar(args, desde_actual="--desde-actual" in sys.argv[1:])
     matices = final.pop("__matices__")
     fuera = final.pop("__fuera__")
     cuerpo = pprint.pformat(final, width=96, sort_dicts=False, compact=True)
