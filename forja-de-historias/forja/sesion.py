@@ -27,7 +27,7 @@ from .generador import crear_mundo
 from .lenguaje import analizar
 from .libro import guardar as guardar_libro
 from .lexico import ARQUETIPOS, FALLAS, GENEROS, TONOS, TRAMAS
-from .modelo import Params
+from .modelo import BASE_MODIFICADOR, ENFOQUES, ETIQUETAS, Params, nivel_de
 
 VERSION_GUARDADO = 1
 ACCIONES = ("op", "libre", "int")
@@ -63,6 +63,7 @@ Comandos (empiezan por /):
   /confirmar          activa o desactiva la confirmación de lo que entiendo
   /modo               alterna entre escribir libremente y ver siempre la lista de opciones
   /dados              enseña u oculta la tirada de dado de cada acción arriesgada
+  /prob               tus probabilidades de éxito según lo que has entrenado
   /frases             lista las frases que no supe leer (para ayudarme a aprender)
   /salir              sale (la partida queda guardada en «auto»)"""
 
@@ -268,6 +269,9 @@ class Sesion:
                 if reg is not None:
                     return self._registrar(reg)
                 continue
+            # La probabilidad de cada opción viaja aparte, para no cambiar la interfaz
+            # de `leer` (cualquier interfaz de usuario sigue valiendo).
+            self.ui.probs_actuales = [self.w.probabilidad_opcion(o) for o in visibles]
             entrada = self.ui.leer(etiquetas, libre_ok=not esc.critica,
                                    critica=esc.critica)
             tipo = entrada[0]
@@ -328,6 +332,9 @@ class Sesion:
             eleccion = "s"
             if self.confirmar_activo or r.es_exploracion:
                 rotulo, etiqueta = etiquetas[r.opcion]
+                p = w.probabilidad_opcion(visibles[r.opcion])
+                if p is not None:
+                    etiqueta += f"  (≈ {round(100 * p)} %)"
                 libre_ok = r.es_exploracion and not (
                     esc.urgente and r.clase in ("descansar", "hablar"))
                 eleccion = self.ui.confirmar(r, rotulo, etiqueta, libre_ok)
@@ -454,6 +461,8 @@ class Sesion:
             self.confirmar_activo = not self.confirmar_activo
             ui.mensaje("Confirmación " + ("activada." if self.confirmar_activo
                                           else "desactivada (solo pregunto si dudo)."))
+        elif nombre in ("prob", "probabilidad", "probabilidades", "stats"):
+            ui.imprimir(self._lineas_probabilidades())
         elif nombre in ("frases", "exportar"):
             lineas = self._lineas_dudosas()
             if lineas:
@@ -532,6 +541,21 @@ class Sesion:
                 f"{self.registros[i].get('lbl', '')}"
                 + (" ↻" if self.registros[i].get("sal") else "")
                 for n, i in enumerate(acc, 1)]
+
+    def _lineas_probabilidades(self):
+        w = self.w
+        lineas = ["Tus probabilidades de éxito ahora (nivel, equipo, ánimo y falla):",
+                  "                              fácil normal difícil"]
+        for enfoque in ENFOQUES:
+            mod = w.atributos[enfoque] - BASE_MODIFICADOR
+            p = [round(100 * w.probabilidad(enfoque, dif)) for dif in (6, 7, 8)]
+            nivel = nivel_de(w.atributos[enfoque])
+            lineas.append(f"{ETIQUETAS[enfoque]:9s} {mod:+d} {nivel:<14s} "
+                          f"{p[0]:4d} % {p[1]:4d} % {p[2]:4d} %")
+        if w.ventaja:
+            lineas.append("Tienes una ventaja para tu próxima tirada: ya está contada.")
+        lineas.append("Lo que no has entrenado resta: te cuesta más.")
+        return lineas
 
     def _lineas_estado(self):
         w = self.w

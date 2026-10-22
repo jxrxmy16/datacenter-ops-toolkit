@@ -27,6 +27,17 @@ VIGOR_INICIAL = 8
 # Ajuste global de equilibrio: se suma a la dificultad de cada tirada.
 AJUSTE_DIFICULTAD = -1
 
+# Los atributos van de 0 a 4 por dentro; a la vista son modificadores que parten
+# de 0: un atributo de 2 no suma ni resta, uno de 0 resta 2.
+BASE_MODIFICADOR = 2
+NIVELES = {0: "sin entrenar", 1: "poco entrenado", 2: "corriente", 3: "entrenado",
+           4: "maestro"}
+
+
+def nivel_de(atributo: int) -> str:
+    return NIVELES[max(0, min(4, atributo))]
+
+
 # Objetos del inventario y los enfoques a los que dan +1.
 BONOS_OBJETO = {
     "equipo": ("valor",),
@@ -155,10 +166,18 @@ class Tirada:
     exito: bool
 
     def describir(self, enfoque: str) -> str:
+        """«dado 4 + valor -1 (sin entrenar) +1 (equipo, ánimo, falla) = 4 contra 5 → fracaso».
+
+        El atributo se muestra como modificador alrededor de 0 (cada punto por
+        debajo de 2 es una penalización) y la dificultad se desplaza igual, de
+        modo que el resultado es el mismo que con los números en bruto.
+        """
         veredicto = "éxito" if self.exito else "fracaso"
+        mod = self.atributo - BASE_MODIFICADOR
         bonos = f" {self.bono:+d} (equipo, ánimo, falla)" if self.bono else ""
-        return (f"dado {self.dado} + {enfoque} {self.atributo}{bonos} = {self.total} "
-                f"contra {self.dificultad} → {veredicto}")
+        return (f"dado {self.dado} + {enfoque} {mod:+d} ({nivel_de(self.atributo)}){bonos} = "
+                f"{self.total - BASE_MODIFICADOR} contra {self.dificultad - BASE_MODIFICADOR} "
+                f"→ {veredicto}")
 
 
 @dataclass
@@ -290,6 +309,21 @@ class Mundo:
         bono = self.bono(enfoque)
         total = dado + atributo + bono
         return Tirada(dado, atributo, bono, total, dif, total >= dif)
+
+    def probabilidad(self, enfoque, dificultad, con_amenaza=False, ajuste=0) -> float:
+        """Probabilidad exacta (0 a 1) de tener éxito con `tirar(...)`, sin tirar."""
+        dif = dificultad(self) if callable(dificultad) else dificultad
+        dif += AJUSTE_DIFICULTAD + ajuste - self.ventaja
+        if con_amenaza:
+            dif += min(2, self.amenaza)
+        suma = self.atributos[enfoque] + self.bono(enfoque)
+        return sum(1 for dado in range(1, 7) if dado + suma >= dif) / 6
+
+    def probabilidad_opcion(self, opcion):
+        """Probabilidad de acertar una opción con tirada; None si no hay riesgo."""
+        if opcion.dif is None or opcion.enfoque is None:
+            return None
+        return self.probabilidad(opcion.enfoque, opcion.dif, opcion.amenaza)
 
     def crecer(self, enfoque: str) -> None:
         if enfoque in CRECEN:

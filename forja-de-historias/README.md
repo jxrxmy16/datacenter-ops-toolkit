@@ -73,6 +73,28 @@ color se desactiva solo.
 4. **El libro**: capítulos, tus decisiones en cursiva y la bibliografía de lo que
    apareció.
 
+## Dados y estadísticas (el componente de rol)
+
+Toda acción con riesgo se resuelve con un dado de seis caras: **dado + tu
+atributo + bonos contra una dificultad**. Se ve siempre, con su desglose:
+
+```
+(dado 4 + valor -1 (poco entrenado) +1 (equipo, ánimo, falla) = 4 contra 5 → fracaso)
+```
+
+- Los atributos (Valor, Ingenio, Compasión, Ambición) se muestran como
+  **modificadores alrededor de 0**: «corriente» ni suma ni resta; «poco
+  entrenado» (-1) y «sin entrenar» (-2) **restan**. Así, un personaje que ha
+  crecido en Ingenio y se lanza a una acción de fuerza tiene un negativo real.
+  Se entrena a base de éxitos con ese atributo.
+- Las opciones con riesgo enseñan su **probabilidad exacta** (`≈ 50 %`) antes de
+  elegir, y también cuando el narrador te enseña cómo ha entendido tu frase.
+  `/prob` resume lo que puedes esperar con cada atributo. `/dados` oculta o
+  muestra las tiradas.
+- «Con cuidado», «en silencio» o «con ayuda» bajan la dificultad; «a ciegas»,
+  «sin armas» o «herido» la suben. «Otra suerte» (`/reintentar`) repite la
+  tirada con otro dado sin cambiar nada más.
+
 ## Cuenta tu mundo: mezclar géneros y poner nombres
 
 Al crear la partida, tras elegir el género:
@@ -155,6 +177,7 @@ lista de tus acciones reconstruyen exactamente la misma historia, hasta el
 | `/corregir` · `/olvidar` | corrige cómo entendí tu última frase · borra lo que he aprendido de ti |
 | `/frases` | enseña las frases que no supe leer y lo que querías decir (se guardan solo en tu equipo, en `partidas/frases_dudosas.jsonl`; si me las pegas, el vocabulario mejora con lo que escribes de verdad) |
 | `/modo` · `/dados` | escribir libremente o ver siempre la lista · mostrar u ocultar las tiradas |
+| `/prob` | tus probabilidades de éxito (fácil / normal / difícil) según lo que has entrenado |
 | `/guardar [nombre]` · `/cargar [nombre]` · `/partidas` | guardados con nombre |
 | `/renombrar mentor Zarkon` | cambia un nombre, también en el libro |
 | `/nota texto` | añade una nota tuya al libro |

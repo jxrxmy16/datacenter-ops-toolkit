@@ -130,10 +130,11 @@ class TestDados(unittest.TestCase):
         with contextlib.redirect_stdout(salida):
             c.resultado(["Algo ocurre."], self._tirada(), "valor")
             c.interludio("mirar", ["Miras."], self._tirada(), "ingenio")
-        texto = salida.getvalue()
-        self.assertIn("dado 4 + valor 3 -1", texto)
-        self.assertIn("contra 7 → fracaso", texto)
-        self.assertIn("dado 4 + ingenio 3", texto)
+        texto = " ".join(salida.getvalue().split())          # sin saltos de línea
+        # atributo 3 = +1 (entrenado); dificultad 7 -> 5; total 6 -> 4
+        self.assertIn("dado 4 + valor +1 (entrenado) -1 (equipo, ánimo, falla) = 4 contra 5 → fracaso",
+                      texto)
+        self.assertIn("dado 4 + ingenio +1 (entrenado)", texto)
 
     def test_se_pueden_ocultar(self):
         c = Consola(color=False, pausas=False, dados=False)

@@ -246,11 +246,14 @@ class Consola:
         self._pista_dada = False
 
     # --- lectura de acciones -------------------------------------------------
-    def _listar(self, opciones, marcada=None):
-        """Imprime las opciones numeradas, con sangría francesa."""
+    def _listar(self, opciones, marcada=None, probs=None):
+        """Imprime las opciones numeradas, con sangría francesa (y la probabilidad
+        de acertar, si la opción tiene tirada)."""
         for i, (rotulo, etiqueta) in enumerate(opciones, 1):
             cab = ("> " if marcada == i - 1 else "  ") + f"{i}) "
-            cuerpo = textwrap.fill(f"[{rotulo}] {etiqueta}", self.ancho,
+            p = probs[i - 1] if probs and i - 1 < len(probs) else None
+            extra = f"  (≈ {round(100 * p)} %)" if p is not None else ""
+            cuerpo = textwrap.fill(f"[{rotulo}] {etiqueta}{extra}", self.ancho,
                                    initial_indent=cab,
                                    subsequent_indent=" " * len(cab))
             print(cuerpo.replace(f"[{rotulo}]", self.c(f"[{rotulo}]", "etiqueta"), 1))
@@ -276,10 +279,11 @@ class Consola:
 
     def leer(self, opciones, libre_ok=True, critica=False):
         """Devuelve ('op', i) | ('txt', frase) | ('cmd', nombre, argumento)."""
+        probs = getattr(self, "probs_actuales", None)
         listar = critica or self.modo == "opciones" or self._lista_pedida
         self._lista_pedida = False
         if listar:
-            self._listar(opciones)
+            self._listar(opciones, probs=probs)
         if critica:
             self.parrafo("Momento crítico: elige una opción.", "  ", "aviso")
         elif not listar:
@@ -301,7 +305,7 @@ class Consola:
                 continue
             if e[0] == "ideas":
                 print(self.c("\n  Ideas (o escribe otra cosa):", "nota"))
-                self._listar(opciones)
+                self._listar(opciones, probs=probs)
                 indicacion = "\n> "
                 continue
             if e[0] == "mal":
@@ -414,6 +418,7 @@ class Demo(Consola):
         self._rng = random.Random(semilla * 7919 + 1)
 
     def leer(self, opciones, libre_ok=True, critica=False):
+        probs = getattr(self, "probs_actuales", None)
         # Juega como una persona razonable: casi siempre evita la ambición y la
         # duda, pero no siempre (así también se ven los caminos oscuros).
         buenas = [k for k, (rotulo, _) in enumerate(opciones)
@@ -422,7 +427,7 @@ class Demo(Consola):
             i = self._rng.choice(buenas)
         else:
             i = self._rng.randrange(len(opciones))
-        self._listar(opciones, marcada=i)
+        self._listar(opciones, marcada=i, probs=probs)
         print()
         return ("op", i)
 
@@ -492,6 +497,7 @@ class Muda:
         return ("fin",)
 
     def leer(self, opciones, libre_ok=True, critica=False):
+        self.ultimas_probs = getattr(self, "probs_actuales", None)
         if self.guion:
             e = self.guion.pop(0)
             if isinstance(e, int):
