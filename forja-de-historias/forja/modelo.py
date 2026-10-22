@@ -189,6 +189,10 @@ class Params:
     arquetipo: str
     falla: str
     semilla: int
+    # Contexto del mundo (opcional). Los guardados antiguos no lo traen.
+    mezcla: list = field(default_factory=list)    # géneros secundarios que se mezclan
+    contexto: str = ""                            # la premisa que escribió el jugador
+    nombres: dict = field(default_factory=dict)   # nombres propios elegidos: rol -> nombre
 
 
 class _Registro(string.Formatter):

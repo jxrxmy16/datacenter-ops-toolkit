@@ -9,12 +9,12 @@ capricho: es la regla de "la pistola de Chéjov" hecha código.
 import random
 
 from .gramatica import Nom
-from .lexico import ARQUETIPOS, FALLAS, GENEROS, TONOS
+from .lexico import ARQUETIPOS, FALLAS, TONOS, mezclar_generos
 from .modelo import Mundo, Params, Personaje
 
 
-def nombre_al_azar(genero, pronombre, rng):
-    lex = GENEROS[genero]
+def nombre_al_azar(genero, pronombre, rng, mezcla=()):
+    lex = mezclar_generos(genero, mezcla)
     if pronombre == "f":
         pool = lex["nombres_f"]
     elif pronombre == "m":
@@ -24,9 +24,29 @@ def nombre_al_azar(genero, pronombre, rng):
     return rng.choice(pool)
 
 
+_ARTICULOS = ("el", "la", "los", "las")
+
+
+def _lugar_con_nombre(actual: str, nuevo: str) -> str:
+    """«la aldea de Brumahonda» + «Aguasmuertas» -> «la aldea de Aguasmuertas».
+
+    Si `nuevo` ya trae su propio sintagma («el pueblo de X»), manda ese.
+    """
+    if nuevo.split(" ", 1)[0].lower() in _ARTICULOS and " " in nuevo:
+        return nuevo
+    palabras = actual.split()
+    for i, w in enumerate(palabras):
+        if i and w[:1].isupper():
+            prefijo = palabras[:i]
+            while len(prefijo) > 1 and prefijo[-1].lower() in _ARTICULOS:
+                prefijo.pop()               # «el barrio de las Tres Chimeneas» -> «el barrio de»
+            return " ".join(prefijo + [nuevo])
+    return " ".join(palabras[:-1] + [nuevo])
+
+
 def crear_mundo(p: Params) -> Mundo:
     rng = random.Random(p.semilla)
-    lex = GENEROS[p.genero]
+    lex = mezclar_generos(p.genero, p.mezcla)
 
     # Nombres sin repetir (ni con el del héroe).
     mujeres = [n for n in lex["nombres_f"] if n != p.nombre]
@@ -62,6 +82,16 @@ def crear_mundo(p: Params) -> Mundo:
         "esbirros": Nom(rng.choice(lex["esbirros"])),
         "refugio": Nom(rng.choice(lex["refugios"])),
     }
+
+    # Nombres propios que eligió el jugador al contar su mundo.
+    for rol, nombre in (p.nombres or {}).items():
+        nombre = " ".join(str(nombre).split())[:40]
+        if not nombre:
+            continue
+        if rol == "hogar":
+            lugares["hogar"] = Nom(_lugar_con_nombre(str(lugares["hogar"]), nombre))
+        elif rol in reparto and rol != "heroe":
+            reparto[rol].nombre = nombre
 
     atributos = {"valor": 1, "ingenio": 1, "compasion": 1, "sombra": 0}
     for k, v in ARQUETIPOS[p.arquetipo]["stats"].items():

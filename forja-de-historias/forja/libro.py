@@ -10,7 +10,7 @@ import unicodedata
 from pathlib import Path
 
 from .fuentes import FUENTES, agrupar, nota
-from .lexico import ARQUETIPOS, FALLAS, GENEROS, TONOS, TRAMAS
+from .lexico import ARQUETIPOS, FALLAS, TONOS, TRAMAS
 
 
 def reemplazar_nombre(texto: str, viejo: str, nuevo: str) -> str:
@@ -46,12 +46,14 @@ def a_markdown(w, final=None) -> str:
     lineas = [
         f"# {w.titulo()}",
         "",
-        f"*Crónica de {w.heroe.nombre}* — {GENEROS[p.genero]['nombre']} · "
+        f"*Crónica de {w.heroe.nombre}* — {w.lex['nombre']} · "
         f"{TRAMAS[p.trama]['nombre']} · tono {TONOS[p.tono]['nombre'].lower()} · "
         f"{ARQUETIPOS[p.arquetipo]['nombre'].lower()} con "
         f"{FALLAS[p.falla]['nombre'].lower()} · semilla `{p.semilla}`",
         "",
     ]
+    if p.contexto:
+        lineas += [f"> *Premisa del mundo, en palabras de quien lo creó:* {p.contexto}", ""]
     for cap in w.cronica:
         lineas += [f"## Capítulo {cap.etapa}. {cap.titulo}", ""]
         for bloque in cap.bloques:

@@ -349,3 +349,38 @@ FALLAS = {
         "leccion_mal": "Tenías todo lo que hacía falta, y aun así querías más.",
     },
 }
+
+
+# --------------------------------------------------------------------------
+# Mezcla de géneros
+# --------------------------------------------------------------------------
+_PESO_PRINCIPAL = 2     # el género principal pesa el doble que cada secundario
+
+
+def mezclar_generos(principal: str, secundarios=()) -> dict:
+    """El léxico de un mundo que mezcla géneros.
+
+    Cada lista (lugares, villanos, guardianes, nombres, ambiente...) es la unión
+    de las del género principal y los secundarios, con el principal repetido
+    para que domine. Lo que no es una lista (la plantilla del problema) se toma
+    del principal. Sin secundarios devuelve el léxico del género tal cual.
+    """
+    base = GENEROS[principal]
+    otros = [g for g in dict.fromkeys(secundarios) if g in GENEROS and g != principal]
+    if not otros:
+        return base
+    mezcla = {}
+    for clave, valor in base.items():
+        if isinstance(valor, list):
+            union = list(valor) * _PESO_PRINCIPAL
+            for g in otros:
+                union += GENEROS[g][clave]
+            # sin duplicados consecutivos pero conservando el peso de cada entrada
+            mezcla[clave] = union
+        else:
+            mezcla[clave] = valor
+    mezcla["nombre"] = " + ".join([base["nombre"]] + [GENEROS[g]["nombre"] for g in otros])
+    mezcla["inspiracion"] = list(dict.fromkeys(
+        base["inspiracion"] + [f for g in otros for f in GENEROS[g]["inspiracion"]]))
+    return mezcla
+

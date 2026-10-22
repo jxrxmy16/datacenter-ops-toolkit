@@ -21,6 +21,7 @@ import sys
 from pathlib import Path
 
 from forja.consola import Consola, Demo
+from forja.contexto import describir, leer_premisa
 from forja.generador import nombre_al_azar
 from forja.lexico import ARQUETIPOS, FALLAS, GENEROS, TONOS, TRAMAS
 from forja.modelo import Params
@@ -32,11 +33,40 @@ CARPETA_PARTIDAS = RAIZ / "partidas"
 PRONOMBRES = [("f", "ella", ""), ("m", "él", ""), ("n", "elle", "")]
 
 
-def _elegir(ui, titulo, datos, rng, descripcion, azar=True):
-    """Menú sobre un diccionario de datos; si se pide azar, elige con `rng`."""
+def _elegir(ui, titulo, datos, rng, descripcion, azar=True, sugerido=None):
+    """Menú sobre un diccionario de datos; si se pide azar, elige con `rng`
+    (o la `sugerido` por la premisa del jugador, si la hay)."""
     opciones = [(k, v["nombre"], v.get(descripcion, "")) for k, v in datos.items()]
     clave = ui.menu(titulo, opciones, azar=azar)
-    return clave if clave is not None else rng.choice(list(datos))
+    if clave is not None:
+        return clave
+    azar_clave = rng.choice(list(datos))            # se saca siempre: el resto no cambia
+    return sugerido if sugerido in datos else azar_clave
+
+
+def _pedir_contexto(ui, genero, mezcla):
+    """Mezcla de géneros y premisa libre. Devuelve (mezcla, premisa, nombres, tono)."""
+    otros = [(k, v["nombre"], v.get("desc", "")) for k, v in GENEROS.items() if k != genero]
+    mezcla = list(ui.multi("¿Lo mezclas con otros géneros? (números separados por comas; "
+                           "Enter = no)", otros))
+    premisa = ui.texto("Cuéntame más de tu mundo con tus palabras: ambiente, gente, nombres "
+                       "(Enter = nada)") or ""
+    tono = None
+    nombres = {}
+    if premisa:
+        lectura = leer_premisa(premisa, genero)
+        nombres_generos = {k: v["nombre"] for k, v in GENEROS.items()}
+        nombres_tonos = {k: v["nombre"] for k, v in TONOS.items()}
+        cosas = describir(lectura, nombres_generos, nombres_tonos)
+        if cosas:
+            ui.mensaje("De lo que has escrito he sacado: " + "; ".join(cosas) + ".")
+            if ui.si_no("¿Es correcto? (si no, solo guardo tu texto como premisa del libro)"):
+                mezcla = list(dict.fromkeys(mezcla + lectura["mezcla"]))[:2]
+                tono, nombres = lectura["tono"], lectura["nombres"]
+        else:
+            ui.mensaje("Guardo tu texto como premisa del libro; no he reconocido géneros "
+                       "ni nombres en él.")
+    return mezcla, premisa, nombres, tono
 
 
 def pedir_parametros(ui, args):
@@ -50,9 +80,13 @@ def pedir_parametros(ui, args):
         pronombre = rng.choice(["f", "m", "n"])
         arquetipo = rng.choice(list(ARQUETIPOS))
         falla = rng.choice(list(FALLAS))
-        nombre = nombre_al_azar(genero, pronombre, rng)
+        extra = random.Random(semilla ^ 0x5A5A)      # aparte: no altera el resto del mundo
+        mezcla = []
+        if extra.random() < 0.35:
+            mezcla = [extra.choice([g for g in GENEROS if g != genero])]
+        nombre = nombre_al_azar(genero, pronombre, rng, mezcla)
         return Params(genero, tono, trama, nombre, pronombre, arquetipo, falla,
-                      semilla)
+                      semilla, mezcla)
 
     ui.portada("FORJA DE HISTORIAS",
                "Un narrador sin inteligencia artificial. Tú pones los "
@@ -60,18 +94,19 @@ def pedir_parametros(ui, args):
                "ponen la lógica. Cada partida es un libro distinto.")
     genero = _elegir(ui, "¿En qué universo transcurre la historia?", GENEROS,
                      rng, "desc")
-    tono = _elegir(ui, "¿Qué tono tiene?", TONOS, rng, "desc")
+    mezcla, premisa, nombres, tono_premisa = _pedir_contexto(ui, genero, [])
+    tono = _elegir(ui, "¿Qué tono tiene?", TONOS, rng, "desc", sugerido=tono_premisa)
     trama = _elegir(ui, "¿Qué tipo de historia es?", TRAMAS, rng, "desc")
     pronombre = ui.menu("¿Cómo se refiere la historia a tu protagonista?",
                         PRONOMBRES, azar=False)
     nombre = ui.texto("¿Cómo se llama tu protagonista? (Enter = al azar)")
     if not nombre:
-        nombre = nombre_al_azar(genero, pronombre, rng)
+        nombre = nombre_al_azar(genero, pronombre, rng, mezcla)
     arquetipo = _elegir(ui, "¿Qué clase de persona es?", ARQUETIPOS, rng, "desc")
     falla = _elegir(ui, "¿Cuál es su falla? (la historia la pondrá a prueba)",
                     FALLAS, rng, "desc")
     return Params(genero, tono, trama, nombre, pronombre, arquetipo, falla,
-                  semilla)
+                  semilla, mezcla, premisa, nombres)
 
 
 def _partida_en_curso(ui, args):

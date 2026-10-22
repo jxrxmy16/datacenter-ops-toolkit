@@ -654,6 +654,9 @@ def leer_guardado(ruta):
         assert params.genero in GENEROS and params.tono in TONOS
         assert params.trama in TRAMAS and params.arquetipo in ARQUETIPOS
         assert params.falla in FALLAS and isinstance(params.semilla, int)
+        assert isinstance(params.mezcla, list) and all(g in GENEROS for g in params.mezcla)
+        assert isinstance(params.contexto, str) and isinstance(params.nombres, dict)
+        assert all(isinstance(k, str) and isinstance(v, str) for k, v in params.nombres.items())
         assert isinstance(datos["registros"], list)
         for reg in datos["registros"]:
             assert isinstance(reg, dict) and reg.get("k") in ACCIONES + META

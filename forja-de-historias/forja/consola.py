@@ -160,6 +160,22 @@ class Consola:
                 return opciones[n - 1][0]
             print(self.c("  Elige un número de la lista.", "aviso"))
 
+    def multi(self, titulo, opciones):
+        """Varias opciones a la vez: «1,3» o «1 3». Enter = ninguna. Devuelve las claves."""
+        print(self.c(f"\n{titulo}", "elige"))
+        for i, (_, nombre, desc) in enumerate(opciones, 1):
+            self._con_sangria(f"{i}) {nombre}" + (f" - {desc}" if desc else ""), "  ")
+        while True:
+            r = self._leer_linea().strip()
+            if not r or r.lower() in ("no", "n", "ninguno", "ninguna", "0"):
+                return []
+            numeros = re.split(r"[\s,;y]+", r.lower())
+            elegidas = [entero(x) for x in numeros if x]
+            if elegidas and all(n is not None and 1 <= n <= len(opciones) for n in elegidas):
+                return list(dict.fromkeys(opciones[n - 1][0] for n in elegidas))
+            print(self.c("  Escribe números de la lista separados por comas, o Enter para ninguno.",
+                         "aviso"))
+
     def texto(self, pregunta, defecto=None):
         sufijo = f" [{defecto}]" if defecto else ""
         r = self._leer_linea(f"\n{pregunta}{sufijo}: ").strip()

@@ -63,7 +63,7 @@ color se desactiva solo.
 1. **Parámetros**: género (fantasía, ciencia ficción, noir, terror gótico), tono
    (luminoso, equilibrado, sombrío), trama (vencer al monstruo / la búsqueda),
    nombre y pronombres del protagonista, arquetipo y una *falla* que la historia
-   pondrá a prueba.
+   pondrá a prueba. Además puedes **contar tu mundo** (ver abajo).
 2. **Doce capítulos** (las etapas del viaje del héroe). En cada uno el motor
    elige, entre las escenas que el estado del mundo permite, una distinta, y te
    da 2-5 decisiones.
@@ -72,6 +72,25 @@ color se desactiva solo.
    y a quién se volvió el héroe.
 4. **El libro**: capítulos, tus decisiones en cursiva y la bibliografía de lo que
    apareció.
+
+## Cuenta tu mundo: mezclar géneros y poner nombres
+
+Al crear la partida, tras elegir el género:
+
+- **Mezcla de géneros.** Puedes mezclarlo con uno o varios más («1,3»). El
+  género principal domina (pesa el doble) y los demás aportan lugares, villanos,
+  guardianes, esbirros, objetos, nombres y ambiente. Un Noir con toques de
+  Fantasía puede tener un detective retirado, un portero del tamaño de un
+  armario y una torre de los vientos muertos, y el libro cita las obras de todos.
+- **Premisa libre.** Una línea con tus palabras: «una ciudad de canales con
+  magia vieja y detectives cansados; el pueblo se llama Aguasmuertas y el
+  villano Zarkon; tono oscuro». No hay IA: el narrador solo reconoce tres
+  cosas concretas, y **te enseña lo que ha entendido** para que lo confirmes:
+  géneros por palabras clave (magia, nave, detective, fantasma...), un tono, y
+  nombres propios tras «se llama / llamado» (pueblo, mentor, aliado, heraldo,
+  villano). El resto de tu texto sale como *premisa* en el libro, pero no
+  cambia las escenas: es mejor decirlo que fingir que lo ha entendido.
+- Con `--aleatorio` hay una probabilidad de mezcla al azar.
 
 ## Escribir libremente, deshacer y guardar
 
